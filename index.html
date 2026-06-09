@@ -359,6 +359,13 @@
         <div class="mode-card-desc">Максимум препятствий, скорость постоянная</div>
       </div>
     </button>
+    <button class="mode-card" id="modeMirror">
+      <div class="mode-card-icon">🪞</div>
+      <div>
+        <div class="mode-card-title">Зеркало</div>
+        <div class="mode-card-desc">Лево = право, право = лево. Попробуй!</div>
+      </div>
+    </button>
   </div>
   <button class="mode-back" id="modeBack">← Назад</button>
 </div>
@@ -548,6 +555,7 @@ const ACHIEVEMENTS=[
   {id:'level10',      icon:'🔟', name:'Уровень 10',       desc:'Достигни 10-го уровня'},
   {id:'survivor',     icon:'💀', name:'Выживший',         desc:'Продержись 30 сек в Выживании'},
   {id:'time_champ',   icon:'⏱', name:'Чемпион времени',  desc:'Набери 20+ очков за 60 сек'},
+  {id:'mirror_5',     icon:'🪞', name:'Зеркальщик',       desc:'Съешь 5 еды в режиме Зеркало'},
 ];
 let unlockedAch=new Set(JSON.parse(localStorage.getItem(S+'Ach')||'[]'));
 let survivalTime=0; // считаем время в режиме выживания
@@ -735,6 +743,7 @@ document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventD
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();initMp3();beginLevel(savedLevel);});
 document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
@@ -835,6 +844,11 @@ function beginLevel(lvl){
   levelData=getLevelData(lvl);
   document.getElementById('lvlNum').textContent=lvl;
   document.getElementById('lvlGoal').textContent=`Съешь ${levelData.foodNeeded} еды`;
+  // Зеркальный режим — меняем иконки d-pad и добавляем рамку
+  const mirror=gameMode==='mirror';
+  document.getElementById('btnLeft').textContent  = mirror ? '▶' : '◀';
+  document.getElementById('btnRight').textContent = mirror ? '◀' : '▶';
+  document.getElementById('c').style.outline = mirror ? '2px solid #e879f9' : 'none';
   showScreen('levelScreen');
   setTimeout(()=>startGame(),1700);
 }
@@ -850,7 +864,7 @@ const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('
 const btnPause=document.getElementById('btnPause');
 bestHud.textContent=best;
 let path,dir,nextDir,food,obstacles,particles,floatTexts;
-let score,totalLen,levelScore;
+let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
 let invincible=0;   // мс неуязвимости (щит при старте уровня)
 let combo=0;        // счётчик подряд съеденной еды
@@ -986,7 +1000,7 @@ function startGame(){
   path=[];
   for(let i=0;i<BASE_LEN;i++) path.push({x:W/2-i,y:H/2});
   dir={x:1,y:0};nextDir={x:1,y:0};
-  score=0;totalLen=BASE_LEN;levelScore=0;particles=[];floatTexts=[];
+  score=0;totalLen=BASE_LEN;levelScore=0;totalFood=0;particles=[];floatTexts=[];
   goldFood=null;goldFoodLife=0;goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
   bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
   shieldActive=false;speedBoost=0;freezeActive=0;
@@ -1061,7 +1075,7 @@ function loop(ts){
   if(dist(head,food)<R+FR){
     combo++;
     const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
-    score+=pts; levelScore++;
+    score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=pts; // монеты = очки
     totalLen+=LEN_PER_FOOD;
@@ -1105,7 +1119,7 @@ function loop(ts){
     } else if(dist(head,goldFood)<R+GFR){
       // съели!
       const pts=3;
-      score+=pts; levelScore++;
+      score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
       totalLen+=LEN_PER_FOOD*pts;
       scoreEl.textContent=score;
@@ -1268,6 +1282,7 @@ function draw(){
   if(speedBoost>0)    effects.push({icon:'⚡',color:'#fb923c',label:Math.ceil(speedBoost/1000)+'с'});
   if(freezeActive>0)  effects.push({icon:'❄',color:'#67e8f9',label:Math.ceil(freezeActive/1000)+'с'});
   if(invincible>0&&invincible<1800) effects.push({icon:'✨',color:'#a78bfa',label:''});
+  if(gameMode==='mirror')           effects.push({icon:'🪞',color:'#e879f9',label:'ЗЕРК'});
   effects.forEach((ef,i)=>{
     const ex=W-18,ey=18+i*28;
     ctx.save();
@@ -1292,6 +1307,7 @@ function endGame(){
   if(currentLevel>=10) unlockAch('level10');
   if(gameMode==='survival'&&survivalTime>=30000) unlockAch('survivor');
   if(gameMode==='time'&&score>=20) unlockAch('time_champ');
+  if(gameMode==='mirror'&&totalFood>=5) unlockAch('mirror_5');
   const isNewRecord = score > 0 && score > best; // рекорд — ДО saveAll()
   if(score>best){best=score;bestHud.textContent=best;}
   gamesPlayed++;pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
@@ -1404,8 +1420,9 @@ function togglePause(){
 }
 function applyDir(nd){
   if(!running||paused) return;
-  // Проверяем против nextDir (а не dir) — иначе при быстром нажатии
-  // двух клавиш подряд змейка могла развернуться на 180° и врезаться в себя
+  // Зеркальный режим — инвертируем горизонталь
+  if(gameMode==='mirror') nd={x:-nd.x, y:nd.y};
+  // Проверяем против nextDir — защита от разворота на 180°
   if(!(nd.x===-nextDir.x&&nd.y===-nextDir.y)) nextDir=nd;
 }
 // Пауза кнопки
