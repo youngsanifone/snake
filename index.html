@@ -448,35 +448,36 @@ const SKINS=[
   {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
-let musicOn    = localStorage.getItem('snakeMusic') !== 'off';
-let sfxOn      = localStorage.getItem('snakeSfx')   !== 'off';
-let difficulty = localStorage.getItem('snakeDiff') || 'normal';
+const S='snake2_'; // смена префикса = сброс прогресса для всех
+let musicOn    = localStorage.getItem(S+'Music') !== 'off';
+let sfxOn      = localStorage.getItem(S+'Sfx')   !== 'off';
+let difficulty = localStorage.getItem(S+'Diff') || 'normal';
 const DIFF_MULT = {easy:0.65, normal:1, hard:1.45};
-let best        = parseInt(localStorage.getItem('snakeBest')||'0');
-let bestLevel   = parseInt(localStorage.getItem('snakeBestLevel')||'1');
-let gamesPlayed = parseInt(localStorage.getItem('snakeGames')||'0');
-let savedLevel  = parseInt(localStorage.getItem('snakeSavedLevel')||'1');
-let coins       = parseInt(localStorage.getItem('snakeCoins')||'0');
-let boughtSkins = new Set(JSON.parse(localStorage.getItem('snakeBought')||'[]'));
+let best        = parseInt(localStorage.getItem(S+'Best')||'0');
+let bestLevel   = parseInt(localStorage.getItem(S+'BestLevel')||'1');
+let gamesPlayed = parseInt(localStorage.getItem(S+'Games')||'0');
+let savedLevel  = parseInt(localStorage.getItem(S+'SavedLevel')||'1');
+let coins       = parseInt(localStorage.getItem(S+'Coins')||'0');
+let boughtSkins = new Set(JSON.parse(localStorage.getItem(S+'Bought')||'[]'));
 let skinIdx     = 0;
 (function(){
-  const s=parseInt(localStorage.getItem('snakeSkin')||'0');
+  const s=parseInt(localStorage.getItem(S+'Skin')||'0');
   skinIdx=isUnlockedIdx(s)?s:0;
 })();
 const skin=()=>SKINS[skinIdx];
 function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
 const isUnlocked=(i)=>isUnlockedIdx(i);
 function saveAll(){
-  localStorage.setItem('snakeBest',best);
-  localStorage.setItem('snakeBestLevel',bestLevel);
-  localStorage.setItem('snakeGames',gamesPlayed);
-  localStorage.setItem('snakeSkin',skinIdx);
-  localStorage.setItem('snakeSavedLevel',savedLevel);
-  localStorage.setItem('snakeMusic', musicOn ? 'on' : 'off');
-  localStorage.setItem('snakeSfx',   sfxOn   ? 'on' : 'off');
-  localStorage.setItem('snakeDiff', difficulty);
-  localStorage.setItem('snakeCoins', coins);
-  localStorage.setItem('snakeBought', JSON.stringify([...boughtSkins]));
+  localStorage.setItem(S+'Best',best);
+  localStorage.setItem(S+'BestLevel',bestLevel);
+  localStorage.setItem(S+'Games',gamesPlayed);
+  localStorage.setItem(S+'Skin',skinIdx);
+  localStorage.setItem(S+'SavedLevel',savedLevel);
+  localStorage.setItem(S+'Music', musicOn ? 'on' : 'off');
+  localStorage.setItem(S+'Sfx',   sfxOn   ? 'on' : 'off');
+  localStorage.setItem(S+'Diff', difficulty);
+  localStorage.setItem(S+'Coins', coins);
+  localStorage.setItem(S+'Bought', JSON.stringify([...boughtSkins]));
 }
 // ── ДОСТИЖЕНИЯ ───────────────────────────────────────────────────
 const ACHIEVEMENTS=[
@@ -493,10 +494,10 @@ const ACHIEVEMENTS=[
   {id:'survivor',     icon:'💀', name:'Выживший',         desc:'Продержись 30 сек в Выживании'},
   {id:'time_champ',   icon:'⏱', name:'Чемпион времени',  desc:'Набери 20+ очков за 60 сек'},
 ];
-let unlockedAch=new Set(JSON.parse(localStorage.getItem('snakeAch')||'[]'));
+let unlockedAch=new Set(JSON.parse(localStorage.getItem(S+'Ach')||'[]'));
 let survivalTime=0; // считаем время в режиме выживания
 
-function saveAch(){localStorage.setItem('snakeAch',JSON.stringify([...unlockedAch]));}
+function saveAch(){localStorage.setItem(S+'Ach',JSON.stringify([...unlockedAch]));}
 function unlockAch(id){
   if(unlockedAch.has(id)) return;
   unlockedAch.add(id);saveAch();
