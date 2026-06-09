@@ -494,6 +494,22 @@ let goldFoodSpawnIn=0;   // через сколько мс появится сл
 const GOLD_LIFETIME=5000;   // живёт 5 сек
 const GOLD_SPAWN_INTERVAL=9000; // появляется каждые ~9 сек
 const GFR=11;            // радиус золотой еды (чуть больше обычной)
+// ── Бонусные предметы ────────────────────────────────────────────
+// Каждый бонус: {x,y} или null, таймер жизни, таймер до появления
+// Типы: 'shield' | 'speed' | 'freeze' | 'bomb'
+const BONUS_RADIUS=11;
+const BONUS_LIFETIME=6000;       // живёт 6 сек
+const BONUS_SPAWN_INTERVAL=12000; // новый бонус каждые 12 сек
+let bonusItem=null;       // текущий бонус на поле
+let bonusLife=0;          // сколько мс осталось
+let bonusSpawnIn=BONUS_SPAWN_INTERVAL; // таймер до следующего появления
+// Активные эффекты на змейке
+let shieldActive=false;   // щит — следующий удар не убивает
+let speedBoost=0;         // мс ускорения
+let freezeActive=0;       // мс заморозки (замедление)
+const BONUS_TYPES=['shield','speed','freeze','bomb'];
+const BONUS_COLORS={shield:'#38bdf8',speed:'#fb923c',freeze:'#67e8f9',bomb:'#f87171'};
+const BONUS_ICONS={shield:'🛡',speed:'⚡',freeze:'❄',bomb:'💣'};
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function spawnFloatText(x,y,text,color){
   floatTexts.push({x,y,text,color,alpha:1,vy:-1.8});
@@ -532,6 +548,47 @@ function spawnGoldFood(){
   goldFood=p;
   goldFoodLife=GOLD_LIFETIME;
 }
+function spawnBonus(){
+  // выбираем случайный тип
+  const type=BONUS_TYPES[Math.floor(Math.random()*BONUS_TYPES.length)];
+  let p,tries=0;
+  do{p={x:BONUS_RADIUS+25+Math.random()*(W-BONUS_RADIUS*2-50),y:BONUS_RADIUS+25+Math.random()*(H-BONUS_RADIUS*2-50)};}
+  while(++tries<60&&(
+    path.some(s=>dist(s,p)<R*4)||
+    obstacles.some(o=>Math.abs(o.x-p.x)<32&&Math.abs(o.y-p.y)<32)||
+    dist(food,p)<40||
+    (goldFood&&dist(goldFood,p)<40)
+  ));
+  bonusItem={...p,type};
+  bonusLife=BONUS_LIFETIME;
+}
+function resetBonus(){
+  bonusItem=null;
+  bonusSpawnIn=BONUS_SPAWN_INTERVAL+(Math.random()*4000-2000); // +/- 2 сек случайность
+}
+function applyBonus(type){
+  playBonusPickup();
+  if(type==='shield'){
+    shieldActive=true;
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'🛡 ЩИТ!','#38bdf8');
+  } else if(type==='speed'){
+    speedBoost=4000; // 4 сек ускорения
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'⚡ ТУРБО!','#fb923c');
+  } else if(type==='freeze'){
+    freezeActive=3000; // 3 сек замедления
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'❄ СТОП!','#67e8f9');
+  } else if(type==='bomb'){
+    // уничтожаем все препятствия
+    obstacles=[];
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'💣 БАБАХ!','#f87171');
+    // взрывные частицы
+    for(let i=0;i<30;i++){
+      const a=Math.random()*Math.PI*2,spd=2+Math.random()*5;
+      particles.push({x:bonusItem.x,y:bonusItem.y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:4+Math.random()*4,alpha:1,color:'#f87171'});
+    }
+  }
+  spawnParticles(bonusItem.x,bonusItem.y,BONUS_COLORS[type]);
+}
 function updateProg(){
   progBar.style.width=Math.min(100,Math.round(levelScore/levelData.foodNeeded*100))+'%';
 }
@@ -544,6 +601,8 @@ function startGame(){
   dir={x:1,y:0};nextDir={x:1,y:0};
   score=0;totalLen=BASE_LEN;levelScore=0;particles=[];floatTexts=[];
   goldFood=null;goldFoodLife=0;goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
+  bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
+  shieldActive=false;speedBoost=0;freezeActive=0;
   invincible=2000; combo=0; // 2 сек неуязвимости при старте
   scoreEl.textContent=0;updateProg();
   spawnObstacles();spawnFood();
@@ -558,18 +617,36 @@ function loop(ts){
   if(!running||paused) return;
   const dt=lastTs?Math.min(ts-lastTs,50):16;lastTs=ts;
   if(invincible>0) invincible-=dt;
-  const spd=levelData.speed*dt/16;
+  if(speedBoost>0) speedBoost-=dt;
+  if(freezeActive>0) freezeActive-=dt;
+  // скорость: ускорение +60%, заморозка -50%, иначе базовая
+  const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
+  const spd=levelData.speed*dt/16*spdMult;
   dir=nextDir;
   const head={x:path[0].x+dir.x*spd,y:path[0].y+dir.y*spd};
   if(invincible<=0){
-    if(head.x<R||head.x>W-R||head.y<R||head.y>H-R){playHit();endGame();return;}
-    for(const o of obstacles){
-      if(head.x>o.x-R&&head.x<o.x+o.w+R&&head.y>o.y-R&&head.y<o.y+o.h+R){playHit();endGame();return;}
+    let hit=false;
+    if(head.x<R||head.x>W-R||head.y<R||head.y>H-R) hit=true;
+    if(!hit) for(const o of obstacles){
+      if(head.x>o.x-R&&head.x<o.x+o.w+R&&head.y>o.y-R&&head.y<o.y+o.h+R){hit=true;break;}
     }
-    let tr=0;
-    for(let i=1;i<path.length-1;i++){
-      tr+=dist(path[i-1],path[i]);
-      if(tr>R*5&&dist(head,path[i])<R*1.4){playHit();endGame();return;}
+    if(!hit){
+      let tr=0;
+      for(let i=1;i<path.length-1;i++){
+        tr+=dist(path[i-1],path[i]);
+        if(tr>R*5&&dist(head,path[i])<R*1.4){hit=true;break;}
+      }
+    }
+    if(hit){
+      if(shieldActive){
+        // щит поглощает удар!
+        shieldActive=false;
+        invincible=1500; // 1.5 сек неуязвимости после срабатывания щита
+        playHit();
+        spawnFloatText(head.x,head.y-R-10,'🛡 БЛОК!','#38bdf8');
+      } else {
+        playHit();endGame();return;
+      }
     }
   }
   path.unshift(head);
@@ -654,6 +731,20 @@ function loop(ts){
     goldFoodSpawnIn-=dt;
     if(goldFoodSpawnIn<=0) spawnGoldFood();
   }
+  // ── Бонусный предмет ─────────────────────────────────────────
+  if(bonusItem){
+    bonusLife-=dt;
+    if(bonusLife<=0){
+      bonusItem=null;
+      resetBonus();
+    } else if(dist(head,bonusItem)<R+BONUS_RADIUS){
+      applyBonus(bonusItem.type);
+      resetBonus();
+    }
+  } else {
+    bonusSpawnIn-=dt;
+    if(bonusSpawnIn<=0) spawnBonus();
+  }
   draw();
   animId=requestAnimationFrame(loop);
 }
@@ -689,6 +780,27 @@ function draw(){
     ctx.globalAlpha=0.7;ctx.strokeStyle='#facc15';ctx.lineWidth=2.5;
     ctx.beginPath();
     ctx.arc(goldFood.x,goldFood.y,GFR+7,-Math.PI/2,-Math.PI/2+Math.PI*2*lifeRatio);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // Бонусный предмет
+  if(bonusItem){
+    const bc=BONUS_COLORS[bonusItem.type];
+    const pulse=1+0.1*Math.sin(Date.now()*0.007);
+    const lifeRatio=bonusLife/BONUS_LIFETIME;
+    ctx.save();
+    ctx.shadowColor=bc;ctx.shadowBlur=22*pulse;
+    ctx.fillStyle=bc;ctx.globalAlpha=0.92;
+    ctx.beginPath();ctx.arc(bonusItem.x,bonusItem.y,BONUS_RADIUS*pulse,0,Math.PI*2);ctx.fill();
+    // иконка в центре
+    ctx.globalAlpha=1;ctx.shadowBlur=0;
+    ctx.font=`bold ${13*pulse}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(BONUS_ICONS[bonusItem.type],bonusItem.x,bonusItem.y);
+    // таймер-кольцо
+    ctx.globalAlpha=0.7;ctx.strokeStyle=bc;ctx.lineWidth=2.5;
+    ctx.beginPath();
+    ctx.arc(bonusItem.x,bonusItem.y,BONUS_RADIUS+7,-Math.PI/2,-Math.PI/2+Math.PI*2*lifeRatio);
     ctx.stroke();
     ctx.restore();
   }
@@ -740,10 +852,31 @@ function draw(){
     ctx.fillStyle='#0a0a0a';ctx.beginPath();ctx.arc(ex,ey,2.8,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex+0.7,ey-0.7,1,0,Math.PI*2);ctx.fill();
   });
+  // HUD активных эффектов (правый верхний угол канваса)
+  const effects=[];
+  if(shieldActive)    effects.push({icon:'🛡',color:'#38bdf8',label:'ЩИТ'});
+  if(speedBoost>0)    effects.push({icon:'⚡',color:'#fb923c',label:Math.ceil(speedBoost/1000)+'с'});
+  if(freezeActive>0)  effects.push({icon:'❄',color:'#67e8f9',label:Math.ceil(freezeActive/1000)+'с'});
+  if(invincible>0&&invincible<1800) effects.push({icon:'✨',color:'#a78bfa',label:''});
+  effects.forEach((ef,i)=>{
+    const ex=W-18,ey=18+i*28;
+    ctx.save();
+    ctx.fillStyle=ef.color;ctx.globalAlpha=0.18;
+    ctx.beginPath();ctx.roundRect(ex-22,ey-11,44,22,6);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.font='14px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(ef.icon,ex-8,ey);
+    if(ef.label){
+      ctx.font='bold 11px Segoe UI';ctx.fillStyle=ef.color;
+      ctx.textAlign='left';ctx.fillText(ef.label,ex+2,ey);
+    }
+    ctx.restore();
+  });
 }
 function endGame(){
   running=false;cancelAnimationFrame(animId);
   combo=0;
+  shieldActive=false;speedBoost=0;freezeActive=0;
   const isNewRecord = score > 0 && score > best; // рекорд — ДО saveAll()
   if(score>best){best=score;bestHud.textContent=best;}
   gamesPlayed++;pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
@@ -848,6 +981,21 @@ function playHit(){
     g.gain.setValueAtTime(0.25,a.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.25);
     o.start();o.stop(a.currentTime+0.25);
+  }catch(e){}
+}
+function playBonusPickup(){
+  if(!sfxOn) return;
+  try{
+    const a=getAudio();
+    // Магический звук — быстрые восходящие арпеджио
+    [[0,400],[0.07,600],[0.14,900],[0.21,1200]].forEach(([t,freq])=>{
+      const o=a.createOscillator(),g=a.createGain();
+      o.connect(g);g.connect(a.destination);o.type='triangle';
+      o.frequency.setValueAtTime(freq,a.currentTime+t);
+      g.gain.setValueAtTime(0.15,a.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+t+0.15);
+      o.start(a.currentTime+t);o.stop(a.currentTime+t+0.15);
+    });
   }catch(e){}
 }
 function playGoldEat(){
