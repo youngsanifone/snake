@@ -140,7 +140,8 @@
   .go-sub{font-size:0.76rem;color:#6b7280;text-align:center;padding:0 12px;}
   .go-btn{padding:9px 22px;background:#4ade80;color:#0f0f0f;border:none;border-radius:8px;
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
-  .go-btn.sec{background:#1f2937;color:#e0e0e0;border:1px solid #374151;}
+  .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
+  .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
   /* DEBUG PANEL */
   #debugPanel{position:absolute;top:0;left:0;width:100%;background:rgba(5,8,18,0.97);
     border-bottom:2px solid #facc15;padding:10px 12px;display:none;flex-direction:column;
@@ -437,6 +438,7 @@
       <div class="go-msg" id="goMsg"></div>
       <div class="go-sub" id="goSub"></div>
       <button class="go-btn" id="goRetryCur">↺ Продолжить с ур. <span id="goLvlNum">1</span></button>
+      <button class="go-btn share" id="goShare">📤 Поделиться</button>
       <button class="go-btn sec" id="goRetry">↺ Заново с ур. 1</button>
       <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
     </div>
@@ -1446,6 +1448,30 @@ goRetry.addEventListener('click',()=>{stopMusic();gameMode='classic';savedLevel=
 goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
+// Поделиться
+const goShare=document.getElementById('goShare');
+function buildShareText(){
+  const modeEmoji={classic:'🐍',time:'⏱',survival:'💀',mirror:'🪞'}[gameMode]||'🐍';
+  const modeName={classic:`уровень ${currentLevel}`,time:'режим Время',survival:'режим Выживание',mirror:'режим Зеркало'}[gameMode];
+  return `${modeEmoji} Набрал ${score} очков в Змейке (${modeName})!\nЛучший результат: ${best} 🏆\nСыграй сам: https://youngsanifone.github.io/snake/`;
+}
+async function shareScore(){
+  const text=buildShareText();
+  if(navigator.share){
+    try{ await navigator.share({title:'🐍 Змейка',text}); return; }catch(_){}
+  }
+  // Fallback — копируем в буфер
+  try{
+    await navigator.clipboard.writeText(text);
+    goShare.textContent='✓ Скопировано!';
+    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
+  }catch(_){
+    goShare.textContent='✗ Ошибка';
+    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
+  }
+}
+goShare.addEventListener('click',shareScore);
+goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{passive:false});
 // Клавиатура
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){e.preventDefault();togglePause();return;}
