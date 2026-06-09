@@ -983,11 +983,16 @@ function loop(ts){
     }
     if(hit){
       if(shieldActive){
-        // щит поглощает удар!
         shieldActive=false;
-        invincible=1500; // 1.5 сек неуязвимости после срабатывания щита
+        invincible=2000;
         playHit();
         spawnFloatText(head.x,head.y-R-10,'🛡 БЛОК!','#38bdf8');
+        // Разворачиваем змейку и зажимаем внутрь арены — не даём застрять за стеной
+        dir={x:-dir.x,y:-dir.y};
+        head.x=Math.max(R+4,Math.min(W-R-4,head.x));
+        head.y=Math.max(R+4,Math.min(H-R-4,head.y));
+        // Сбрасываем хвост чтобы не было "прыжка" линии
+        path.splice(Math.floor(path.length*0.4));
       } else {
         playHit();endGame();return;
       }
@@ -1177,7 +1182,8 @@ function draw(){
   if(path.length<2) return;
   // Щит-флэш: пока неуязвимы — мигаем (250мс период) и рисуем синее кольцо вокруг головы
   const shielded = invincible > 0;
-  const shieldAlpha = shielded ? (Math.floor(Date.now()/120)%2===0 ? 0.45 : 1.0) : 1.0;
+  // Мигание только когда инвул заканчивается (<900мс) — не мигать при спавне
+  const shieldAlpha = shielded ? (invincible<900 && Math.floor(Date.now()/120)%2===0 ? 0.4 : 1.0) : 1.0;
   ctx.save();ctx.globalAlpha=shieldAlpha;ctx.shadowColor=shielded?'#38bdf8':sk.glow;ctx.shadowBlur=shielded?28:16;
   ctx.beginPath();ctx.moveTo(path[0].x,path[0].y);
   for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x,path[i].y);
