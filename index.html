@@ -140,6 +140,25 @@
   .mode-card-title{font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:2px;}
   .mode-card-desc{font-size:0.75rem;color:#6b7280;line-height:1.3;}
   .mode-back{margin-top:8px;background:transparent;border:none;color:#6b7280;font-size:0.82rem;cursor:pointer;padding:6px;}
+  /* МАГАЗИН */
+  .shop-coins{font-size:0.9rem;color:#facc15;font-weight:700;margin-bottom:14px;}
+  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));max-height:60vh;overflow-y:auto;}
+  .shop-card{display:flex;align-items:center;gap:12px;background:#1a2535;border:1.5px solid #2d4a60;border-radius:12px;padding:10px 14px;}
+  .shop-card.owned{border-color:#4ade80;background:#112210;}
+  .shop-card.active-skin{border-color:#facc15;background:#1a1500;}
+  .shop-icon{font-size:1.8rem;width:40px;text-align:center;flex-shrink:0;}
+  .shop-info{flex:1;}
+  .shop-name{font-size:0.88rem;font-weight:700;color:#e0e0e0;}
+  .shop-price{font-size:0.75rem;color:#facc15;margin-top:2px;}
+  .shop-price.owned{color:#4ade80;}
+  .shop-btn{padding:6px 12px;border:none;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
+  .shop-btn.buy{background:#facc15;color:#0f0f0f;}
+  .shop-btn.buy:disabled{background:#374151;color:#6b7280;cursor:default;}
+  .shop-btn.equip{background:#4ade80;color:#0f0f0f;}
+  .shop-btn.equipped{background:#374151;color:#6b7280;cursor:default;}
+  .shop-back{margin-top:10px;background:transparent;border:none;color:#6b7280;font-size:0.82rem;cursor:pointer;padding:6px;}
+  /* Монеты в меню */
+  .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:6px;}
   /* ДОСТИЖЕНИЯ */
   .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:65vh;overflow-y:auto;padding-right:4px;}
   .ach-card{display:flex;align-items:center;gap:12px;background:#1a2535;border:1.5px solid #2d4a60;border-radius:12px;padding:10px 14px;}
@@ -250,11 +269,20 @@
   <div class="menu-title">Змейка</div>
   <div class="skin-row" id="menuSkinRow"></div>
   <div class="best-lbl">Рекорд: <span id="menuBest">0</span> · Макс. уровень: <span id="menuLevel">1</span></div>
+  <div class="menu-coins" id="menuCoins">🪙 0 монет</div>
   <button class="menu-btn primary" id="btnPlay">▶ Играть</button>
   <button class="menu-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
   <button class="menu-btn" id="btnRecords">🏆 Рекорды</button>
   <button class="menu-btn" id="btnAch">🏅 Достижения</button>
+  <button class="menu-btn" id="btnShop">🪙 Магазин</button>
   <button class="menu-btn" id="btnSettings">⚙️ Настройки</button>
+</div>
+<!-- МАГАЗИН -->
+<div class="screen" id="shopScreen">
+  <div class="rec-title">🪙 Магазин</div>
+  <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
+  <div class="shop-grid" id="shopGrid"></div>
+  <button class="shop-back" id="shopBack">← Назад</button>
 </div>
 <!-- УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ -->
 <div id="achNotif">
@@ -413,6 +441,11 @@ const SKINS=[
   {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Красный'},
   {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
   {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолетовый'},
+  // Магазинные скины — покупаются за монеты
+  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:50,name:'Розовый'},
+  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:80,name:'Тёмный'},
+  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:100,name:'Океан'},
+  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
 let musicOn    = localStorage.getItem('snakeMusic') !== 'off';
@@ -423,13 +456,16 @@ let best        = parseInt(localStorage.getItem('snakeBest')||'0');
 let bestLevel   = parseInt(localStorage.getItem('snakeBestLevel')||'1');
 let gamesPlayed = parseInt(localStorage.getItem('snakeGames')||'0');
 let savedLevel  = parseInt(localStorage.getItem('snakeSavedLevel')||'1');
+let coins       = parseInt(localStorage.getItem('snakeCoins')||'0');
+let boughtSkins = new Set(JSON.parse(localStorage.getItem('snakeBought')||'[]'));
 let skinIdx     = 0;
 (function(){
   const s=parseInt(localStorage.getItem('snakeSkin')||'0');
-  skinIdx=(bestLevel>=SKINS[s].unlockLevel)?s:0;
+  skinIdx=isUnlockedIdx(s)?s:0;
 })();
 const skin=()=>SKINS[skinIdx];
-const isUnlocked=(i)=>bestLevel>=SKINS[i].unlockLevel;
+function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
+const isUnlocked=(i)=>isUnlockedIdx(i);
 function saveAll(){
   localStorage.setItem('snakeBest',best);
   localStorage.setItem('snakeBestLevel',bestLevel);
@@ -439,6 +475,8 @@ function saveAll(){
   localStorage.setItem('snakeMusic', musicOn ? 'on' : 'off');
   localStorage.setItem('snakeSfx',   sfxOn   ? 'on' : 'off');
   localStorage.setItem('snakeDiff', difficulty);
+  localStorage.setItem('snakeCoins', coins);
+  localStorage.setItem('snakeBought', JSON.stringify([...boughtSkins]));
 }
 // ── ДОСТИЖЕНИЯ ───────────────────────────────────────────────────
 const ACHIEVEMENTS=[
@@ -510,6 +548,7 @@ function buildSkinRow(){
 function refreshMenuUI(){
   document.getElementById('menuBest').textContent=best;
   document.getElementById('menuLevel').textContent=bestLevel;
+  document.getElementById('menuCoins').textContent='🪙 '+coins+' монет';
   buildSkinRow();
   const contBtn=document.getElementById('btnContinue');
   if(savedLevel>1){
@@ -518,6 +557,63 @@ function refreshMenuUI(){
   } else {
     contBtn.style.display='none';
   }
+}
+// ── МАГАЗИН ──────────────────────────────────────────────────────
+function buildShopScreen(){
+  document.getElementById('shopCoins').textContent='🪙 '+coins+' монет';
+  const grid=document.getElementById('shopGrid');
+  grid.innerHTML='';
+  SKINS.forEach((s,i)=>{
+    const owned=isUnlocked(i);
+    const canBuy=!owned&&s.price&&coins>=s.price;
+    const tooExpensive=!owned&&s.price&&coins<s.price;
+    const card=document.createElement('div');
+    card.className='shop-card';
+    let btnHtml='';
+    if(skinIdx===i && owned){
+      btnHtml=`<button class="shop-btn equipped" disabled>Надет</button>`;
+    } else if(owned){
+      btnHtml=`<button class="shop-btn equip" data-i="${i}">Надеть</button>`;
+    } else if(s.price){
+      btnHtml=`<button class="shop-btn buy" data-i="${i}" ${tooExpensive?'disabled':''}>🪙 ${s.price}</button>`;
+    } else {
+      btnHtml=`<button class="shop-btn buy" disabled>Ур. ${s.unlockLevel}</button>`;
+    }
+    card.innerHTML=`
+      <span style="font-size:1.6rem">${s.emoji}</span>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:0.9rem">${s.name}</div>
+        <div style="font-size:0.75rem;color:#9ca3af">${owned?'Куплено':s.price?'🪙 '+s.price+' монет':'Уровень '+s.unlockLevel}</div>
+      </div>
+      ${btnHtml}
+    `;
+    grid.appendChild(card);
+  });
+  // события кнопок
+  grid.querySelectorAll('.shop-btn.buy:not([disabled])').forEach(btn=>{
+    const evBuy=()=>{
+      const i=parseInt(btn.dataset.i);
+      const s=SKINS[i];
+      if(coins<s.price) return;
+      coins-=s.price;
+      boughtSkins.add(i);
+      skinIdx=i;
+      saveAll();
+      spawnFloatText&&spawnFloatText(0,0,'🪙 Куплено!','#facc15');
+      buildShopScreen(); // перерисовать
+    };
+    btn.addEventListener('click',evBuy);
+    btn.addEventListener('touchstart',e=>{e.preventDefault();evBuy();},{passive:false});
+  });
+  grid.querySelectorAll('.shop-btn.equip').forEach(btn=>{
+    const evEquip=()=>{
+      skinIdx=parseInt(btn.dataset.i);
+      saveAll();
+      buildShopScreen();
+    };
+    btn.addEventListener('click',evEquip);
+    btn.addEventListener('touchstart',e=>{e.preventDefault();evEquip();},{passive:false});
+  });
 }
 refreshMenuUI();
 // ── АНИМИРОВАННЫЙ ФОН МЕНЮ ───────────────────────────────────────
@@ -576,6 +672,10 @@ document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDe
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnAch').addEventListener('click',()=>{buildAchScreen();showScreen('achScreen');});
 document.getElementById('achBack').addEventListener('click',()=>showScreen('menuScreen'));
+document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();showScreen('shopScreen');});
+document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();showScreen('shopScreen');},{passive:false});
+document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
+document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';savedLevel=1;saveAll();beginLevel(1);});
@@ -877,6 +977,7 @@ function loop(ts){
     const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
     score+=pts; levelScore++;
     if(score>best){best=score;bestHud.textContent=best;}
+    coins+=pts; // монеты = очки
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
