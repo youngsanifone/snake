@@ -60,15 +60,17 @@
     touch-action:none;user-select:none;-webkit-user-select:none;
   }
   .screen{
-    display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;
+    display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
     width:100%;
     min-height:100vh;
     min-height:100dvh;
     min-height:-webkit-fill-available;
     overflow-y:auto;overflow-x:hidden;
-    padding:10px 0;
+    padding:10px 0 20px;
   }
   .screen.active{display:flex;}
+  /* Меню — центрировать если контент меньше экрана, иначе flex-start со скроллом */
+  #menuScreen{justify-content:safe center;}
   /* МЕНЮ */
   .menu-snake{font-size:clamp(1.4rem,3.5vh,2.2rem);animation:wiggle 1s ease-in-out infinite;margin-bottom:2px;}
   @keyframes wiggle{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
