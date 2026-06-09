@@ -292,6 +292,25 @@
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;text-align:center;
   }
   .diff-btn.active{border-color:#4ade80;color:#4ade80;background:#0d1f12;}
+  /* КВЕСТЫ */
+  .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 165px);overflow-y:auto;}
+  .quest-card{background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;transition:var(--transition);}
+  .quest-card.done{border-color:#4ade80;}
+  .quest-card.claimed{border-color:var(--border2);opacity:0.5;}
+  .quest-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .quest-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px;}
+  .quest-title{font-size:0.88rem;font-weight:700;color:var(--text);}
+  .quest-desc{font-size:0.73rem;color:var(--text2);margin-top:1px;}
+  .quest-footer{display:flex;align-items:center;gap:8px;}
+  .quest-pbar{flex:1;height:5px;background:var(--hud-bg);border-radius:3px;overflow:hidden;}
+  .quest-pfill{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width 0.4s;}
+  .quest-cnt{font-size:0.68rem;color:var(--text3);min-width:40px;text-align:right;}
+  .quest-claim{padding:5px 11px;border:none;border-radius:7px;font-size:0.75rem;font-weight:700;cursor:pointer;touch-action:manipulation;background:#4ade80;color:#0f0f0f;flex-shrink:0;}
+  .quest-claim:disabled{background:var(--hud-bg);color:var(--text3);cursor:default;}
+  .quest-reset{font-size:0.7rem;color:var(--text3);text-align:center;margin-top:8px;}
+  .quest-badge{display:inline-block;background:#ef4444;color:#fff;border-radius:99px;font-size:0.6rem;font-weight:bold;padding:1px 5px;margin-left:5px;vertical-align:middle;line-height:1.5;}
+  .quest-reward-toast{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);background:#facc15;color:#0f0f0f;font-size:1.3rem;font-weight:bold;padding:11px 24px;border-radius:12px;pointer-events:none;z-index:1000;animation:toastFade 1.4s ease-out forwards;}
+  @keyframes toastFade{0%{opacity:0;transform:translate(-50%,-60%);}15%{opacity:1;transform:translate(-50%,-50%);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-40%);}}
   /* ПК: скрываем dpad если мышь */
   @media (hover:hover) and (pointer:fine){
     .dpad,.kb-hint{display:none;}
@@ -314,6 +333,7 @@
   <button class="menu-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
   <button class="menu-btn" id="btnRecords">🏆 Рекорды</button>
   <button class="menu-btn" id="btnAch">🏅 Достижения</button>
+  <button class="menu-btn" id="btnQuests">📋 Квесты</button>
   <button class="menu-btn" id="btnShop">🪙 Магазин</button>
   <button class="menu-btn" id="btnSettings">⚙️ Настройки</button>
 </div>
@@ -460,6 +480,13 @@
   </div>
   <div class="kb-hint">↑↓←→ / WASD · SPACE — пауза</div>
 </div>
+<!-- КВЕСТЫ -->
+<div class="screen" id="questScreen">
+  <div class="rec-title">📋 Квесты</div>
+  <div class="quest-grid" id="questGrid"></div>
+  <div class="quest-reset" id="questReset">Сброс в полночь</div>
+  <button class="shop-back" id="questBack">← Назад</button>
+</div>
 <!-- НАСТРОЙКИ -->
 <div class="screen" id="settingsScreen">
   <div class="rec-title">⚙️ Настройки</div>
@@ -592,6 +619,134 @@ function buildAchScreen(){
     grid.appendChild(card);
   });
 }
+// ── ДНЕВНЫЕ КВЕСТЫ ───────────────────────────────────────────────
+const QUEST_POOL=[
+  {type:'eat_food',   icon:'🍎',title:'Обжора',         make:(n)=>`Съешь ${n} еды за день`},
+  {type:'score',      icon:'🏆',title:'Очкарик',         make:(n)=>`Набери ${n} очков за день`},
+  {type:'play_games', icon:'🎮',title:'Игроман',         make:(n)=>`Сыграй ${n===1?'1 раз':`${n} раза`}`},
+  {type:'reach_level',icon:'⬆️',title:'Скалолаз',        make:(n)=>`Достигни уровня ${n}`},
+  {type:'eat_gold',   icon:'⭐',title:'Золотоискатель',  make:(n)=>`Съешь ${n} золотой еды`},
+  {type:'use_bonus',  icon:'🛡',title:'Коллекционер',    make:(n)=>`Подбери ${n===1?'1 бонус':`${n} бонуса`}`},
+  {type:'combo',      icon:'🔥',title:'Комбо',           make:(n)=>`Набери комбо ×${n}`},
+];
+const QUEST_PARAMS={
+  eat_food:   [{n:10,coins:15},{n:25,coins:30},{n:50,coins:60}],
+  score:      [{n:50,coins:20},{n:150,coins:40},{n:300,coins:70}],
+  play_games: [{n:1,coins:10},{n:3,coins:25},{n:5,coins:40}],
+  reach_level:[{n:3,coins:15},{n:5,coins:30},{n:10,coins:60}],
+  eat_gold:   [{n:1,coins:20},{n:3,coins:40},{n:5,coins:70}],
+  use_bonus:  [{n:1,coins:15},{n:3,coins:35},{n:5,coins:60}],
+  combo:      [{n:2,coins:20},{n:3,coins:40},{n:5,coins:70}],
+};
+function getDayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function seededInt(seed,max){
+  let h=5381;
+  for(let i=0;i<seed.length;i++){h=((h<<5)+h)^seed.charCodeAt(i);h=h&0x7fffffff;}
+  return Math.abs(h)%max;
+}
+let questData=null;
+function loadQuests(){
+  const today=getDayKey();
+  const saved=JSON.parse(localStorage.getItem(S+'Quests')||'null');
+  if(saved&&saved.day===today){questData=saved;return;}
+  const pool=[...QUEST_POOL];
+  const quests=[];
+  for(let i=0;i<3;i++){
+    const ti=seededInt(today+'_t'+i,pool.length);
+    const qt=pool.splice(ti,1)[0];
+    const params=QUEST_PARAMS[qt.type];
+    const pi=seededInt(today+'_p'+i,params.length);
+    const p=params[pi];
+    quests.push({type:qt.type,icon:qt.icon,title:qt.title,desc:qt.make(p.n),goal:p.n,coins:p.coins,progress:0,claimed:false});
+  }
+  questData={day:today,quests};
+  saveQuests();
+}
+function saveQuests(){localStorage.setItem(S+'Quests',JSON.stringify(questData));}
+function questTrack(type,value){
+  if(!questData) return;
+  let changed=false;
+  questData.quests.forEach(q=>{
+    if(q.claimed||q.progress>=q.goal) return;
+    if(q.type!==type) return;
+    const wasComplete=q.progress>=q.goal;
+    if(type==='score'||type==='reach_level'||type==='combo'){
+      if(value>q.progress){q.progress=Math.min(value,q.goal);changed=true;}
+    } else {
+      q.progress=Math.min(q.progress+value,q.goal);changed=true;
+    }
+    if(!wasComplete&&q.progress>=q.goal) showQuestComplete(q);
+  });
+  if(changed){saveQuests();updateQuestBadge();}
+}
+function showQuestComplete(q){
+  document.getElementById('anIcon').textContent=q.icon;
+  document.getElementById('anTitle').textContent='Квест выполнен!';
+  document.getElementById('anSub').textContent=q.title+': '+q.desc;
+  const notif=document.getElementById('achNotif');
+  notif.classList.add('show');
+  setTimeout(()=>notif.classList.remove('show'),3000);
+}
+function claimQuest(i){
+  const q=questData.quests[i];
+  if(q.claimed||q.progress<q.goal) return;
+  q.claimed=true;
+  coins+=q.coins;
+  saveAll();saveQuests();
+  refreshMenuUI();buildQuestScreen();updateQuestBadge();
+  const t=document.createElement('div');
+  t.className='quest-reward-toast';
+  t.textContent='+'+q.coins+' 🪙';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),1400);
+}
+function updateQuestBadge(){
+  const btn=document.getElementById('btnQuests');
+  if(!btn||!questData) return;
+  const claimable=questData.quests.filter(q=>!q.claimed&&q.progress>=q.goal).length;
+  const old=btn.querySelector('.quest-badge');
+  if(old) old.remove();
+  if(claimable>0){
+    const b=document.createElement('span');
+    b.className='quest-badge';b.textContent=claimable;
+    btn.appendChild(b);
+  }
+}
+function buildQuestScreen(){
+  if(!questData) return;
+  const grid=document.getElementById('questGrid');
+  grid.innerHTML='';
+  questData.quests.forEach((q,i)=>{
+    const pct=Math.min(100,Math.round(q.progress/q.goal*100));
+    const done=q.progress>=q.goal;
+    const card=document.createElement('div');
+    card.className='quest-card'+(q.claimed?' claimed':done?' done':'');
+    card.innerHTML=`
+      <div class="quest-header">
+        <div class="quest-icon">${q.icon}</div>
+        <div style="flex:1"><div class="quest-title">${q.title}</div><div class="quest-desc">${q.desc}</div></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#facc15;flex-shrink:0">+${q.coins}🪙</div>
+      </div>
+      <div class="quest-footer">
+        <div class="quest-pbar"><div class="quest-pfill" style="width:${pct}%"></div></div>
+        <div class="quest-cnt">${q.progress}/${q.goal}</div>
+        <button class="quest-claim" data-i="${i}" ${!done||q.claimed?'disabled':''}>${q.claimed?'✓ Получено':'Забрать'}</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll('.quest-claim:not([disabled])').forEach(btn=>{
+    const act=()=>claimQuest(parseInt(btn.dataset.i));
+    btn.addEventListener('click',act);
+    btn.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
+  });
+  const ms=new Date().setHours(24,0,0,0)-Date.now();
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  document.getElementById('questReset').textContent=`🕐 Сброс через ${h}ч ${m}м`;
+}
+loadQuests();
 // ── ЭКРАНЫ ───────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -620,6 +775,7 @@ function refreshMenuUI(){
   document.getElementById('menuLevel').textContent=bestLevel;
   document.getElementById('menuCoins').textContent='🪙 '+coins+' монет';
   buildSkinRow();
+  updateQuestBadge();
   const contBtn=document.getElementById('btnContinue');
   if(savedLevel>1){
     contBtn.style.display='block';
@@ -741,6 +897,10 @@ document.getElementById('btnPlay').addEventListener('click',openModeScreen);
 document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnAch').addEventListener('click',()=>{buildAchScreen();showScreen('achScreen');});
+document.getElementById('btnQuests').addEventListener('click',()=>{buildQuestScreen();showScreen('questScreen');});
+document.getElementById('btnQuests').addEventListener('touchstart',e=>{e.preventDefault();buildQuestScreen();showScreen('questScreen');},{passive:false});
+document.getElementById('questBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
+document.getElementById('questBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('achBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();showScreen('shopScreen');});
 document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();showScreen('shopScreen');},{passive:false});
@@ -955,6 +1115,7 @@ function resetBonus(){
 }
 function applyBonus(type){
   playBonusPickup();
+  questTrack('use_bonus',1);
   if(type==='shield')  unlockAch('shield_user');
   if(type==='bomb')    unlockAch('bomb_user');
   if(type==='speed')   unlockAch('speed_user');
@@ -1096,6 +1257,10 @@ function loop(ts){
     if(levelScore===1&&score===1) unlockAch('first_bite');
     if(score>=10) unlockAch('ten_food');
     if(combo>=5) unlockAch('combo_master');
+    // Квесты — еда
+    questTrack('eat_food',1);
+    questTrack('score',score);
+    questTrack('combo',combo);
     if(gameMode==='classic'&&levelScore>=levelData.foodNeeded){
       running=false;cancelAnimationFrame(animId);
       const newLvl=currentLevel+1;
@@ -1109,6 +1274,7 @@ function loop(ts){
         });
       }
       savedLevel=newLvl;
+      questTrack('reach_level',newLvl);
       saveAll();refreshMenuUI();
       showLevelUp(newLvl, ()=>beginLevel(newLvl));
       return;
@@ -1135,6 +1301,8 @@ function loop(ts){
       spawnFloatText(goldFood.x, goldFood.y-GFR-4, '+3 ⭐', '#facc15');
       playGoldEat();
       unlockAch('gold_eater');
+      questTrack('eat_gold',1);
+      questTrack('score',score);
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
       // проверяем завершение уровня (только в классике)
@@ -1151,6 +1319,7 @@ function loop(ts){
         });
         }
         savedLevel=newLvl;
+        questTrack('reach_level',newLvl);
         saveAll();refreshMenuUI();
         showLevelUp(newLvl,()=>beginLevel(newLvl));
         return;
@@ -1316,7 +1485,7 @@ function endGame(){
   if(gameMode==='mirror'&&totalFood>=5) unlockAch('mirror_5');
   const isNewRecord = score > 0 && score > best; // рекорд — ДО saveAll()
   if(score>best){best=score;bestHud.textContent=best;}
-  gamesPlayed++;pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
+  gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
   ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '⏱ Время вышло!';
