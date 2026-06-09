@@ -34,25 +34,27 @@
   .screen{
     display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;
     width:100%;
-    height:100vh;
-    height:100dvh;
+    min-height:100vh;
+    min-height:100dvh;
     min-height:-webkit-fill-available;
+    overflow-y:auto;overflow-x:hidden;
+    padding:10px 0;
   }
   .screen.active{display:flex;}
   /* МЕНЮ */
-  .menu-snake{font-size:2.5rem;animation:wiggle 1s ease-in-out infinite;margin-bottom:6px;}
+  .menu-snake{font-size:clamp(1.5rem,4vh,2.5rem);animation:wiggle 1s ease-in-out infinite;margin-bottom:clamp(2px,1vh,6px);}
   @keyframes wiggle{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
   .menu-title{
-    font-size:clamp(2rem,9vw,3.2rem);font-weight:900;letter-spacing:5px;text-transform:uppercase;
+    font-size:clamp(1.6rem,7vw,3.2rem);font-weight:900;letter-spacing:5px;text-transform:uppercase;
     background:linear-gradient(135deg,#4ade80,#22d3ee,#a78bfa);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    animation:glow 2s ease-in-out infinite;margin-bottom:20px;
+    animation:glow 2s ease-in-out infinite;margin-bottom:clamp(8px,2vh,20px);
   }
   @keyframes glow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
   .menu-btn{
-    width:210px;padding:13px 0;margin:5px 0;
+    width:min(210px,80vw);padding:clamp(7px,1.8vh,13px) 0;margin:clamp(2px,0.6vh,5px) 0;
     background:#1a2535;border:1.5px solid #2d4a60;border-radius:13px;
-    color:#e0e0e0;font-size:1rem;font-weight:600;cursor:pointer;
+    color:#e0e0e0;font-size:clamp(0.85rem,3.5vw,1rem);font-weight:600;cursor:pointer;
     touch-action:manipulation;transition:all 0.15s;letter-spacing:1px;
   }
   .menu-btn:active,.menu-btn:hover{border-color:#4ade80;color:#4ade80;}
@@ -62,12 +64,12 @@
   }
   .menu-btn.primary{background:linear-gradient(135deg,#166534,#15803d);border-color:#4ade80;color:#fff;}
   .menu-btn.primary:hover{background:linear-gradient(135deg,#15803d,#16a34a);}
-  .best-lbl{color:#9ca3af;font-size:0.82rem;margin:10px 0 14px;}
+  .best-lbl{color:#9ca3af;font-size:0.82rem;margin:clamp(4px,1vh,10px) 0 clamp(4px,1vh,10px);}
   .best-lbl span{color:#facc15;font-weight:bold;}
   /* СКИНЫ */
-  .skin-row{display:flex;gap:8px;margin-bottom:4px;}
+  .skin-row{display:flex;gap:6px;margin-bottom:clamp(2px,0.8vh,4px);}
   .skin-btn{
-    width:46px;height:52px;border-radius:12px;border:2px solid #2d3e52;
+    width:clamp(36px,10vw,46px);height:clamp(42px,11vw,52px);border-radius:12px;border:2px solid #2d3e52;
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     font-size:1.2rem;background:transparent;gap:2px;
@@ -95,7 +97,8 @@
   .prog-bar{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width 0.3s;}
   .wrap{position:relative;display:inline-block;flex-shrink:0;}
   canvas{border:2px solid #1f2937;border-radius:8px;background:#111827;display:block;
-    width:min(560px,calc(100vw - 12px));height:min(560px,calc(100vw - 12px));}
+    --csz:min(560px,calc(100vw - 12px),calc(100dvh - 225px));
+    width:var(--csz);height:var(--csz);}
   /* ПАУЗА */
   #pauseMenu{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
@@ -142,7 +145,7 @@
   .mode-back{margin-top:8px;background:transparent;border:none;color:#6b7280;font-size:0.82rem;cursor:pointer;padding:6px;}
   /* МАГАЗИН */
   .shop-coins{font-size:0.9rem;color:#facc15;font-weight:700;margin-bottom:14px;}
-  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));max-height:60vh;overflow-y:auto;}
+  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;}
   .shop-card{display:flex;align-items:center;gap:12px;background:#1a2535;border:1.5px solid #2d4a60;border-radius:12px;padding:10px 14px;}
   .shop-card.owned{border-color:#4ade80;background:#112210;}
   .shop-card.active-skin{border-color:#facc15;background:#1a1500;}
@@ -160,7 +163,7 @@
   /* Монеты в меню */
   .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:6px;}
   /* ДОСТИЖЕНИЯ */
-  .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:65vh;overflow-y:auto;padding-right:4px;}
+  .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;padding-right:4px;}
   .ach-card{display:flex;align-items:center;gap:12px;background:#1a2535;border:1.5px solid #2d4a60;border-radius:12px;padding:10px 14px;}
   .ach-card.unlocked{border-color:#4ade80;background:#112210;}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
@@ -255,7 +258,7 @@
   /* ПК: скрываем dpad если мышь */
   @media (hover:hover) and (pointer:fine){
     .dpad,.kb-hint{display:none;}
-    #c{width:min(580px,90vh)!important;height:min(580px,90vh)!important;}
+    #c{--csz:min(580px,90vh)!important;width:var(--csz)!important;height:var(--csz)!important;}
     .prog-wrap{width:min(580px,90vh);}
   }
 </style>
