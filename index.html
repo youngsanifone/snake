@@ -70,15 +70,97 @@
   }
   .screen.active{display:flex;}
   /* МЕНЮ */
-  .menu-snake{font-size:clamp(1.5rem,4vh,2.5rem);animation:wiggle 1s ease-in-out infinite;margin-bottom:clamp(2px,1vh,6px);}
+  .menu-snake{font-size:clamp(1.4rem,3.5vh,2.2rem);animation:wiggle 1s ease-in-out infinite;margin-bottom:2px;}
   @keyframes wiggle{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
   .menu-title{
     font-size:clamp(1.6rem,7vw,3.2rem);font-weight:900;letter-spacing:5px;text-transform:uppercase;
     background:linear-gradient(135deg,#4ade80,#22d3ee,#a78bfa);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    animation:glow 2s ease-in-out infinite;margin-bottom:clamp(8px,2vh,20px);
+    animation:glow 2s ease-in-out infinite;margin-bottom:clamp(4px,1vh,10px);
   }
   @keyframes glow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
+  /* СКИНЫ */
+  .skin-row{display:flex;gap:5px;margin-bottom:clamp(4px,1vh,8px);}
+  .skin-btn{
+    width:clamp(32px,9vw,42px);height:clamp(36px,10vw,48px);border-radius:11px;border:2px solid var(--border2);
+    cursor:pointer;touch-action:manipulation;transition:all 0.15s;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:1.1rem;background:transparent;gap:2px;
+  }
+  .skin-btn.active{border-color:#4ade80;transform:scale(1.12);background:var(--panel);}
+  .skin-btn.locked{opacity:0.38;cursor:default;filter:grayscale(0.8);}
+  .skin-lbl{font-size:0.4rem;color:var(--text2);line-height:1;}
+  /* СТАТС-БАР МЕНЮ */
+  .menu-stats-bar{
+    display:flex;align-items:center;
+    background:var(--panel);border:1px solid var(--border2);border-radius:14px;
+    padding:8px 16px;margin-bottom:clamp(6px,1.4vh,12px);
+    width:min(260px,82vw);
+  }
+  .msb-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .msb-val{font-size:1rem;font-weight:800;color:var(--text);line-height:1;}
+  .msb-lbl{font-size:0.56rem;color:var(--text3);letter-spacing:0.3px;text-transform:uppercase;}
+  .msb-sep{width:1px;height:24px;background:var(--border2);flex-shrink:0;}
+  /* КНОПКИ МЕНЮ */
+  .menu-play-btn{
+    width:min(240px,82vw);padding:clamp(10px,2vh,14px) 0;margin-bottom:6px;
+    background:linear-gradient(135deg,#166534,#15803d);
+    border:2px solid #4ade80;border-radius:14px;
+    color:#fff;font-size:clamp(0.95rem,3.8vw,1.1rem);font-weight:800;cursor:pointer;
+    letter-spacing:2px;touch-action:manipulation;
+    box-shadow:0 0 16px rgba(74,222,128,0.25),0 4px 12px rgba(0,0,0,0.3);
+    transition:all 0.15s;
+  }
+  .menu-play-btn:hover,.menu-play-btn:active{
+    box-shadow:0 0 28px rgba(74,222,128,0.42),0 6px 16px rgba(0,0,0,0.4);
+    background:linear-gradient(135deg,#15803d,#16a34a);
+  }
+  .menu-cont-btn{
+    width:min(240px,82vw);padding:clamp(7px,1.5vh,11px) 0;margin-bottom:6px;
+    background:var(--panel);border:1.5px solid #22d3ee;border-radius:12px;
+    color:#22d3ee;font-size:clamp(0.78rem,3vw,0.88rem);font-weight:700;cursor:pointer;
+    letter-spacing:1px;touch-action:manipulation;transition:all 0.15s;
+  }
+  .menu-cont-btn:hover,.menu-cont-btn:active{background:rgba(34,211,238,0.07);}
+  /* СЕТКА ФУНКЦИЙ */
+  .menu-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);
+    gap:7px;width:min(240px,82vw);margin-bottom:6px;
+  }
+  .mgrid-btn{
+    position:relative;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:4px;padding:clamp(9px,1.7vh,13px) 6px;
+    border-radius:12px;border:1.5px solid var(--border);
+    background:var(--panel);cursor:pointer;touch-action:manipulation;
+    transition:all 0.15s;overflow:visible;
+  }
+  .mgrid-icon{font-size:1.35rem;line-height:1;}
+  .mgrid-label{font-size:0.66rem;font-weight:700;color:var(--text2);letter-spacing:0.4px;}
+  .mgrid-btn.clr-yellow{border-color:rgba(250,204,21,0.5);}
+  .mgrid-btn.clr-yellow:active,.mgrid-btn.clr-yellow:hover{border-color:#facc15;background:rgba(250,204,21,0.07);}
+  .mgrid-btn.clr-purple{border-color:rgba(167,139,250,0.5);}
+  .mgrid-btn.clr-purple:active,.mgrid-btn.clr-purple:hover{border-color:#a78bfa;background:rgba(167,139,250,0.07);}
+  .mgrid-btn.clr-blue{border-color:rgba(56,189,248,0.5);}
+  .mgrid-btn.clr-blue:active,.mgrid-btn.clr-blue:hover{border-color:#38bdf8;background:rgba(56,189,248,0.07);}
+  .mgrid-btn.clr-orange{border-color:rgba(251,146,60,0.5);}
+  .mgrid-btn.clr-orange:active,.mgrid-btn.clr-orange:hover{border-color:#fb923c;background:rgba(251,146,60,0.07);}
+  @media(hover:none){.mgrid-btn:hover{border-color:var(--border);background:var(--panel);}}
+  /* Бейдж квеста — абсолютный */
+  .quest-badge{
+    position:absolute;top:-7px;right:-7px;
+    background:#ef4444;color:#fff;border-radius:99px;
+    font-size:0.58rem;font-weight:bold;padding:2px 6px;
+    pointer-events:none;line-height:1.4;border:2px solid var(--bg);
+  }
+  /* Настройки внизу */
+  .menu-settings-btn{
+    background:transparent;border:none;color:var(--text3);
+    font-size:0.76rem;cursor:pointer;padding:5px 14px;
+    border-radius:8px;touch-action:manipulation;
+    display:flex;align-items:center;gap:5px;transition:color 0.15s;
+  }
+  .menu-settings-btn:hover,.menu-settings-btn:active{color:var(--text2);}
+  /* Совместимость — .menu-btn для других экранов */
   .menu-btn{
     width:min(210px,80vw);padding:clamp(7px,1.8vh,13px) 0;margin:clamp(2px,0.6vh,5px) 0;
     background:var(--panel);border:1.5px solid var(--border);border-radius:13px;
@@ -86,24 +168,10 @@
     touch-action:manipulation;transition:all 0.15s;letter-spacing:1px;
   }
   .menu-btn:active,.menu-btn:hover{border-color:#4ade80;color:#4ade80;}
-  @media (hover:none){
-    .menu-btn:hover{border-color:var(--border);color:var(--text);}
-  }
   .menu-btn.primary{background:linear-gradient(135deg,#166534,#15803d);border-color:#4ade80;color:#fff;}
-  .menu-btn.primary:hover{background:linear-gradient(135deg,#15803d,#16a34a);}
-  .best-lbl{color:var(--text2);font-size:0.82rem;margin:clamp(4px,1vh,10px) 0 clamp(4px,1vh,10px);}
+  .best-lbl{color:var(--text2);font-size:0.82rem;margin:4px 0;}
   .best-lbl span{color:#facc15;font-weight:bold;}
-  /* СКИНЫ */
-  .skin-row{display:flex;gap:6px;margin-bottom:clamp(2px,0.8vh,4px);}
-  .skin-btn{
-    width:clamp(36px,10vw,46px);height:clamp(42px,11vw,52px);border-radius:12px;border:2px solid var(--border2);
-    cursor:pointer;touch-action:manipulation;transition:all 0.15s;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    font-size:1.2rem;background:transparent;gap:2px;
-  }
-  .skin-btn.active{border-color:#4ade80;transform:scale(1.12);background:var(--panel);}
-  .skin-btn.locked{opacity:0.38;cursor:default;filter:grayscale(0.8);}
-  .skin-lbl{font-size:0.42rem;color:var(--text2);line-height:1;}
+  .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:4px;}
   /* ЭКРАН УРОВНЯ */
   .lvl-label{font-size:0.9rem;color:var(--text3);letter-spacing:4px;text-transform:uppercase;margin-bottom:8px;}
   .lvl-num{
@@ -115,7 +183,7 @@
   @keyframes zoomIn{from{transform:scale(0.2);opacity:0;}to{transform:scale(1);opacity:1;}}
   .lvl-goal{font-size:0.88rem;color:var(--text2);margin-top:10px;}
   /* ИГРА */
-  #gameScreen{gap:5px;padding:5px 0;}
+  #gameScreen{gap:5px;padding:5px 0;overflow:hidden;}
   .hud{display:flex;gap:clamp(8px,3vw,24px);font-size:clamp(0.68rem,2.4vw,0.85rem);color:var(--text2);align-items:center;}
   .hud span{color:var(--text);font-weight:bold;}
   .lvl-badge{background:linear-gradient(135deg,#166534,#15803d);color:#fff;
@@ -124,14 +192,14 @@
   .prog-bar{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width 0.3s;}
   .wrap{position:relative;display:inline-block;flex-shrink:0;}
   canvas{border:2px solid var(--canvas-border);border-radius:8px;background:var(--canvas-bg);display:block;
-    --csz:min(560px,calc(100vw - 12px),calc(100dvh - 225px));
+    --csz:min(560px,calc(100vw - 12px),calc(100dvh - 260px));
     width:var(--csz);height:var(--csz);}
   /* ПАУЗА */
   #pauseMenu{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:12px;background:rgba(0,0,0,0.78);border-radius:8px;pointer-events:all;}
   .pm-title{font-size:1.4rem;font-weight:bold;color:#facc15;letter-spacing:3px;}
-  .pm-info{font-size:0.8rem;color:#6b7280;}
+  .pm-info{font-size:0.8rem;color:var(--text3);}
   .pm-btn{width:200px;padding:12px 0;border:none;border-radius:10px;font-size:0.92rem;
     font-weight:bold;cursor:pointer;touch-action:manipulation;letter-spacing:1px;}
   .pm-btn.resume{background:#4ade80;color:#0f0f0f;}
@@ -146,17 +214,32 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
   .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
-  /* DEBUG PANEL */
-  #debugPanel{position:absolute;top:0;left:0;width:100%;background:rgba(5,8,18,0.97);
-    border-bottom:2px solid #facc15;padding:10px 12px;display:none;flex-direction:column;
-    gap:7px;z-index:99;pointer-events:all;overflow-y:auto;max-height:55%;}
-  #debugPanel.open{display:flex;}
+  /* DEBUG PANEL — боковая панель справа, не перекрывает игру */
+  #debugPanel{
+    position:fixed;top:0;right:-280px;width:268px;height:100dvh;
+    background:rgba(5,8,18,0.97);border-left:2px solid #facc15;
+    padding:12px 10px 20px;display:flex;flex-direction:column;
+    gap:6px;z-index:999;pointer-events:all;overflow-y:auto;
+    transition:right 0.22s cubic-bezier(.4,0,.2,1);
+    box-shadow:-4px 0 24px rgba(0,0,0,0.6);
+  }
+  #debugPanel.open{right:0;}
+  /* Кнопка-таб для открытия панели (видна всегда) */
+  #dbgTab{
+    position:fixed;top:50%;right:0;transform:translateY(-50%);
+    background:#422006;border:2px solid #facc15;border-right:none;
+    border-radius:8px 0 0 8px;padding:8px 5px;z-index:998;
+    cursor:pointer;writing-mode:vertical-rl;font-size:0.62rem;
+    color:#facc15;font-weight:bold;letter-spacing:2px;
+    transition:background 0.15s;
+  }
+  #dbgTab:hover{background:#633209;}
   .dbg-title{color:#facc15;font-size:0.72rem;font-weight:bold;letter-spacing:3px;text-align:center;}
-  .dbg-stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:0.65rem;color:#9ca3af;}
+  .dbg-stats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:0.62rem;color:#9ca3af;text-align:center;}
   .dbg-stats b{color:#f0f0f0;}
-  .dbg-section{font-size:0.58rem;color:#4b5563;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-top:2px;}
+  .dbg-section{font-size:0.56rem;color:#4b5563;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-top:2px;}
   .dbg-row{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}
-  .dbg-btn{padding:5px 9px;font-size:0.7rem;font-weight:bold;border:none;border-radius:7px;
+  .dbg-btn{padding:5px 9px;font-size:0.68rem;font-weight:bold;border:none;border-radius:7px;
     cursor:pointer;touch-action:manipulation;background:#1e3a5f;color:#7dd3fc;white-space:nowrap;}
   .dbg-btn:active{transform:scale(0.93);}
   .dbg-btn.green{background:#14532d;color:#4ade80;}
@@ -174,8 +257,8 @@
     padding:14px 18px;cursor:pointer;touch-action:manipulation;
     display:flex;align-items:center;gap:14px;transition:all 0.15s;text-align:left;
   }
-  .mode-card:active,.mode-card:hover{border-color:#4ade80;background:#1e3040;}
-  @media(hover:none){.mode-card:hover{border-color:#2d4a60;background:#1a2535;}}
+  .mode-card:active,.mode-card:hover{border-color:#4ade80;background:var(--panel2);}
+  @media(hover:none){.mode-card:hover{border-color:var(--border);background:var(--panel);}}
   .mode-card-icon{font-size:1.8rem;flex-shrink:0;}
   .mode-card-title{font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:2px;}
   .mode-card-desc{font-size:0.75rem;color:var(--text3);line-height:1.3;}
@@ -193,9 +276,9 @@
   .shop-price.owned{color:#4ade80;}
   .shop-btn{padding:6px 12px;border:none;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
   .shop-btn.buy{background:#facc15;color:#0f0f0f;}
-  .shop-btn.buy:disabled{background:#374151;color:#6b7280;cursor:default;}
+  .shop-btn.buy:disabled{background:var(--hud-bg);color:var(--text3);cursor:default;}
   .shop-btn.equip{background:#4ade80;color:#0f0f0f;}
-  .shop-btn.equipped{background:#374151;color:#6b7280;cursor:default;}
+  .shop-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
   .shop-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
   /* Монеты в меню */
   .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:6px;}
@@ -212,16 +295,16 @@
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
-    background:#112210;border:1.5px solid #4ade80;border-radius:14px;
+    background:var(--panel);border:1.5px solid #4ade80;border-radius:14px;
     padding:10px 18px;display:flex;align-items:center;gap:10px;
     pointer-events:none;z-index:999;opacity:0;transition:opacity 0.3s,transform 0.3s;
-    white-space:nowrap;
+    white-space:nowrap;box-shadow:0 4px 20px rgba(74,222,128,0.25);
   }
   #achNotif.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .an-icon{font-size:1.4rem;}
   .an-text{font-size:0.78rem;}
   .an-title{color:#4ade80;font-weight:700;}
-  .an-sub{color:#9ca3af;}
+  .an-sub{color:var(--text2);}
   /* ТАЙМЕР В HUD */
   .hud-timer{font-size:clamp(0.75rem,2.6vw,0.95rem);font-weight:bold;color:#f87171;min-width:44px;text-align:center;}
   .hud-timer.urgent{animation:blink 0.5s ease-in-out infinite;}
@@ -236,8 +319,8 @@
   .dpad-center{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;color:#facc15;
     font-size:0.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
     touch-action:manipulation;}
-  .dpad-center:active{background:#2d3e52;}
-  .kb-hint{font-size:0.6rem;color:#1f2937;letter-spacing:1px;}
+  .dpad-center:active{background:var(--border2);}
+  .kb-hint{font-size:0.6rem;color:var(--text3);letter-spacing:1px;}
   /* РЕКОРДЫ / НАСТРОЙКИ — общий контейнер */
   .rec-title{font-size:1.3rem;font-weight:bold;color:#facc15;letter-spacing:2px;margin-bottom:10px;}
   .rec-list{
@@ -291,7 +374,7 @@
     background:var(--panel);color:var(--text2);font-size:0.8rem;font-weight:600;
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;text-align:center;
   }
-  .diff-btn.active{border-color:#4ade80;color:#4ade80;background:#0d1f12;}
+  .diff-btn.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   /* КВЕСТЫ */
   .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 165px);overflow-y:auto;}
   .quest-card{background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;transition:var(--transition);}
@@ -327,15 +410,48 @@
   <div class="menu-snake">🐍</div>
   <div class="menu-title">Змейка</div>
   <div class="skin-row" id="menuSkinRow"></div>
-  <div class="best-lbl">Рекорд: <span id="menuBest">0</span> · Макс. уровень: <span id="menuLevel">1</span></div>
-  <div class="menu-coins" id="menuCoins">🪙 0 монет</div>
-  <button class="menu-btn primary" id="btnPlay">▶ Играть</button>
-  <button class="menu-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
-  <button class="menu-btn" id="btnRecords">🏆 Рекорды</button>
-  <button class="menu-btn" id="btnAch">🏅 Достижения</button>
-  <button class="menu-btn" id="btnQuests">📋 Квесты</button>
-  <button class="menu-btn" id="btnShop">🪙 Магазин</button>
-  <button class="menu-btn" id="btnSettings">⚙️ Настройки</button>
+  <!-- Статс-бар -->
+  <div class="menu-stats-bar">
+    <div class="msb-item">
+      <div class="msb-val" id="menuBest">0</div>
+      <div class="msb-lbl">Рекорд</div>
+    </div>
+    <div class="msb-sep"></div>
+    <div class="msb-item">
+      <div class="msb-val" id="menuLevel">1</div>
+      <div class="msb-lbl">Ур. макс</div>
+    </div>
+    <div class="msb-sep"></div>
+    <div class="msb-item">
+      <div class="msb-val" style="color:#facc15;" id="menuCoins">0</div>
+      <div class="msb-lbl">🪙 Монет</div>
+    </div>
+  </div>
+  <!-- Главная кнопка -->
+  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
+  <!-- Продолжить -->
+  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Продолжить &nbsp;(Ур. <span id="btnContinueLvl">1</span>)</button>
+  <!-- Сетка 2×2 -->
+  <div class="menu-grid">
+    <button class="mgrid-btn clr-yellow" id="btnRecords">
+      <div class="mgrid-icon">🏆</div>
+      <div class="mgrid-label">Рекорды</div>
+    </button>
+    <button class="mgrid-btn clr-purple" id="btnAch">
+      <div class="mgrid-icon">🏅</div>
+      <div class="mgrid-label">Ачивки</div>
+    </button>
+    <button class="mgrid-btn clr-blue" id="btnQuests" style="position:relative;">
+      <div class="mgrid-icon">📋</div>
+      <div class="mgrid-label">Квесты</div>
+    </button>
+    <button class="mgrid-btn clr-orange" id="btnShop">
+      <div class="mgrid-icon">🪙</div>
+      <div class="mgrid-label">Магазин</div>
+    </button>
+  </div>
+  <!-- Настройки -->
+  <button class="menu-settings-btn" id="btnSettings">⚙️ Настройки</button>
 </div>
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
@@ -422,8 +538,12 @@
       <div class="lu-text">LEVEL UP!</div>
       <div class="lu-sub" id="luSub">Уровень 2</div>
     </div>
+    <button id="dbgTab" onclick="dbgOpen()">🛠 DEBUG</button>
     <div id="debugPanel">
-      <div class="dbg-title">🛠 DEBUG PANEL</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="dbg-title" style="flex:1;">🛠 DEBUG PANEL</div>
+        <button class="dbg-btn red" style="padding:3px 8px;font-size:0.85rem;" onclick="dbgClose()">✕</button>
+      </div>
       <div class="dbg-stats" id="dbgStats">Ур.— · Счёт — · 🪙—</div>
       <div class="dbg-section">— бонусы —</div>
       <div class="dbg-row">
@@ -773,7 +893,7 @@ function buildSkinRow(){
 function refreshMenuUI(){
   document.getElementById('menuBest').textContent=best;
   document.getElementById('menuLevel').textContent=bestLevel;
-  document.getElementById('menuCoins').textContent='🪙 '+coins+' монет';
+  document.getElementById('menuCoins').textContent=coins;
   buildSkinRow();
   updateQuestBadge();
   const contBtn=document.getElementById('btnContinue');
@@ -809,7 +929,7 @@ function buildShopScreen(){
       <span style="font-size:1.6rem">${s.emoji}</span>
       <div style="flex:1">
         <div style="font-weight:600;font-size:0.9rem">${s.name}</div>
-        <div style="font-size:0.75rem;color:#9ca3af">${owned?'Куплено':s.price?'🪙 '+s.price+' монет':'Уровень '+s.unlockLevel}</div>
+        <div style="font-size:0.75rem;color:var(--text3)">${owned?'Куплено':s.price?'🪙 '+s.price+' монет':'Уровень '+s.unlockLevel}</div>
       </div>
       ${btnHtml}
     `;
@@ -1491,13 +1611,14 @@ function endGame(){
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '⏱ Время вышло!';
     else if(gameMode==='survival') goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Выжил!';
     else                           goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Конец игры';
-    const modeLbl = gameMode==='time' ? '⏱ Время' : gameMode==='survival' ? '💀 Выживание' : `Уровень: ${currentLevel}`;
+    const modeLbl = gameMode==='time' ? '⏱ Время' : gameMode==='survival' ? '💀 Выживание' : gameMode==='mirror' ? '🪞 Зеркало' : `Уровень: ${currentLevel}`;
     goSub.textContent=`Счёт: ${score} · ${modeLbl}`;
-    document.getElementById('goLvlNum').textContent=currentLevel;
-    // В режимах Время/Выживание кнопка "Продолжить с уровня" → "Сыграть ещё"
+    // В режимах Время/Выживание/Зеркало кнопка "Продолжить с уровня" → "Сыграть ещё"
     const retryCurBtn=document.getElementById('goRetryCur');
     if(gameMode!=='classic') retryCurBtn.innerHTML=`↺ Сыграть ещё`;
-    else retryCurBtn.innerHTML=`↺ Продолжить с ур. <span id="goLvlNum">${currentLevel}</span>`;
+    else retryCurBtn.innerHTML=`↺ Продолжить с ур. ${currentLevel}`;
+    const lvlEl=document.getElementById('goLvlNum');
+    if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
   },350);
 }
@@ -1511,8 +1632,8 @@ document.getElementById('score').addEventListener('click',()=>{
   dbgTapTimer=setTimeout(()=>dbgTapCount=0,1500);
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
-function dbgOpen(){if(running&&!paused)togglePause();debugPanel.classList.add('open');dbgUpdateStats();}
-function dbgClose(){debugPanel.classList.remove('open');if(paused)togglePause();}
+function dbgOpen(){debugPanel.classList.add('open');dbgUpdateStats();document.getElementById('dbgTab').style.display='none';}
+function dbgClose(){debugPanel.classList.remove('open');document.getElementById('dbgTab').style.display='block';}
 function dbgBonus(type){
   if(!running) return;
   // немедленно применяем эффект — не ждём пока предмет появится на поле
