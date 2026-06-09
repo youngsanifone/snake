@@ -124,6 +124,26 @@
   .dbg-btn{padding:5px 10px;font-size:0.72rem;font-weight:bold;border:none;border-radius:7px;
     cursor:pointer;touch-action:manipulation;background:#1e3a5f;color:#7dd3fc;}
   .dbg-btn:active{transform:scale(0.95);}
+  /* РЕЖИМЫ */
+  .mode-title{font-size:clamp(1.4rem,6vw,2rem);font-weight:900;letter-spacing:3px;margin-bottom:6px;
+    background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .mode-sub{font-size:0.8rem;color:#6b7280;margin-bottom:24px;}
+  .mode-cards{display:flex;flex-direction:column;gap:10px;width:min(320px,calc(100vw - 32px));}
+  .mode-card{
+    background:#1a2535;border:1.5px solid #2d4a60;border-radius:14px;
+    padding:14px 18px;cursor:pointer;touch-action:manipulation;
+    display:flex;align-items:center;gap:14px;transition:all 0.15s;text-align:left;
+  }
+  .mode-card:active,.mode-card:hover{border-color:#4ade80;background:#1e3040;}
+  @media(hover:none){.mode-card:hover{border-color:#2d4a60;background:#1a2535;}}
+  .mode-card-icon{font-size:1.8rem;flex-shrink:0;}
+  .mode-card-title{font-size:0.95rem;font-weight:700;color:#e0e0e0;margin-bottom:2px;}
+  .mode-card-desc{font-size:0.75rem;color:#6b7280;line-height:1.3;}
+  .mode-back{margin-top:8px;background:transparent;border:none;color:#6b7280;font-size:0.82rem;cursor:pointer;padding:6px;}
+  /* ТАЙМЕР В HUD */
+  .hud-timer{font-size:clamp(0.75rem,2.6vw,0.95rem);font-weight:bold;color:#f87171;min-width:44px;text-align:center;}
+  .hud-timer.urgent{animation:blink 0.5s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
   /* DPAD */
   .dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;margin-top:4px;}
   .dpad-btn{background:#1a2535;border:1.5px solid #2d3e52;border-radius:11px;color:#c0d0e0;
@@ -212,6 +232,35 @@
   <button class="menu-btn" id="btnRecords">🏆 Рекорды</button>
   <button class="menu-btn" id="btnSettings">⚙️ Настройки</button>
 </div>
+<!-- ВЫБОР РЕЖИМА -->
+<div class="screen" id="modeScreen">
+  <div class="mode-title">Выбор режима</div>
+  <div class="mode-sub">Как хочешь играть?</div>
+  <div class="mode-cards">
+    <button class="mode-card" id="modeClassic">
+      <div class="mode-card-icon">🐍</div>
+      <div>
+        <div class="mode-card-title">Классика</div>
+        <div class="mode-card-desc">Уровни, растущая скорость, бесконечно</div>
+      </div>
+    </button>
+    <button class="mode-card" id="modeTime">
+      <div class="mode-card-icon">⏱</div>
+      <div>
+        <div class="mode-card-title">Время</div>
+        <div class="mode-card-desc">60 секунд — набери максимум очков</div>
+      </div>
+    </button>
+    <button class="mode-card" id="modeSurvival">
+      <div class="mode-card-icon">💀</div>
+      <div>
+        <div class="mode-card-title">Выживание</div>
+        <div class="mode-card-desc">Максимум препятствий, скорость постоянная</div>
+      </div>
+    </button>
+  </div>
+  <button class="mode-back" id="modeBack">← Назад</button>
+</div>
 <!-- ЭКРАН УРОВНЯ -->
 <div class="screen" id="levelScreen">
   <div class="lvl-label">Уровень</div>
@@ -223,9 +272,10 @@
   <div class="hud">
     <div>Счёт: <span id="score">0</span></div>
     <div class="lvl-badge" id="hudLvl">Ур. 1</div>
+    <div id="hudTimerWrap" style="display:none;"><span class="hud-timer" id="hudTimer">60</span></div>
     <div>Рекорд: <span id="bestHud">0</span></div>
   </div>
-  <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+  <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
   <div class="wrap">
     <canvas id="c" width="560" height="560"></canvas>
     <div id="pauseMenu">
@@ -435,8 +485,16 @@ refreshMenuUI();
   }
   bgLoop();
 })();
-document.getElementById('btnPlay').addEventListener('click',()=>{getAudio();initMp3();savedLevel=1;saveAll();beginLevel(1);});
-document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();getAudio();initMp3();savedLevel=1;saveAll();beginLevel(1);},{passive:false});
+let gameMode='classic'; // 'classic' | 'time' | 'survival'
+let timeLeft=0;         // мс оставшегося времени (режим Время)
+const TIME_MODE_DURATION=60000; // 60 секунд
+function openModeScreen(){getAudio();initMp3();showScreen('modeScreen');}
+document.getElementById('btnPlay').addEventListener('click',openModeScreen);
+document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
+document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
+document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();initMp3();beginLevel(savedLevel);});
 document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
@@ -636,7 +694,23 @@ function updateProg(){
 function startGame(){
   if(animId) cancelAnimationFrame(animId);
   showScreen('gameScreen');
-  hudLvl.textContent='Ур. '+currentLevel;
+  // Настраиваем HUD под режим
+  if(gameMode==='time'){
+    hudLvl.textContent='⏱ ВРЕМЯ';
+    timeLeft=TIME_MODE_DURATION;
+    document.getElementById('hudTimerWrap').style.display='';
+    document.getElementById('hudTimer').textContent='60';
+    document.getElementById('hudTimer').classList.remove('urgent');
+    document.getElementById('progWrap').style.display='none';
+  } else if(gameMode==='survival'){
+    hudLvl.textContent='💀 ВЫЖИВАНИЕ';
+    document.getElementById('hudTimerWrap').style.display='none';
+    document.getElementById('progWrap').style.display='none';
+  } else {
+    hudLvl.textContent='Ур. '+currentLevel;
+    document.getElementById('hudTimerWrap').style.display='none';
+    document.getElementById('progWrap').style.display='';
+  }
   path=[];
   for(let i=0;i<BASE_LEN;i++) path.push({x:W/2-i,y:H/2});
   dir={x:1,y:0};nextDir={x:1,y:0};
@@ -644,8 +718,10 @@ function startGame(){
   goldFood=null;goldFoodLife=0;goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
   bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
   shieldActive=false;speedBoost=0;freezeActive=0;
-  invincible=2000; combo=0; // 2 сек неуязвимости при старте
+  invincible=2000; combo=0;
   scoreEl.textContent=0;updateProg();
+  // Выживание: сразу максимум препятствий
+  if(gameMode==='survival') levelData={...levelData,obsCount:22,speed:3.5*DIFF_MULT[difficulty]};
   spawnObstacles();spawnFood();
   gameOverlay.style.display='none';
   pauseMenu.style.display='none';
@@ -660,6 +736,15 @@ function loop(ts){
   if(invincible>0) invincible-=dt;
   if(speedBoost>0) speedBoost-=dt;
   if(freezeActive>0) freezeActive-=dt;
+  // Режим Время: обратный отсчёт
+  if(gameMode==='time'){
+    timeLeft-=dt;
+    const secs=Math.ceil(timeLeft/1000);
+    const timerEl=document.getElementById('hudTimer');
+    timerEl.textContent=secs;
+    if(secs<=10) timerEl.classList.add('urgent'); else timerEl.classList.remove('urgent');
+    if(timeLeft<=0){playHit();endGame();return;}
+  }
   // скорость: ускорение +60%, заморозка -50%, иначе базовая
   const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
   const spd=levelData.speed*dt/16*spdMult;
@@ -709,7 +794,7 @@ function loop(ts){
     else if(combo>=3)  spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x2`,'#fb923c');
     else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`            ,skin().foodColor);
     playEat();
-    if(levelScore>=levelData.foodNeeded){
+    if(gameMode==='classic'&&levelScore>=levelData.foodNeeded){
       running=false;cancelAnimationFrame(animId);
       const newLvl=currentLevel+1;
       if(currentLevel>=bestLevel){
@@ -749,8 +834,8 @@ function loop(ts){
       playGoldEat();
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
-      // проверяем завершение уровня
-      if(levelScore>=levelData.foodNeeded){
+      // проверяем завершение уровня (только в классике)
+      if(gameMode==='classic'&&levelScore>=levelData.foodNeeded){
         running=false;cancelAnimationFrame(animId);
         const newLvl=currentLevel+1;
         if(currentLevel>=bestLevel){
@@ -923,9 +1008,16 @@ function endGame(){
   gamesPlayed++;pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
   ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
-    goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Конец игры';
-    goSub.textContent=`Счёт: ${score} · Уровень: ${currentLevel}`;
+    if(gameMode==='time')          goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '⏱ Время вышло!';
+    else if(gameMode==='survival') goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Выжил!';
+    else                           goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Конец игры';
+    const modeLbl = gameMode==='time' ? '⏱ Время' : gameMode==='survival' ? '💀 Выживание' : `Уровень: ${currentLevel}`;
+    goSub.textContent=`Счёт: ${score} · ${modeLbl}`;
     document.getElementById('goLvlNum').textContent=currentLevel;
+    // В режимах Время/Выживание кнопка "Продолжить с уровня" → "Сыграть ещё"
+    const retryCurBtn=document.getElementById('goRetryCur');
+    if(gameMode!=='classic') retryCurBtn.innerHTML=`↺ Сыграть ещё`;
+    else retryCurBtn.innerHTML=`↺ Продолжить с ур. <span id="goLvlNum">${currentLevel}</span>`;
     gameOverlay.style.display='flex';
   },350);
 }
@@ -1008,10 +1100,16 @@ pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
 // Game over кнопки
 const goRetryCur=document.getElementById('goRetryCur');
-goRetryCur.addEventListener('click',()=>{beginLevel(currentLevel);});
-goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();beginLevel(currentLevel);},{passive:false});
-goRetry.addEventListener('click',()=>{stopMusic();savedLevel=1;saveAll();beginLevel(1);});
-goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();savedLevel=1;saveAll();beginLevel(1);},{passive:false});
+goRetryCur.addEventListener('click',()=>{
+  if(gameMode!=='classic'){savedLevel=1;saveAll();}
+  beginLevel(gameMode==='classic'?currentLevel:1);
+});
+goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();
+  if(gameMode!=='classic'){savedLevel=1;saveAll();}
+  beginLevel(gameMode==='classic'?currentLevel:1);
+},{passive:false});
+goRetry.addEventListener('click',()=>{stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
+goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 // Клавиатура
