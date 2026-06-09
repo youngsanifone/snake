@@ -214,26 +214,37 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
   .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
-  /* DEBUG PANEL — боковая панель справа, не перекрывает игру */
+  /* DEBUG PANEL — нижний drawer */
   #debugPanel{
-    position:fixed;top:0;right:-280px;width:268px;height:100dvh;
-    background:rgba(5,8,18,0.97);border-left:2px solid #facc15;
-    padding:12px 10px 20px;display:flex;flex-direction:column;
-    gap:6px;z-index:999;pointer-events:all;overflow-y:auto;
-    transition:right 0.22s cubic-bezier(.4,0,.2,1);
-    box-shadow:-4px 0 24px rgba(0,0,0,0.6);
+    position:fixed;bottom:-100%;left:0;right:0;
+    max-height:62dvh;
+    background:rgba(5,8,18,0.98);border-top:2px solid #facc15;
+    border-radius:16px 16px 0 0;
+    padding:10px 14px 20px;display:flex;flex-direction:column;
+    gap:7px;z-index:999;pointer-events:all;overflow-y:auto;
+    transition:bottom 0.25s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 -6px 32px rgba(0,0,0,0.7);
   }
-  #debugPanel.open{right:0;}
-  /* Кнопка-таб для открытия панели (видна всегда) */
+  #debugPanel.open{bottom:0;}
+  /* Ручка-потяшка сверху дравера */
+  #dbgHandle{
+    width:40px;height:4px;border-radius:2px;
+    background:#facc15;opacity:0.5;margin:0 auto 4px;flex-shrink:0;
+  }
+  /* Кнопка-таб — левый нижний угол, компактная */
   #dbgTab{
-    position:fixed;top:50%;right:0;transform:translateY(-50%);
-    background:#422006;border:2px solid #facc15;border-right:none;
-    border-radius:8px 0 0 8px;padding:8px 5px;z-index:998;
-    cursor:pointer;writing-mode:vertical-rl;font-size:0.62rem;
-    color:#facc15;font-weight:bold;letter-spacing:2px;
-    transition:background 0.15s;
+    position:fixed;bottom:8px;left:8px;
+    background:#422006;border:1.5px solid #facc15;
+    border-radius:8px;padding:5px 9px;z-index:998;
+    cursor:pointer;font-size:0.6rem;
+    color:#facc15;font-weight:bold;letter-spacing:1px;
+    transition:background 0.15s;opacity:0.7;
   }
-  #dbgTab:hover{background:#633209;}
+  #dbgTab:hover{background:#633209;opacity:1;}
+  /* Двухколоночная сетка для рядов кнопок */
+  .dbg-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}
+  .dbg-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+  .dbg-grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
   .dbg-title{color:#facc15;font-size:0.72rem;font-weight:bold;letter-spacing:3px;text-align:center;}
   .dbg-stats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:0.62rem;color:#9ca3af;text-align:center;}
   .dbg-stats b{color:#f0f0f0;}
@@ -391,7 +402,6 @@
   .quest-claim{padding:5px 11px;border:none;border-radius:7px;font-size:0.75rem;font-weight:700;cursor:pointer;touch-action:manipulation;background:#4ade80;color:#0f0f0f;flex-shrink:0;}
   .quest-claim:disabled{background:var(--hud-bg);color:var(--text3);cursor:default;}
   .quest-reset{font-size:0.7rem;color:var(--text3);text-align:center;margin-top:8px;}
-  .quest-badge{display:inline-block;background:#ef4444;color:#fff;border-radius:99px;font-size:0.6rem;font-weight:bold;padding:1px 5px;margin-left:5px;vertical-align:middle;line-height:1.5;}
   .quest-reward-toast{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);background:#facc15;color:#0f0f0f;font-size:1.3rem;font-weight:bold;padding:11px 24px;border-radius:12px;pointer-events:none;z-index:1000;animation:toastFade 1.4s ease-out forwards;}
   @keyframes toastFade{0%{opacity:0;transform:translate(-50%,-60%);}15%{opacity:1;transform:translate(-50%,-50%);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-40%);}}
   /* ПК: скрываем dpad если мышь */
@@ -538,28 +548,29 @@
       <div class="lu-text">LEVEL UP!</div>
       <div class="lu-sub" id="luSub">Уровень 2</div>
     </div>
-    <button id="dbgTab" onclick="dbgOpen()">🛠 DEBUG</button>
+    <button id="dbgTab" onclick="dbgOpen()">🛠 DBG</button>
     <div id="debugPanel">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div class="dbg-title" style="flex:1;">🛠 DEBUG PANEL</div>
-        <button class="dbg-btn red" style="padding:3px 8px;font-size:0.85rem;" onclick="dbgClose()">✕</button>
+      <div id="dbgHandle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+        <div class="dbg-title">🛠 DEBUG PANEL</div>
+        <div class="dbg-stats" id="dbgStats" style="flex:1;text-align:right;">Ур.— · 🪙—</div>
+        <button class="dbg-btn red" style="padding:3px 10px;font-size:0.85rem;margin-left:8px;" onclick="dbgClose()">✕</button>
       </div>
-      <div class="dbg-stats" id="dbgStats">Ур.— · Счёт — · 🪙—</div>
       <div class="dbg-section">— бонусы —</div>
-      <div class="dbg-row">
+      <div class="dbg-grid3">
         <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
         <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Турбо</button>
         <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Заморозка</button>
         <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Бомба</button>
         <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Золото</button>
+        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Инв.</button>
       </div>
-      <div class="dbg-section">— прогресс —</div>
-      <div class="dbg-row">
+      <div class="dbg-section">— уровень —</div>
+      <div class="dbg-grid2">
         <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
         <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ След. уровень</button>
-        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Неуязвимость</button>
       </div>
-      <div class="dbg-row">
+      <div class="dbg-grid5">
         <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
         <button class="dbg-btn" onclick="dbgSetLevel(5)">Ур.5</button>
         <button class="dbg-btn" onclick="dbgSetLevel(10)">Ур.10</button>
@@ -567,15 +578,12 @@
         <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
       </div>
       <div class="dbg-section">— ресурсы —</div>
-      <div class="dbg-row">
+      <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
         <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Все скины</button>
         <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Все ачивки</button>
-      </div>
-      <div class="dbg-row">
-        <button class="dbg-btn red" onclick="dbgResetAll()">🗑 Сбросить всё</button>
-        <button class="dbg-btn red" onclick="dbgClose()">✕ Закрыть</button>
+        <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Сбросить всё</button>
       </div>
     </div>
     <div id="gameOverlay">
