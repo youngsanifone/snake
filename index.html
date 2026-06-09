@@ -107,6 +107,15 @@
   .go-btn{padding:9px 22px;background:#4ade80;color:#0f0f0f;border:none;border-radius:8px;
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:#1f2937;color:#e0e0e0;border:1px solid #374151;}
+  /* DEBUG PANEL */
+  #debugPanel{position:absolute;top:0;left:0;width:100%;background:rgba(0,0,0,0.92);
+    border-radius:8px;padding:10px;display:none;flex-direction:column;gap:6px;z-index:99;pointer-events:all;}
+  #debugPanel.open{display:flex;}
+  .dbg-title{color:#facc15;font-size:0.75rem;font-weight:bold;letter-spacing:2px;text-align:center;}
+  .dbg-row{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}
+  .dbg-btn{padding:5px 10px;font-size:0.72rem;font-weight:bold;border:none;border-radius:7px;
+    cursor:pointer;touch-action:manipulation;background:#1e3a5f;color:#7dd3fc;}
+  .dbg-btn:active{transform:scale(0.95);}
   /* DPAD */
   .dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;margin-top:4px;}
   .dpad-btn{background:#1a2535;border:1.5px solid #2d3e52;border-radius:11px;color:#c0d0e0;
@@ -221,6 +230,30 @@
     <div id="levelUpOverlay">
       <div class="lu-text">LEVEL UP!</div>
       <div class="lu-sub" id="luSub">Уровень 2</div>
+    </div>
+    <div id="debugPanel">
+      <div class="dbg-title">🛠 DEBUG MODE</div>
+      <div class="dbg-row">
+        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
+        <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Турбо</button>
+        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Заморозка</button>
+        <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Бомба</button>
+      </div>
+      <div class="dbg-row">
+        <button class="dbg-btn" onclick="dbgFillBar()">⚡ Заполнить бар</button>
+        <button class="dbg-btn" onclick="dbgNextLevel()">⏭ След. уровень</button>
+        <button class="dbg-btn" onclick="dbgUnlockAll()">🔓 Все скины</button>
+      </div>
+      <div class="dbg-row">
+        <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(5)">Ур.5</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(10)">Ур.10</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
+      </div>
+      <div class="dbg-row">
+        <button class="dbg-btn" style="background:#3b0000;color:#f87171" onclick="dbgClose()">✕ Закрыть</button>
+      </div>
     </div>
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
@@ -888,6 +921,57 @@ function endGame(){
     gameOverlay.style.display='flex';
   },350);
 }
+// ── DEBUG PANEL ───────────────────────────────────────────────────
+const debugPanel=document.getElementById('debugPanel');
+let dbgTapCount=0,dbgTapTimer=null;
+// Открыть: тапнуть по счёту 5 раз или нажать ` на клавиатуре
+document.getElementById('score').addEventListener('click',()=>{
+  dbgTapCount++;
+  if(dbgTapTimer) clearTimeout(dbgTapTimer);
+  dbgTapTimer=setTimeout(()=>dbgTapCount=0,1500);
+  if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
+});
+function dbgOpen(){if(running&&!paused)togglePause();debugPanel.classList.add('open');}
+function dbgClose(){debugPanel.classList.remove('open');if(paused)togglePause();}
+function dbgBonus(type){
+  if(!running) return;
+  // немедленно применяем эффект — не ждём пока предмет появится на поле
+  bonusItem={x:food.x,y:food.y,type};
+  bonusLife=1; // мгновенно "подбираем"
+}
+function dbgFillBar(){
+  if(!running) return;
+  levelScore=levelData.foodNeeded-1;
+  updateProg();
+  spawnFloatText(W/2,H/2-20,'⚡ БАР ЗАПОЛНЕН','#facc15');
+}
+function dbgNextLevel(){
+  if(!running) return;
+  levelScore=levelData.foodNeeded;
+  // триггерим переход вручную
+  running=false;cancelAnimationFrame(animId);
+  debugPanel.classList.remove('open');
+  const newLvl=currentLevel+1;
+  if(currentLevel>=bestLevel){bestLevel=newLvl;}
+  savedLevel=newLvl;saveAll();refreshMenuUI();
+  showLevelUp(newLvl,()=>beginLevel(newLvl));
+}
+function dbgUnlockAll(){
+  bestLevel=SKINS.reduce((m,s)=>Math.max(m,s.unlockLevel||0),0)+1;
+  saveAll();refreshMenuUI();
+  spawnFloatText(W/2,H/2-20,'🔓 ВСЕ СКИНЫ!','#a78bfa');
+}
+function dbgSetLevel(n){
+  debugPanel.classList.remove('open');
+  running=false;cancelAnimationFrame(animId);
+  currentLevel=n;savedLevel=n;
+  if(bestLevel<n) bestLevel=n;
+  saveAll();refreshMenuUI();
+  beginLevel(n);
+}
+// Клавиша ` на клавиатуре
+document.addEventListener('keydown',e=>{if(e.key==='`'&&running) dbgOpen();});
+// ─────────────────────────────────────────────────────────────────
 function togglePause(){
   if(!running) return;
   if(paused){
