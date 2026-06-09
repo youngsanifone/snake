@@ -119,14 +119,23 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:#1f2937;color:#e0e0e0;border:1px solid #374151;}
   /* DEBUG PANEL */
-  #debugPanel{position:absolute;top:0;left:0;width:100%;background:rgba(0,0,0,0.92);
-    border-radius:8px;padding:10px;display:none;flex-direction:column;gap:6px;z-index:99;pointer-events:all;}
+  #debugPanel{position:absolute;top:0;left:0;width:100%;background:rgba(5,8,18,0.97);
+    border-bottom:2px solid #facc15;padding:10px 12px;display:none;flex-direction:column;
+    gap:7px;z-index:99;pointer-events:all;overflow-y:auto;max-height:55%;}
   #debugPanel.open{display:flex;}
-  .dbg-title{color:#facc15;font-size:0.75rem;font-weight:bold;letter-spacing:2px;text-align:center;}
+  .dbg-title{color:#facc15;font-size:0.72rem;font-weight:bold;letter-spacing:3px;text-align:center;}
+  .dbg-stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:0.65rem;color:#9ca3af;}
+  .dbg-stats b{color:#f0f0f0;}
+  .dbg-section{font-size:0.58rem;color:#4b5563;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-top:2px;}
   .dbg-row{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}
-  .dbg-btn{padding:5px 10px;font-size:0.72rem;font-weight:bold;border:none;border-radius:7px;
-    cursor:pointer;touch-action:manipulation;background:#1e3a5f;color:#7dd3fc;}
-  .dbg-btn:active{transform:scale(0.95);}
+  .dbg-btn{padding:5px 9px;font-size:0.7rem;font-weight:bold;border:none;border-radius:7px;
+    cursor:pointer;touch-action:manipulation;background:#1e3a5f;color:#7dd3fc;white-space:nowrap;}
+  .dbg-btn:active{transform:scale(0.93);}
+  .dbg-btn.green{background:#14532d;color:#4ade80;}
+  .dbg-btn.yellow{background:#422006;color:#facc15;}
+  .dbg-btn.red{background:#3b0000;color:#f87171;}
+  .dbg-btn.purple{background:#2e1065;color:#c4b5fd;}
+  .dbg-btn.active-toggle{outline:2px solid #facc15;}
   /* РЕЖИМЫ */
   .mode-title{font-size:clamp(1.4rem,6vw,2rem);font-weight:900;letter-spacing:3px;margin-bottom:6px;
     background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
@@ -359,17 +368,21 @@
       <div class="lu-sub" id="luSub">Уровень 2</div>
     </div>
     <div id="debugPanel">
-      <div class="dbg-title">🛠 DEBUG MODE</div>
+      <div class="dbg-title">🛠 DEBUG PANEL</div>
+      <div class="dbg-stats" id="dbgStats">Ур.— · Счёт — · 🪙—</div>
+      <div class="dbg-section">— бонусы —</div>
       <div class="dbg-row">
         <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
         <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Турбо</button>
         <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Заморозка</button>
         <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Бомба</button>
+        <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Золото</button>
       </div>
+      <div class="dbg-section">— прогресс —</div>
       <div class="dbg-row">
-        <button class="dbg-btn" onclick="dbgFillBar()">⚡ Заполнить бар</button>
-        <button class="dbg-btn" onclick="dbgNextLevel()">⏭ След. уровень</button>
-        <button class="dbg-btn" onclick="dbgUnlockAll()">🔓 Все скины</button>
+        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
+        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ След. уровень</button>
+        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Неуязвимость</button>
       </div>
       <div class="dbg-row">
         <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
@@ -378,8 +391,16 @@
         <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
         <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
       </div>
+      <div class="dbg-section">— ресурсы —</div>
       <div class="dbg-row">
-        <button class="dbg-btn" style="background:#3b0000;color:#f87171" onclick="dbgClose()">✕ Закрыть</button>
+        <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
+        <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Все скины</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Все ачивки</button>
+      </div>
+      <div class="dbg-row">
+        <button class="dbg-btn red" onclick="dbgResetAll()">🗑 Сбросить всё</button>
+        <button class="dbg-btn red" onclick="dbgClose()">✕ Закрыть</button>
       </div>
     </div>
     <div id="gameOverlay">
@@ -947,7 +968,7 @@ function loop(ts){
   const spd=levelData.speed*dt/16*spdMult;
   dir=nextDir;
   const head={x:path[0].x+dir.x*spd,y:path[0].y+dir.y*spd};
-  if(invincible<=0){
+  if(invincible<=0&&!dbgInvOn){
     let hit=false;
     if(head.x<R||head.x>W-R||head.y<R||head.y>H-R) hit=true;
     if(!hit) for(const o of obstacles){
@@ -1239,7 +1260,7 @@ document.getElementById('score').addEventListener('click',()=>{
   dbgTapTimer=setTimeout(()=>dbgTapCount=0,1500);
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
-function dbgOpen(){if(running&&!paused)togglePause();debugPanel.classList.add('open');}
+function dbgOpen(){if(running&&!paused)togglePause();debugPanel.classList.add('open');dbgUpdateStats();}
 function dbgClose(){debugPanel.classList.remove('open');if(paused)togglePause();}
 function dbgBonus(type){
   if(!running) return;
@@ -1276,6 +1297,34 @@ function dbgSetLevel(n){
   if(bestLevel<n) bestLevel=n;
   saveAll();refreshMenuUI();
   beginLevel(n);
+}
+function dbgGoldFood(){
+  if(!running) return;
+  goldFood={x:food.x+R*3,y:food.y,life:GOLD_LIFETIME};
+  spawnFloatText(W/2,H/2-20,'⭐ ЗОЛОТАЯ ЕДА','#facc15');
+}
+let dbgInvOn=false;
+function dbgToggleInv(){
+  dbgInvOn=!dbgInvOn;
+  document.getElementById('dbgInvBtn').classList.toggle('active-toggle',dbgInvOn);
+  spawnFloatText(W/2,H/2-20,dbgInvOn?'♾ НЕУЯЗВИМОСТЬ ВКЛ':'♾ ВЫКЛ','#c4b5fd');
+}
+function dbgCoins(n){
+  coins+=n; saveAll(); refreshMenuUI();
+  document.getElementById('dbgStats').innerHTML=`Ур.<b>${currentLevel}</b> · Счёт <b>${score}</b> · 🪙<b>${coins}</b>`;
+  spawnFloatText(W/2,H/2-20,'🪙 +'+n,'#facc15');
+}
+function dbgUnlockAllAch(){
+  ACHIEVEMENTS.forEach(a=>{if(!unlockedAch.has(a.id)){unlockedAch.add(a.id);}});
+  saveAch();
+  spawnFloatText(W/2,H/2-20,'🏅 ВСЕ АЧИВКИ!','#4ade80');
+}
+function dbgResetAll(){
+  localStorage.clear();location.reload();
+}
+function dbgUpdateStats(){
+  const el=document.getElementById('dbgStats');
+  if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · Счёт <b>${score}</b> · 🪙<b>${coins}</b>`;
 }
 // Клавиша ` на клавиатуре
 document.addEventListener('keydown',e=>{if(e.key==='`'&&running) dbgOpen();});
