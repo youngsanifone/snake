@@ -968,9 +968,12 @@ function loop(ts){
   const spd=levelData.speed*dt/16*spdMult;
   dir=nextDir;
   const head={x:path[0].x+dir.x*spd,y:path[0].y+dir.y*spd};
+  // Стены всегда твёрдые — зажимаем позицию в любом случае
+  head.x=Math.max(R+1,Math.min(W-R-1,head.x));
+  head.y=Math.max(R+1,Math.min(H-R-1,head.y));
   if(invincible<=0&&!dbgInvOn){
     let hit=false;
-    if(head.x<R||head.x>W-R||head.y<R||head.y>H-R) hit=true;
+    if(head.x<=R+1||head.x>=W-R-1||head.y<=R+1||head.y>=H-R-1) hit=true;
     if(!hit) for(const o of obstacles){
       if(head.x>o.x-R&&head.x<o.x+o.w+R&&head.y>o.y-R&&head.y<o.y+o.h+R){hit=true;break;}
     }
@@ -987,12 +990,6 @@ function loop(ts){
         invincible=2000;
         playHit();
         spawnFloatText(head.x,head.y-R-10,'🛡 БЛОК!','#38bdf8');
-        // Разворачиваем змейку и зажимаем внутрь арены — не даём застрять за стеной
-        dir={x:-dir.x,y:-dir.y};
-        head.x=Math.max(R+4,Math.min(W-R-4,head.x));
-        head.y=Math.max(R+4,Math.min(H-R-4,head.y));
-        // Сбрасываем хвост чтобы не было "прыжка" линии
-        path.splice(Math.floor(path.length*0.4));
       } else {
         playHit();endGame();return;
       }
