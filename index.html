@@ -766,12 +766,23 @@ function showUnlock(s){
 }
 // ── УРОВНИ ───────────────────────────────────────────────────────
 function getLevelData(lvl){
+  // foodNeeded: 5 → 15 (кап), плавный рост
+  // speed: 2.15 → 5.5 (кап), нет бесконечного ускорения
+  // obsCount: 0 → 20 (кап), появляются со 2-го уровня
   return{
-    foodNeeded:3+lvl*2,
-    speed:(2.2+lvl*0.3) * DIFF_MULT[difficulty],
-    obsCount:Math.min(Math.floor((lvl-1)/2)*2,22),
+    foodNeeded: Math.min(4 + Math.round(lvl * 0.7), 15),
+    speed:      Math.min(2.0 + lvl * 0.15, 5.5) * DIFF_MULT[difficulty],
+    obsCount:   Math.min(Math.floor((lvl-1)/2)*2, 20),
   };
 }
+// Таблица баланса для справки:
+// Ур.1:  еда=5,  скорость≈2.15, препятствий=0
+// Ур.3:  еда=6,  скорость≈2.45, препятствий=2
+// Ур.5:  еда=8,  скорость≈2.75, препятствий=4
+// Ур.10: еда=11, скорость≈3.5,  препятствий=10
+// Ур.15: еда=15, скорость≈4.25, препятствий=14
+// Ур.20: еда=15, скорость≈5.0,  препятствий=20
+// Ур.24+: всё на максимуме (еда=15, скорость=5.5, преп.=20)
 let currentLevel=1,levelData=null;
 function beginLevel(lvl){
   currentLevel=lvl;
