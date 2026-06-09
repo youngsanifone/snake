@@ -448,7 +448,9 @@ const SKINS=[
   {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
-const S='snake2_'; // смена префикса = сброс прогресса для всех
+// Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
+if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
+const S='snake2_';
 let musicOn    = localStorage.getItem(S+'Music') !== 'off';
 let sfxOn      = localStorage.getItem(S+'Sfx')   !== 'off';
 let difficulty = localStorage.getItem(S+'Diff') || 'normal';
