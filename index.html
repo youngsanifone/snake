@@ -443,6 +443,22 @@
   .quest-reset{font-size:0.7rem;color:var(--text3);text-align:center;margin-top:8px;}
   .quest-reward-toast{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);background:#facc15;color:#0f0f0f;font-size:1.3rem;font-weight:bold;padding:11px 24px;border-radius:12px;pointer-events:none;z-index:1000;animation:toastFade 1.4s ease-out forwards;}
   @keyframes toastFade{0%{opacity:0;transform:translate(-50%,-60%);}15%{opacity:1;transform:translate(-50%,-50%);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-40%);}}
+  /* ГЛОБАЛЬНАЯ СТАТИСТИКА */
+  .global-stats-bar{
+    display:flex;align-items:center;gap:8px;
+    font-size:0.72rem;color:var(--text3);
+    margin-bottom:clamp(4px,1vh,8px);
+    background:var(--panel);border:1px solid var(--border2);
+    border-radius:20px;padding:5px 14px;
+  }
+  .gst-sep{color:var(--border);}
+  /* КНОПКА СБРОСА */
+  .reset-btn{
+    width:100%;padding:11px 0;margin-top:8px;
+    background:transparent;border:1.5px solid #ef4444;
+    border-radius:12px;color:#ef4444;font-size:0.82rem;font-weight:700;
+    cursor:pointer;touch-action:manipulation;
+  }
   /* ЭКРАН ПРИВЕТСТВИЯ */
   #welcomeScreen{
     justify-content:safe center;
@@ -517,6 +533,12 @@
       <div class="msb-val" style="color:#facc15;" id="menuCoins">0</div>
       <div class="msb-lbl">🪙 Монет</div>
     </div>
+  </div>
+  <!-- Глобальная статистика -->
+  <div id="globalStats" class="global-stats-bar">
+    <span id="gStatPlayers">🌍 ...</span>
+    <span class="gst-sep">·</span>
+    <span id="gStatGames">🎮 ...</span>
   </div>
   <!-- Главная кнопка -->
   <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
@@ -733,7 +755,8 @@
       <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
     </div>
   </div>
-  <button class="menu-btn" style="margin-top:16px;" id="btnBackSettings">← Назад</button>
+  <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
+  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
 <!-- РЕКОРДЫ + ЛИДЕРБОРД -->
 <div class="screen" id="recordsScreen">
@@ -762,6 +785,48 @@ const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
 const SB_URL='https://wopvlulqfzecujmfoezr.supabase.co';
 const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
 const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+
+// ── ГЛОБАЛЬНАЯ СТАТИСТИКА ─────────────────────────────────────────
+// Получить/создать уникальный ID игрока
+function getPlayerId(){
+  let pid=localStorage.getItem(S+'pid');
+  if(!pid){
+    pid=crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);
+    localStorage.setItem(S+'pid',pid);
+  }
+  return pid;
+}
+// Отправить событие в Supabase (fire-and-forget)
+function trackEvent(event,score,mode){
+  const pid=getPlayerId();
+  fetch(SB_URL+'/rest/v1/player_events',{
+    method:'POST',
+    headers:SB_HEADERS,
+    body:JSON.stringify({player_id:pid,event,score:score||null,mode:mode||null})
+  }).catch(()=>{});
+}
+// Визит — один раз в сутки
+(function(){
+  const today=new Date().toISOString().slice(0,10);
+  if(localStorage.getItem(S+'lastVisit')!==today){
+    localStorage.setItem(S+'lastVisit',today);
+    trackEvent('visit',null,null);
+  }
+})();
+// Загрузить и показать глобальную статистику
+async function fetchGlobalStats(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/get_global_stats',{method:'POST',headers:SB_HEADERS,body:'{}'});
+    if(!r.ok) return;
+    const d=await r.json();
+    const p=d.total_players||0;
+    const g=d.total_games||0;
+    document.getElementById('gStatPlayers').textContent=`🌍 ${p.toLocaleString('ru')} ${p===1?'игрок':p<5?'игрока':'игроков'}`;
+    document.getElementById('gStatGames').textContent=`🎮 ${g.toLocaleString('ru')} ${g===1?'партия':g<5?'партии':'партий'}`;
+  }catch(e){}
+}
+fetchGlobalStats();
+
 const SKINS=[
   {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Зелёный'},
   {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Синий'},
@@ -1039,6 +1104,7 @@ function showLbSubmit(){
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if(id==='menuScreen') fetchGlobalStats();
 }
 // ── СКИНЫ (теперь в магазине) ─────────────────────────────────────
 function buildSkinRow(){
@@ -1277,6 +1343,17 @@ document.getElementById('btnSettings').addEventListener('click',openSettings);
 document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preventDefault();openSettings();},{passive:false});
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
+// ── СБРОС ПРОГРЕССА ───────────────────────────────────────────────
+function doResetProgress(){
+  if(!confirm('Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.')) return;
+  const keepKeys=[S+'Nick',S+'pid',S+'Theme',S+'Music',S+'Sfx',S+'lastVisit'];
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith(S) && !keepKeys.includes(k)) localStorage.removeItem(k);
+  });
+  location.reload();
+}
+document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
+document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   const set=()=>{ difficulty=b.dataset.diff; saveAll(); updateDiffBtns(); };
   b.addEventListener('click',set);
@@ -1827,7 +1904,8 @@ function endGame(){
   if(gameMode==='mirror'&&totalFood>=5) unlockAch('mirror_5');
   const isNewRecord = score > 0 && score > best; // рекорд — ДО saveAll()
   if(score>best){best=score;bestHud.textContent=best;}
-  gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll(); // pauseMusic — сохраняем позицию трека
+  gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
+  trackEvent('game_over',score,gameMode); // глобальная статистика
   ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '⏱ Время вышло!';
