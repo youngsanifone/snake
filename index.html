@@ -801,7 +801,7 @@ function trackEvent(event,score,mode){
   fetch(SB_URL+'/rest/v1/player_events',{
     method:'POST',
     headers:SB_HEADERS,
-    body:JSON.stringify({player_id:pid,event,score:score||null,mode:mode||null})
+    body:JSON.stringify({player_id:pid,event,score:score??null,mode:mode||null})
   }).catch(()=>{});
 }
 // Визит — вызывается из initGame() после объявления S
@@ -1414,12 +1414,14 @@ function openModeScreen(){getAudio();initMp3();showScreen('modeScreen');}
 document.getElementById('btnPlay').addEventListener('click',openModeScreen);
 document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
+document.getElementById('modeBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 document.getElementById('btnAch').addEventListener('click',()=>{buildAchScreen();showScreen('achScreen');});
 document.getElementById('btnQuests').addEventListener('click',()=>{buildQuestScreen();showScreen('questScreen');});
 document.getElementById('btnQuests').addEventListener('touchstart',e=>{e.preventDefault();buildQuestScreen();showScreen('questScreen');},{passive:false});
 document.getElementById('questBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
 document.getElementById('questBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('achBack').addEventListener('click',()=>showScreen('menuScreen'));
+document.getElementById('achBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();buildSkinRow();showScreen('shopScreen');});
 document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();buildSkinRow();showScreen('shopScreen');},{passive:false});
 document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
@@ -1455,11 +1457,28 @@ document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preve
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 // ── СБРОС ПРОГРЕССА ───────────────────────────────────────────────
-function doResetProgress(){
+async function doResetProgress(){
   if(!confirm('Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.')) return;
-  const keepKeys=[S+'Nick',S+'pid',S+'Theme',S+'Music',S+'Sfx',S+'lastVisit'];
+  // 1. Сбрасываем профиль в Supabase до нуля (сохраняем ник и pid)
+  const pid=localStorage.getItem(S+'pid');
+  const nick=localStorage.getItem(S+'Nick')||'Аноним';
+  if(pid){
+    await fetch(SB_URL+'/rest/v1/players',{
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({
+        player_id:pid,nick,
+        coins:0,best:0,best_level:1,games_played:0,saved_level:1,
+        skin_idx:0,bought_skins:'[]',achievements:'[]',quests:null,
+        difficulty:'normal',music_on:true,sfx_on:true,theme:'dark',
+        updated_at:new Date().toISOString()
+      })
+    }).catch(()=>{});
+  }
+  // 2. Чистим localStorage (оставляем ник, pid, lastVisit)
+  const keepKeys=[S+'Nick',S+'pid',S+'lastVisit'];
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith(S) && !keepKeys.includes(k)) localStorage.removeItem(k);
+    if(k.startsWith(S)&&!keepKeys.includes(k)) localStorage.removeItem(k);
   });
   location.reload();
 }
@@ -1823,6 +1842,7 @@ function loop(ts){
       const pts=3;
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
+      coins+=pts;
       totalLen+=LEN_PER_FOOD*pts;
       scoreEl.textContent=score;
       updateProg();
