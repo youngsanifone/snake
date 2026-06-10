@@ -1091,43 +1091,68 @@ refreshMenuUI();
 (function(){
   const bc=document.getElementById('menuBg');
   const bx=bc.getContext('2d');
-  // Создаём частицы — светящиеся точки которые медленно плывут
-  const DOTS=[];
   function resize(){ bc.width=window.innerWidth; bc.height=window.innerHeight; }
   resize(); window.addEventListener('resize',resize);
-  for(let i=0;i<55;i++) DOTS.push({
-    x:Math.random()*bc.width, y:Math.random()*bc.height,
-    r:1+Math.random()*2.5,
-    vx:(Math.random()-0.5)*0.4, vy:(Math.random()-0.5)*0.4,
-    hue:120+Math.random()*160, alpha:0.3+Math.random()*0.5
+  let t=0;
+  // Несколько змеек с разными параметрами
+  const SNAKES=[
+    {segs:180,width:13,color:'#4ade80',glow:'#4ade80',alpha:0.13,amp:0.22,freq:0.16,speed:0.022,yBase:0.5,amp2:0.09,freq2:0.09,speed2:0.015},
+    {segs:140,width:8, color:'#22d3ee',glow:'#22d3ee',alpha:0.09,amp:0.18,freq:0.20,speed:0.018,yBase:0.32,amp2:0.07,freq2:0.12,speed2:0.020},
+    {segs:120,width:6, color:'#a78bfa',glow:'#a78bfa',alpha:0.07,amp:0.14,freq:0.24,speed:0.014,yBase:0.68,amp2:0.05,freq2:0.08,speed2:0.012},
+  ];
+  // Частицы-искры
+  const DOTS=[];
+  for(let i=0;i<40;i++) DOTS.push({
+    x:Math.random(), y:Math.random(),
+    r:0.8+Math.random()*1.4,
+    hue:130+Math.random()*150, alpha:0.25+Math.random()*0.4,
+    phase:Math.random()*Math.PI*2
   });
   function bgLoop(){
-    bx.clearRect(0,0,bc.width,bc.height);
-    // Линии между близкими точками
-    for(let i=0;i<DOTS.length;i++){
-      for(let j=i+1;j<DOTS.length;j++){
-        const dx=DOTS[i].x-DOTS[j].x, dy=DOTS[i].y-DOTS[j].y;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<100){
-          bx.save();
-          bx.globalAlpha=(1-d/100)*0.12;
-          bx.strokeStyle=`hsl(${DOTS[i].hue},80%,60%)`;
-          bx.lineWidth=0.8;
-          bx.beginPath(); bx.moveTo(DOTS[i].x,DOTS[i].y); bx.lineTo(DOTS[j].x,DOTS[j].y); bx.stroke();
-          bx.restore();
-        }
-      }
-    }
-    // Точки
-    DOTS.forEach(d=>{
-      d.x+=d.vx; d.y+=d.vy;
-      if(d.x<0) d.x=bc.width; if(d.x>bc.width) d.x=0;
-      if(d.y<0) d.y=bc.height; if(d.y>bc.height) d.y=0;
+    t+=1;
+    const W=bc.width,H=bc.height;
+    bx.clearRect(0,0,W,H);
+    // Змейки
+    SNAKES.forEach(s=>{
       bx.save();
-      bx.globalAlpha=d.alpha;
+      bx.globalAlpha=s.alpha;
+      bx.lineWidth=s.width;
+      bx.lineCap='round'; bx.lineJoin='round';
+      bx.shadowColor=s.glow; bx.shadowBlur=s.width*2.5;
+      bx.strokeStyle=s.color;
+      bx.beginPath();
+      for(let i=0;i<s.segs;i++){
+        const px=W*(i/s.segs);
+        const py=H*s.yBase
+          +Math.sin(i*s.freq - t*s.speed)*H*s.amp
+          +Math.sin(i*s.freq2 - t*s.speed2)*H*s.amp2;
+        i===0 ? bx.moveTo(px,py) : bx.lineTo(px,py);
+      }
+      bx.stroke();
+      // блик поверх
+      bx.globalAlpha=s.alpha*0.5;
+      bx.lineWidth=s.width*0.35;
+      bx.shadowBlur=0;
+      bx.strokeStyle='rgba(255,255,255,0.6)';
+      bx.beginPath();
+      for(let i=0;i<s.segs;i++){
+        const px=W*(i/s.segs);
+        const py=H*s.yBase
+          +Math.sin(i*s.freq - t*s.speed)*H*s.amp
+          +Math.sin(i*s.freq2 - t*s.speed2)*H*s.amp2;
+        i===0 ? bx.moveTo(px,py) : bx.lineTo(px,py);
+      }
+      bx.stroke();
+      bx.restore();
+    });
+    // Искры
+    DOTS.forEach(d=>{
+      const alpha=d.alpha*(0.5+0.5*Math.sin(t*0.04+d.phase));
+      bx.save();
+      bx.globalAlpha=alpha;
       bx.fillStyle=`hsl(${d.hue},80%,65%)`;
-      bx.shadowColor=`hsl(${d.hue},80%,65%)`; bx.shadowBlur=8;
-      bx.beginPath(); bx.arc(d.x,d.y,d.r,0,Math.PI*2); bx.fill();
+      bx.shadowColor=`hsl(${d.hue},80%,65%)`; bx.shadowBlur=6;
+      bx.beginPath(); bx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2); bx.fill();
       bx.restore();
     });
     requestAnimationFrame(bgLoop);
