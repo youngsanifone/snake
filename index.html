@@ -743,11 +743,11 @@
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl">🎵 Музыка</span>
-      <button class="diff-btn" id="btnMusicToggle">zap.</button>
+      <button class="diff-btn" id="btnMusicToggle">вкл.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl">🔊 Звуковые эффекты</span>
-      <button class="diff-btn" id="btnSfxToggle">zap.</button>
+      <button class="diff-btn" id="btnSfxToggle">вкл.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl">🎨 Тема</span>
@@ -1137,7 +1137,7 @@ async function fetchLeaderboard(){
   try{
     const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
     const data=await r.json();
-    if(!data||!data.length){el.innerHTML='<div class="lb-empty">Zatiaľ nikto — buď prvý!</div>';return;}
+    if(!data||!data.length){el.innerHTML='<div class="lb-empty">Пока никого — будь первым!</div>';return;}
     const medals=['🥇','🥈','🥉'];
     const rankClass=['gold','silver','bronze'];
     el.innerHTML=data.map((row,i)=>`
@@ -1145,11 +1145,11 @@ async function fetchLeaderboard(){
         <span class="lb-rank ${rankClass[i]||''}">${medals[i]||i+1}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">Ур.${row.level} · ${row.mode||'classic'}</div>
+          <div class="lb-meta">Ур.${row.level} · ${{classic:'Классика',time:'Время',survival:'Выживание',mirror:'Зеркало'}[row.mode]||'Классика'}</div>
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
-  }catch(e){el.innerHTML='<div class="lb-empty">Chyba načítania 😞</div>';}
+  }catch(e){el.innerHTML='<div class="lb-empty">Ошибка загрузки 😞</div>';}
 }
 
 async function submitToLeaderboard(name,score,level,mode){
@@ -1499,7 +1499,7 @@ document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
 function applyTheme(){
   document.documentElement.dataset.theme = theme;
   const btn = document.getElementById('btnThemeToggle');
-  if(btn) btn.textContent = theme==='light' ? '☀️ Svetlá' : '🌙 Тёмная';
+  if(btn) btn.textContent = theme==='light' ? '☀️ Светлая' : '🌙 Тёмная';
   document.querySelector('meta[name="theme-color"]').content = theme==='light' ? '#eef2f7' : '#0a0a0f';
 }
 function toggleTheme(){
@@ -2200,7 +2200,7 @@ async function shareScore(){
     goShare.textContent='✓ Skopírované!';
     setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
   }catch(_){
-    goShare.textContent='✗ Chyba';
+    goShare.textContent='✗ Ошибка';
     setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
   }
 }
