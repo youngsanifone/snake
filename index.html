@@ -503,18 +503,18 @@
 <!-- ЭКРАН ЗАГРУЗКИ -->
 <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
-  <div style="font-size:0.8rem;color:var(--text3);">Загрузка...</div>
+  <div style="font-size:0.8rem;color:var(--text3);">Načítavam...</div>
 </div>
 <div id="unlockNotif"></div>
 <!-- ЭКРАН ПРИВЕТСТВИЯ (первый запуск) -->
 <div class="screen" id="welcomeScreen">
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
-    <div class="menu-title">Змейка</div>
-    <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
-    <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
-    <button id="welcSkip">играть без имени</button>
+    <div class="menu-title">Had</div>
+    <div class="welc-sub">Ahoj! Zadaj svoje meno pre tabuľku rekordov 🌍</div>
+    <input id="welcInput" type="text" maxlength="16" placeholder="Tvoja prezývka..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="welcBtn">▶ &nbsp;HRAŤ!</button>
+    <button id="welcSkip">hrať bez mena</button>
   </div>
 </div>
 <!-- МЕНЮ -->
@@ -526,17 +526,17 @@
   <div class="menu-stats-bar">
     <div class="msb-item">
       <div class="msb-val" id="menuBest">0</div>
-      <div class="msb-lbl">Рекорд</div>
+      <div class="msb-lbl">Rekord</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" id="menuLevel">1</div>
-      <div class="msb-lbl">Макс. ур.</div>
+      <div class="msb-lbl">Max. úr.</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" style="color:#facc15;" id="menuCoins">0</div>
-      <div class="msb-lbl">🪙 Монет</div>
+      <div class="msb-lbl">🪙 Mincí</div>
     </div>
   </div>
   <!-- Глобальная статистика -->
@@ -546,121 +546,121 @@
     <span id="gStatGames">🎮 ...</span>
   </div>
   <!-- Главная кнопка -->
-  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
+  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;HRAŤ</button>
   <!-- Pokračovať -->
-  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
+  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Pokračovať (Úr. <span id="btnContinueLvl">1</span>)</button>
   <!-- Горизонтальная панель навигации -->
   <div class="menu-nav-bar">
     <button class="mnav-btn clr-yellow" id="btnRecords">
       <div class="mnav-icon">🏆</div>
-      <div class="mnav-label">Рекорды</div>
+      <div class="mnav-label">Rekordy</div>
     </button>
     <button class="mnav-btn clr-purple" id="btnAch">
       <div class="mnav-icon">🏅</div>
-      <div class="mnav-label">Ачивки</div>
+      <div class="mnav-label">Ocenenia</div>
     </button>
     <button class="mnav-btn clr-blue" id="btnQuests" style="position:relative;">
       <div class="mnav-icon">📋</div>
-      <div class="mnav-label">Квесты</div>
+      <div class="mnav-label">Úlohy</div>
     </button>
     <button class="mnav-btn clr-orange" id="btnShop">
       <div class="mnav-icon">🪙</div>
-      <div class="mnav-label">Магазин</div>
+      <div class="mnav-label">Obchod</div>
     </button>
     <button class="mnav-btn" id="btnSettings">
       <div class="mnav-icon">⚙️</div>
-      <div class="mnav-label">Настройки</div>
+      <div class="mnav-label">Nastavenia</div>
     </button>
   </div>
 </div>
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
-  <div class="rec-title">🪙 Магазин</div>
-  <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
+  <div class="rec-title">🪙 Obchod</div>
+  <div class="shop-coins" id="shopCoins">🪙 0 mincí</div>
   <div style="margin-bottom:8px;">
-    <div style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">ВЫБОР СКИНА</div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">VÝBER SKINU</div>
     <div class="skin-row" id="shopSkinRow"></div>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
-  <button class="shop-back" id="shopBack">← Назад</button>
+  <button class="shop-back" id="shopBack">← Späť</button>
 </div>
 <!-- УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ -->
 <div id="achNotif">
   <div class="an-icon" id="anIcon">🏅</div>
   <div class="an-text">
-    <div class="an-title" id="anTitle">Достижение!</div>
-    <div class="an-sub" id="anSub">Описание</div>
+    <div class="an-title" id="anTitle">Ocenenie!</div>
+    <div class="an-sub" id="anSub">Popis</div>
   </div>
 </div>
 <!-- ЭКРАН ДОСТИЖЕНИЙ -->
 <div class="screen" id="achScreen">
-  <div class="rec-title">🏅 Достижения</div>
+  <div class="rec-title">🏅 Ocenenia</div>
   <div class="ach-grid" id="achGrid"></div>
-  <button class="ach-back" id="achBack">← Назад</button>
+  <button class="ach-back" id="achBack">← Späť</button>
 </div>
 <!-- ВЫБОР РЕЖИМА -->
 <div class="screen" id="modeScreen">
-  <div class="mode-title">Выбор режима</div>
-  <div class="mode-sub">Как хочешь играть?</div>
+  <div class="mode-title">Výber režimu</div>
+  <div class="mode-sub">Ako chceš hrať?</div>
   <div class="mode-cards">
     <button class="mode-card" id="modeClassic">
       <div class="mode-card-icon">🐍</div>
       <div>
-        <div class="mode-card-title">Классика</div>
-        <div class="mode-card-desc">Уровни, растущая скорость, без конца</div>
+        <div class="mode-card-title">Klasika</div>
+        <div class="mode-card-desc">Úrovne, rastúca rýchlosť, bez konca</div>
       </div>
     </button>
     <button class="mode-card" id="modeTime">
       <div class="mode-card-icon">⏱</div>
       <div>
-        <div class="mode-card-title">Время</div>
-        <div class="mode-card-desc">60 секунд — набери как можно больше очков</div>
+        <div class="mode-card-title">Čas</div>
+        <div class="mode-card-desc">60 sekúnd — nazber čo najviac bodov</div>
       </div>
     </button>
     <button class="mode-card" id="modeSurvival">
       <div class="mode-card-icon">💀</div>
       <div>
-        <div class="mode-card-title">Выживание</div>
-        <div class="mode-card-desc">Максимум препятствий, постоянная скорость</div>
+        <div class="mode-card-title">Prežitie</div>
+        <div class="mode-card-desc">Maximum prekážok, konštantná rýchlosť</div>
       </div>
     </button>
     <button class="mode-card" id="modeMirror">
       <div class="mode-card-icon">🪞</div>
       <div>
-        <div class="mode-card-title">Зеркало</div>
-        <div class="mode-card-desc">Лево = право, право = лево. Попробуй!</div>
+        <div class="mode-card-title">Zrkadlo</div>
+        <div class="mode-card-desc">Ľavo = pravo, pravo = ľavo. Vyskúšaj!</div>
       </div>
     </button>
   </div>
-  <button class="mode-back" id="modeBack">← Назад</button>
+  <button class="mode-back" id="modeBack">← Späť</button>
 </div>
 <!-- ЭКРАН УРОВНЯ -->
 <div class="screen" id="levelScreen">
-  <div class="lvl-label">Уровень</div>
+  <div class="lvl-label">Úroveň</div>
   <div class="lvl-num" id="lvlNum">1</div>
-  <div class="lvl-goal" id="lvlGoal">Съешь 5 еды</div>
+  <div class="lvl-goal" id="lvlGoal">Zjedz 5 jedál</div>
 </div>
 <!-- ИГРА -->
 <div class="screen" id="gameScreen">
   <div class="hud">
-    <div>Счёт: <span id="score">0</span></div>
+    <div>Skóre: <span id="score">0</span></div>
     <div class="lvl-badge" id="hudLvl">Úr. 1</div>
     <div id="hudTimerWrap" style="display:none;"><span class="hud-timer" id="hudTimer">60</span></div>
-    <div>Рекорд: <span id="bestHud">0</span></div>
+    <div>Rekord: <span id="bestHud">0</span></div>
   </div>
   <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
   <div class="wrap">
     <canvas id="c" width="560" height="560"></canvas>
     <div id="pauseMenu">
-      <div class="pm-title">⏸ ПАУЗА</div>
+      <div class="pm-title">⏸ PAUZA</div>
       <div class="pm-info" id="pmInfo"></div>
-      <button class="pm-btn resume" id="pmResume">▶ Продолжить</button>
-      <button class="pm-btn secondary" id="pmRestart">↺ Начать уровень заново</button>
-      <button class="pm-btn secondary" id="pmMenu">⌂ Главное меню</button>
+      <button class="pm-btn resume" id="pmResume">▶ Pokračovať</button>
+      <button class="pm-btn secondary" id="pmRestart">↺ Začať úroveň znova</button>
+      <button class="pm-btn secondary" id="pmMenu">⌂ Hlavné menu</button>
     </div>
     <div id="levelUpOverlay">
       <div class="lu-text">LEVEL UP!</div>
-      <div class="lu-sub" id="luSub">Уровень 2</div>
+      <div class="lu-sub" id="luSub">Úroveň 2</div>
     </div>
     <button id="dbgTab" onclick="dbgOpen()" style="display:none;"></button>
     <div id="debugPanel">
@@ -670,19 +670,19 @@
         <div class="dbg-stats" id="dbgStats" style="flex:1;text-align:right;">Ур.— · 🪙—</div>
         <button class="dbg-btn red" style="padding:3px 10px;font-size:0.85rem;margin-left:8px;" onclick="dbgClose()">✕</button>
       </div>
-      <div class="dbg-section">— бонусы —</div>
+      <div class="dbg-section">— bonusy —</div>
       <div class="dbg-grid3">
-        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
+        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Štít</button>
         <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Turbo</button>
-        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Заморозка</button>
+        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Mraz</button>
         <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Bomba</button>
         <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Zlato</button>
         <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Inv.</button>
       </div>
-      <div class="dbg-section">— уровень —</div>
+      <div class="dbg-section">— úroveň —</div>
       <div class="dbg-grid2">
-        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
-        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ Следующий уровень</button>
+        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Naplniť bar</button>
+        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ Ďalšia úroveň</button>
       </div>
       <div class="dbg-grid5">
         <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
@@ -691,22 +691,22 @@
         <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
         <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
       </div>
-      <div class="dbg-section">— ресурсы —</div>
+      <div class="dbg-section">— zdroje —</div>
       <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Все скины</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Все достижения</button>
-        <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Сбросить всё</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Všetky skiny</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Všetky ocenenia</button>
+        <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Resetovať všetko</button>
       </div>
     </div>
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
       <div class="go-sub" id="goSub"></div>
-      <button class="go-btn" id="goRetryCur">↺ Продолжить с ур. <span id="goLvlNum">1</span></button>
-      <button class="go-btn share" id="goShare">📤 Поделиться</button>
-      <button class="go-btn sec" id="goRetry">↺ Заново с ур. 1</button>
-      <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
+      <button class="go-btn" id="goRetryCur">↺ Pokračovať od úr. <span id="goLvlNum">1</span></button>
+      <button class="go-btn share" id="goShare">📤 Zdieľať</button>
+      <button class="go-btn sec" id="goRetry">↺ Znova od úr. 1</button>
+      <button class="go-btn sec" id="goMenu">⌂ Hlavné menu</button>
     </div>
   </div>
   <div class="dpad">
@@ -720,67 +720,67 @@
     <button class="dpad-btn" id="btnDown">▼</button>
     <div class="dpad-empty"></div>
   </div>
-  <div class="kb-hint">↑↓←→ / WASD · SPACE — пауза</div>
+  <div class="kb-hint">↑↓←→ / WASD · SPACE — pauza</div>
 </div>
 <!-- КВЕСТЫ -->
 <div class="screen" id="questScreen">
-  <div class="rec-title">📋 Квесты</div>
+  <div class="rec-title">📋 Úlohy</div>
   <div class="quest-grid" id="questGrid"></div>
-  <div class="quest-reset" id="questReset">Сброс в полночь</div>
-  <button class="shop-back" id="questBack">← Назад</button>
+  <div class="quest-reset" id="questReset">Reset o polnoci</div>
+  <button class="shop-back" id="questBack">← Späť</button>
 </div>
 <!-- НАСТРОЙКИ -->
 <div class="screen" id="settingsScreen">
-  <div class="rec-title">⚙️ Настройки</div>
+  <div class="rec-title">⚙️ Nastavenia</div>
   <div class="rec-list">
     <div class="rec-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-      <span class="rl">Сложность</span>
+      <span class="rl">Obtiažnosť</span>
       <div class="diff-row">
-        <button class="diff-btn" data-diff="easy">😌 Легко</button>
-        <button class="diff-btn" data-diff="normal">😐 Нормально</button>
-        <button class="diff-btn" data-diff="hard">😤 Хардкор</button>
+        <button class="diff-btn" data-diff="easy">😌 Ľahká</button>
+        <button class="diff-btn" data-diff="normal">😐 Normál</button>
+        <button class="diff-btn" data-diff="hard">😤 Hardcore</button>
       </div>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎵 Музыка</span>
-      <button class="diff-btn" id="btnMusicToggle">вкл.</button>
+      <span class="rl">🎵 Hudba</span>
+      <button class="diff-btn" id="btnMusicToggle">zap.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🔊 Звуковые эффекты</span>
-      <button class="diff-btn" id="btnSfxToggle">вкл.</button>
+      <span class="rl">🔊 Zvukové efekty</span>
+      <button class="diff-btn" id="btnSfxToggle">zap.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎨 Тема</span>
-      <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
+      <span class="rl">🎨 Téma</span>
+      <button class="diff-btn" id="btnThemeToggle">🌙 Tmavá</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl" id="settLangLbl">🌐 Jazyk</span>
       <button class="diff-btn" id="btnLangToggle">RU</button>
     </div>
   </div>
-  <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
-  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
+  <button class="reset-btn" id="btnResetProgress">🗑 Resetovať postup</button>
+  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Späť</button>
 </div>
 <!-- РЕКОРДЫ + ЛИДЕРБОРД -->
 <div class="screen" id="recordsScreen">
-  <div class="rec-title">🏆 Рекорды</div>
+  <div class="rec-title">🏆 Rekordy</div>
   <div class="lb-tabs">
-    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Мои</button>
+    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Moje</button>
     <button class="lb-tab" id="tabOnline" onclick="switchLbTab('online')">🌍 Online</button>
   </div>
   <!-- Moje rekordy -->
   <div id="panelMy">
     <div class="rec-list">
-      <div class="rec-row"><span class="rl">Лучший счёт</span><span class="rv" id="rBest">0</span></div>
-      <div class="rec-row"><span class="rl">Макс. уровень</span><span class="rv" id="rLvl">1</span></div>
-      <div class="rec-row"><span class="rl">Партий сыграно</span><span class="rv" id="rGames">0</span></div>
+      <div class="rec-row"><span class="rl">Najlepšie skóre</span><span class="rv" id="rBest">0</span></div>
+      <div class="rec-row"><span class="rl">Max. úroveň</span><span class="rv" id="rLvl">1</span></div>
+      <div class="rec-row"><span class="rl">Hier odohratých</span><span class="rv" id="rGames">0</span></div>
     </div>
   </div>
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
-    <div class="lb-list" id="lbList"><div class="lb-loading">Загрузка...</div></div>
+    <div class="lb-list" id="lbList"><div class="lb-loading">Načítavam...</div></div>
   </div>
-  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Назад</button>
+  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Späť</button>
 </div>
 <script>
 const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
@@ -1092,22 +1092,22 @@ async function fetchGlobalStats(){
 fetchGlobalStats();
 
 const SKINS=[
-  {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Зелёный'},
-  {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Синий'},
-  {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Красный'},
-  {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
+  {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Zelený'},
+  {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Modrý'},
+  {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Červený'},
+  {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Zlatý'},
   {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолет'},
   // Скины из магазина — покупаются за монеты
-  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:50,name:'Розовый'},
-  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:80,name:'Тёмный'},
-  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:100,name:'Океан'},
-  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
+  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:50,name:'Ružový'},
+  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:80,name:'Tmavý'},
+  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:100,name:'Oceán'},
+  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Oheň'},
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
 if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
 const S='snake2_';
-currentLang=localStorage.getItem(S+'Lang')||'sk';
+currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
 let theme      = 'dark';
 let musicOn    = true;
@@ -1231,19 +1231,19 @@ function clearLocalData(){
 }
 // ── ДОСТИЖЕНИЯ ───────────────────────────────────────────────────
 const ACHIEVEMENTS=[
-  {id:'first_bite',   icon:'🍎', name:'Первый укус',      desc:'Съешь первую еду'},
-  {id:'ten_food',     icon:'🔟', name:'Десяточка',        desc:'Съешь 10 еды за одну игру'},
-  {id:'combo_master', icon:'🔥', name:'Комбо-мастер',     desc:'Сделай комбо x3 (5+ подряд)'},
-  {id:'gold_eater',   icon:'⭐', name:'Золотоискатель',   desc:'Съешь золотую еду'},
-  {id:'shield_user',  icon:'🛡', name:'Под защитой',      desc:'Подбери щит'},
-  {id:'bomb_user',    icon:'💣', name:'Подрывник',        desc:'Используй бомбу'},
-  {id:'speed_user',   icon:'⚡', name:'Быстрячок',        desc:'Используй турбо'},
-  {id:'freeze_user',  icon:'❄', name:'Морозильник',      desc:'Используй заморозку'},
-  {id:'level5',       icon:'5️⃣', name:'Уровень 5',        desc:'Достигни 5-го уровня'},
-  {id:'level10',      icon:'🔟', name:'Уровень 10',       desc:'Достигни 10-го уровня'},
-  {id:'survivor',     icon:'💀', name:'Выживший',         desc:'Выживи 30 сек. в Выживании'},
-  {id:'time_champ',   icon:'⏱', name:'Чемпион',          desc:'Набери 20+ очков за 60 сек.'},
-  {id:'mirror_5',     icon:'🪞', name:'Зеркальщик',       desc:'Съешь 5 еды в режиме Зеркало'},
+  {id:'first_bite',   icon:'🍎', name:'Prvé sústo',      desc:'Zjedz prvé jedlo'},
+  {id:'ten_food',     icon:'🔟', name:'Desiatka',        desc:'Zjedz 10 jedál za jednu hru'},
+  {id:'combo_master', icon:'🔥', name:'Combo majster',     desc:'Dosiahni combo x3 (5+ za sebou)'},
+  {id:'gold_eater',   icon:'⭐', name:'Zlatokop',   desc:'Zjedz zlaté jedlo'},
+  {id:'shield_user',  icon:'🛡', name:'Pod ochranou',      desc:'Zober štít'},
+  {id:'bomb_user',    icon:'💣', name:'Demolačník',        desc:'Použi bombu'},
+  {id:'speed_user',   icon:'⚡', name:'Rýchlik',        desc:'Použi turbo'},
+  {id:'freeze_user',  icon:'❄', name:'Mraziak',      desc:'Použi mrazenie'},
+  {id:'level5',       icon:'5️⃣', name:'Úroveň 5',        desc:'Dosiahni 5. úroveň'},
+  {id:'level10',      icon:'🔟', name:'Úroveň 10',       desc:'Dosiahni 10. úroveň'},
+  {id:'survivor',     icon:'💀', name:'Preživší',         desc:'Prežij 30 sek. v Prežití'},
+  {id:'time_champ',   icon:'⏱', name:'Časový šampión',   desc:'Nazber 20+ bodov za 60 sek.'},
+  {id:'mirror_5',     icon:'🪞', name:'Zrkadlár',       desc:'Zjedz 5 jedál v režime Zrkadlo'},
 ];
 let unlockedAch=new Set(); // заполняется из Supabase при initGame()
 let survivalTime=0; // считаем время в режиме выживания
@@ -1276,13 +1276,13 @@ function buildAchScreen(){
 }
 // ── ДНЕВНЫЕ КВЕСТЫ ───────────────────────────────────────────────
 const QUEST_POOL=[
-  {type:'eat_food',   icon:'🍎',title:'Обжора',           make:(n)=>`Съешь ${n} еды за день`},
-  {type:'score',      icon:'🏆',title:'Очкарик',         make:(n)=>`Набери ${n} очков за день`},
-  {type:'play_games', icon:'🎮',title:'Игрок',            make:(n)=>`Сыграй ${n===1?'1 раз':`${n} раза`}`},
-  {type:'reach_level',icon:'⬆️',title:'Скалолаз',       make:(n)=>`Достигни уровня ${n}`},
-  {type:'eat_gold',   icon:'⭐',title:'Золотоискатель',        make:(n)=>`Съешь ${n} золотых еды`},
-  {type:'use_bonus',  icon:'🛡',title:'Коллектор',        make:(n)=>`Подбери ${n===1?'1 бонус':`${n} бонуса`}`},
-  {type:'combo',      icon:'🔥',title:'Комбо',           make:(n)=>`Сделай комбо ×${n}`},
+  {type:'eat_food',   icon:'🍎',title:'Jedák',           make:(n)=>`Zjedz ${n} jedál za deň`},
+  {type:'score',      icon:'🏆',title:'Bodovač',         make:(n)=>`Nazber ${n} bodov za deň`},
+  {type:'play_games', icon:'🎮',title:'Hráč',            make:(n)=>`Zahraj ${n===1?'1-krát':`${n}-krát`}`},
+  {type:'reach_level',icon:'⬆️',title:'Horolezec',       make:(n)=>`Dosiahni úroveň ${n}`},
+  {type:'eat_gold',   icon:'⭐',title:'Zlatokop',        make:(n)=>`Zjedz ${n} zlatých jedál`},
+  {type:'use_bonus',  icon:'🛡',title:'Zberateľ',        make:(n)=>`Zober ${n===1?'1 bonus':`${n} bonusy`}`},
+  {type:'combo',      icon:'🔥',title:'Combo',           make:(n)=>`Dosiahni combo ×${n}`},
 ];
 const QUEST_PARAMS={
   eat_food:   [{n:10,coins:15},{n:25,coins:30},{n:50,coins:60}],
@@ -2403,7 +2403,7 @@ function dbgToggleInv(){
 }
 function dbgCoins(n){
   coins+=n; saveAll(); refreshMenuUI();
-  document.getElementById('dbgStats').innerHTML=`Ур.<b>${currentLevel}</b> · Счёт <b>${score}</b> · 🪙<b>${coins}</b>`;
+  document.getElementById('dbgStats').innerHTML=`Úr.<b>${currentLevel}</b> · Skóre <b>${score}</b> · 🪙<b>${coins}</b>`;
   spawnFloatText(W/2,H/2-20,'🪙 +'+n,'#facc15');
 }
 function dbgUnlockAllAch(){
