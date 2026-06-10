@@ -1313,6 +1313,7 @@ function applyLocalCache(){
   sfxOn        = localStorage.getItem(S+'Sfx')!=='off';
   theme        = localStorage.getItem(S+'Theme')||'dark';
   currentLang  = localStorage.getItem(S+'Lang')||'ru';
+  const _bestHudCached=document.getElementById('bestHud');if(_bestHudCached)_bestHudCached.textContent=best;
 }
 // Очистить всё (при сбросе)
 function clearLocalData(){
