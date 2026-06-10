@@ -301,7 +301,31 @@
   .mode-back{margin-top:8px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
   /* МАГАЗИН */
   .shop-coins{font-size:0.9rem;color:#facc15;font-weight:700;margin-bottom:14px;}
-  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;}
+  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));}
+  /* Превью выбранного скина в магазине */
+  .shop-preview-card{
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    width:min(280px,calc(100vw - 48px));
+    background:var(--panel);border:2px solid var(--border);border-radius:16px;
+    padding:20px 24px;margin:14px 0 4px;
+    transition:border-color 0.2s, background 0.2s;
+  }
+  .shop-preview-card.owned{border-color:#4ade80;background:color-mix(in srgb,#4ade80 8%,var(--panel));}
+  .shop-preview-card.active-skin{border-color:#facc15;background:color-mix(in srgb,#facc15 8%,var(--panel));}
+  .shop-preview-card.locked{border-color:var(--border2);opacity:0.75;}
+  .shop-preview-emoji{font-size:3.5rem;line-height:1;margin-bottom:2px;}
+  .shop-preview-name{font-size:1.1rem;font-weight:800;color:var(--text);}
+  .shop-preview-sub{font-size:0.78rem;color:var(--text3);margin-top:2px;}
+  .shop-preview-btn{
+    width:100%;padding:12px 0;border:none;border-radius:11px;
+    font-size:0.95rem;font-weight:800;cursor:pointer;touch-action:manipulation;
+    transition:opacity 0.15s, transform 0.1s;
+  }
+  .shop-preview-btn:active{transform:scale(0.97);}
+  .shop-preview-btn.buy{background:linear-gradient(135deg,#facc15,#f59e0b);color:#0f0f0f;}
+  .shop-preview-btn.equip{background:linear-gradient(135deg,#4ade80,#22c55e);color:#0f0f0f;}
+  .shop-preview-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
+  .shop-preview-btn:disabled{opacity:0.45;cursor:default;}
   .shop-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .shop-card.owned{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .shop-card.active-skin{border-color:#facc15;background:color-mix(in srgb,#facc15 10%,var(--panel));}
@@ -339,7 +363,7 @@
   .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
   .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
   /* ДОСТИЖЕНИЯ */
-  .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;padding-right:4px;}
+  .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));padding-right:4px;padding-bottom:4px;}
   .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .ach-card.unlocked{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
@@ -347,7 +371,7 @@
   .ach-name{font-size:0.85rem;font-weight:700;color:var(--text);}
   .ach-card.unlocked .ach-name{color:#4ade80;}
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
-  .ach-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
+  .ach-back{flex-shrink:0;margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
@@ -432,7 +456,8 @@
   }
   .diff-btn.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   /* КВЕСТЫ */
-  .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 165px);overflow-y:auto;}
+  #questScreen{justify-content:safe center;}
+  .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));}
   .quest-card{background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;transition:var(--transition);}
   .quest-card.done{border-color:#4ade80;}
   .quest-card.claimed{border-color:var(--border2);opacity:0.5;}
@@ -583,11 +608,10 @@
 <div class="screen" id="shopScreen">
   <div class="rec-title">🪙 Магазин</div>
   <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
-  <div style="margin-bottom:8px;">
-    <div id="shopSkinLabel" style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">ВЫБОР СКИНА</div>
-    <div class="skin-row" id="shopSkinRow"></div>
-  </div>
-  <div class="shop-grid" id="shopGrid"></div>
+  <div id="shopSkinLabel" style="font-size:0.65rem;color:var(--text3);margin-bottom:8px;letter-spacing:1px;">ВЫБОР СКИНА</div>
+  <div class="skin-row" id="shopSkinRow"></div>
+  <!-- Карточка выбранного скина -->
+  <div class="shop-preview-card" id="shopPreviewCard"></div>
   <button class="shop-back" id="shopBack">← Назад</button>
 </div>
 <!-- УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ -->
@@ -764,7 +788,6 @@
       <button class="diff-btn" id="btnLangToggle">RU</button>
     </div>
   </div>
-  <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
 <!-- РЕКОРДЫ + ЛИДЕРБОРД -->
@@ -825,7 +848,7 @@ const TRANSLATIONS={
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
     settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
-    settingsLang:'🌐 Jazyk',langBtn:'🇸🇰 SK',
+    settingsLang:'🌐 Jazyk',langBtn:'🇬🇧 EN',
     soundOn:'zap.',soundOff:'vyp.',
     btnReset:'🗑 Resetovať postup',btnBack:'← Späť',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
@@ -906,7 +929,7 @@ const TRANSLATIONS={
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
     settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
-    settingsLang:'🌐 Язык',langBtn:'🇷🇺 RU',
+    settingsLang:'🌐 Язык',langBtn:'🇸🇰 SK',
     soundOn:'вкл',soundOff:'выкл',
     btnReset:'🗑 Сбросить прогресс',btnBack:'← Назад',
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
@@ -1108,7 +1131,6 @@ function applyLang(){
     else if(b.dataset.diff==='normal')b.textContent=L.diffNormal;
     else if(b.dataset.diff==='hard')b.textContent=L.diffHard;
   });
-  const btnRst=document.getElementById('btnResetProgress');if(btnRst)btnRst.textContent=L.btnReset;
   const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
   const btnLangEl=document.getElementById('btnLangToggle');if(btnLangEl)btnLangEl.textContent=L.langBtn;
   const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
@@ -1145,7 +1167,6 @@ function toggleLang(){
   buildAchScreen();
   buildQuestScreen();
   buildShopScreen();
-  buildSkinRow();
 }
 
 
@@ -1567,17 +1588,30 @@ function showScreen(id){
 function buildSkinRow(){
   const row=document.getElementById('shopSkinRow');
   if(!row) return;
+  // Определяем режим: в магазине (есть shopPreviewCard) или просто выбор скина
+  const inShop = !!document.getElementById('shopPreviewCard');
   row.innerHTML='';
   SKINS.forEach((s,i)=>{
     const unlocked=isUnlocked(i);
     const b=document.createElement('button');
-    b.className='skin-btn'+(i===skinIdx?' active':'')+(unlocked?'':' locked');
+    // В магазине подсвечиваем выбранный в превью; вне магазина — надетый
+    const isHighlighted = inShop ? (i===shopPreviewIdx) : (i===skinIdx);
+    b.className='skin-btn'+(isHighlighted?' active':'')+(unlocked?'':' locked');
     b.innerHTML=`<span class="skin-emoji">${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
-    if(unlocked){
-      const sel=()=>{skinIdx=i;saveAll();buildSkinRow();buildShopScreen();};
-      b.addEventListener('click',sel);
-      b.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
-    }
+    const sel=()=>{
+      if(inShop){
+        // В магазине — просто выбираем для превью, не меняем skinIdx
+        shopPreviewIdx=i;
+        buildSkinRow();
+        buildShopPreview();
+      } else {
+        // Вне магазина — сразу меняем скин
+        if(!unlocked) return;
+        skinIdx=i;saveAll();buildSkinRow();
+      }
+    };
+    b.addEventListener('click',sel);
+    b.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
     row.appendChild(b);
   });
 }
@@ -1596,61 +1630,88 @@ function refreshMenuUI(){
   }
 }
 // ── МАГАЗИН ──────────────────────────────────────────────────────
+// Индекс скина, выбранного в превью магазина (не обязательно надетый)
+let shopPreviewIdx = 0;
+
 function buildShopScreen(){
+  shopPreviewIdx = skinIdx; // по умолчанию показываем надетый
   document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
-  const grid=document.getElementById('shopGrid');
-  grid.innerHTML='';
-  SKINS.forEach((s,i)=>{
-    const owned=isUnlocked(i);
-    const canBuy=!owned&&s.price&&coins>=s.price;
-    const tooExpensive=!owned&&s.price&&coins<s.price;
-    const card=document.createElement('div');
-    card.className='shop-card';
-    let btnHtml='';
-    if(skinIdx===i && owned){
-      btnHtml=`<button class="shop-btn equipped" disabled>${T().shopEquipped}</button>`;
-    } else if(owned){
-      btnHtml=`<button class="shop-btn equip" data-i="${i}">${T().shopEquip}</button>`;
-    } else if(s.price){
-      btnHtml=`<button class="shop-btn buy" data-i="${i}" ${tooExpensive?'disabled':''}>🪙 ${s.price}</button>`;
-    } else {
-      btnHtml=`<button class="shop-btn buy" disabled>${T().skinLvlFmt(s.unlockLevel)}</button>`;
-    }
-    card.innerHTML=`
-      <span style="font-size:1.6rem">${s.emoji}</span>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:0.9rem">${s.name}</div>
-        <div style="font-size:0.75rem;color:var(--text3)">${owned?T().shopBought:s.price?T().shopCoinPriceFmt(s.price):T().shopLevelFmt(s.unlockLevel)}</div>
-      </div>
-      ${btnHtml}
-    `;
-    grid.appendChild(card);
-  });
-  // события кнопок
-  grid.querySelectorAll('.shop-btn.buy:not([disabled])').forEach(btn=>{
-    const evBuy=()=>{
-      const i=parseInt(btn.dataset.i);
-      const s=SKINS[i];
-      if(coins<s.price) return;
-      coins-=s.price;
+  buildSkinRow();
+  buildShopPreview();
+}
+
+function buildShopPreview(){
+  const card = document.getElementById('shopPreviewCard');
+  if(!card) return;
+  const i = shopPreviewIdx;
+  const s = SKINS[i];
+  const owned = isUnlocked(i);
+  const isEquipped = skinIdx === i;
+  const canBuy = !owned && s.price && coins >= s.price;
+  const tooExpensive = !owned && s.price && coins < s.price;
+  const lockedByLevel = !owned && !s.price;
+
+  card.className = 'shop-preview-card' + (isEquipped ? ' active-skin' : owned ? ' owned' : lockedByLevel ? ' locked' : '');
+
+  let sub = '';
+  let btnText = '';
+  let btnClass = '';
+  let btnDisabled = false;
+
+  if(isEquipped){
+    sub = T().shopEquipped;
+    btnText = '✓ ' + T().shopEquipped;
+    btnClass = 'equipped';
+    btnDisabled = true;
+  } else if(owned){
+    sub = T().shopBought;
+    btnText = T().shopEquip;
+    btnClass = 'equip';
+  } else if(lockedByLevel){
+    sub = T().shopLevelFmt(s.unlockLevel);
+    btnText = T().skinLvlFmt(s.unlockLevel);
+    btnClass = 'equipped';
+    btnDisabled = true;
+  } else if(tooExpensive){
+    sub = T().shopCoinPriceFmt(s.price);
+    btnText = '🪙 ' + s.price + ' — ' + T().lbError.replace('😞','').trim();
+    btnClass = 'buy';
+    btnDisabled = true;
+  } else {
+    sub = T().shopCoinPriceFmt(s.price);
+    btnText = '🪙 ' + T().shopCoinsFmt(s.price);
+    btnClass = 'buy';
+  }
+
+  card.innerHTML = `
+    <div class="shop-preview-emoji">${s.emoji}</div>
+    <div class="shop-preview-name">${s.name}</div>
+    <div class="shop-preview-sub">${sub}</div>
+    <button class="shop-preview-btn ${btnClass}" id="shopPreviewBtn" ${btnDisabled?'disabled':''}>${btnText}</button>
+  `;
+
+  const btn = document.getElementById('shopPreviewBtn');
+  if(!btn || btnDisabled) return;
+
+  const action = () => {
+    if(btnClass === 'buy'){
+      if(coins < s.price) return;
+      coins -= s.price;
       boughtSkins.add(i);
-      skinIdx=i;
+      skinIdx = i;
+      shopPreviewIdx = i;
       saveAll();
-      spawnFloatText&&spawnFloatText(0,0,T().floatBought,'#facc15');
-      buildShopScreen(); // перерисовать
-    };
-    btn.addEventListener('click',evBuy);
-    btn.addEventListener('touchstart',e=>{e.preventDefault();evBuy();},{passive:false});
-  });
-  grid.querySelectorAll('.shop-btn.equip').forEach(btn=>{
-    const evEquip=()=>{
-      skinIdx=parseInt(btn.dataset.i);
+      spawnFloatText && spawnFloatText(0, 0, T().floatBought, '#facc15');
+    } else if(btnClass === 'equip'){
+      skinIdx = i;
       saveAll();
-      buildShopScreen();
-    };
-    btn.addEventListener('click',evEquip);
-    btn.addEventListener('touchstart',e=>{e.preventDefault();evEquip();},{passive:false});
-  });
+    }
+    buildSkinRow();
+    buildShopPreview();
+    document.getElementById('shopCoins').textContent = T().shopCoinsFmt(coins);
+  };
+  btn.addEventListener('click', action);
+  btn.addEventListener('touchstart', e => { e.preventDefault(); action(); }, {passive:false});
 }
 // ── ИНИЦИАЛИЗАЦИЯ ИГРЫ (async — загружает профиль из Supabase) ────
 (async function initGame(){
@@ -1794,7 +1855,7 @@ function buildShopScreen(){
 let gameMode='classic'; // 'classic' | 'time' | 'survival'
 let timeLeft=0;         // мс оставшегося времени (режим Время)
 const TIME_MODE_DURATION=60000; // 60 секунд
-function openModeScreen(){getAudio();initMp3();showScreen('modeScreen');}
+function openModeScreen(){getAudio();showScreen('modeScreen');}
 document.getElementById('btnPlay').addEventListener('click',openModeScreen);
 document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
@@ -1807,8 +1868,8 @@ document.getElementById('questBack').addEventListener('click',()=>{refreshMenuUI
 document.getElementById('questBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('achBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('achBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
-document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();buildSkinRow();showScreen('shopScreen');});
-document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();buildSkinRow();showScreen('shopScreen');},{passive:false});
+document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();showScreen('shopScreen');});
+document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();showScreen('shopScreen');},{passive:false});
 document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
 document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
@@ -1819,8 +1880,8 @@ document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='
 document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.preventDefault();gameMode='survival';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();initMp3();beginLevel(savedLevel);});
-document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();initMp3();beginLevel(savedLevel);},{passive:false});
+document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();beginLevel(savedLevel);});
+document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
 document.getElementById('btnRecords').addEventListener('touchstart',e=>{e.preventDefault();openRecords();},{passive:false});
 // ── РЕКОРДЫ ──────────────────────────────────────────────────────
@@ -1871,8 +1932,6 @@ async function doResetProgress(){
   });
   location.reload();
 }
-document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
-document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
 document.getElementById('btnLangToggle').addEventListener('click',toggleLang);
 document.getElementById('btnLangToggle').addEventListener('touchstart',e=>{e.preventDefault();toggleLang();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
@@ -2702,16 +2761,9 @@ function playDie(){
   }catch(e){}
 }
 // ── МУЗЫКА ───────────────────────────────────────────────────────
-// Сначала пробуем загрузить MP3.
-// Если не получится (например нет файла) — включаем процедурную музыку.
-let mp3Music=null;
-let mp3Failed=false;
-function initMp3(){
-  if(mp3Music||mp3Failed) return;
-  mp3Music=new Audio('Only%20Today.mp3');
-  mp3Music.loop=true; mp3Music.volume=0.35;
-  mp3Music.onerror=()=>{ mp3Failed=true; mp3Music=null; };
-}
+// Только процедурная музыка Web Audio API (Only Today.mp3 удалён)
+const mp3Music=null, mp3Failed=true;
+function initMp3(){}
 
 // ── ПРОЦЕДУРНАЯ МУЗЫКА (запасной вариант) ────────────────────────
 
@@ -2809,13 +2861,6 @@ function musicLoop(){
 
 function playMusic(){
   if(!musicOn) return;
-  // Пробуем MP3 первым
-  initMp3();
-  if(mp3Music&&!mp3Failed){
-    const p=mp3Music.play();
-    if(p) p.catch(()=>{ mp3Failed=true; mp3Music=null; startProceduralMusic(); });
-    return;
-  }
   startProceduralMusic();
 }
 function startProceduralMusic(){
@@ -2828,12 +2873,10 @@ function startProceduralMusic(){
   musicLoop();
 }
 function pauseMusic(){
-  if(mp3Music&&!mp3Failed){ mp3Music.pause(); return; }
   musicPlaying=false;
   if(musicTimer) clearTimeout(musicTimer);
 }
 function stopMusic(){
-  if(mp3Music&&!mp3Failed){ mp3Music.pause(); mp3Music.currentTime=0; return; }
   musicPlaying=false;
   if(musicTimer) clearTimeout(musicTimer);
   musicStep=0;
