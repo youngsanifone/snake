@@ -1590,6 +1590,8 @@ function buildShopScreen(){
       trackEvent('visit',null,null);
     }
   })();
+  // Heartbeat — пинг каждые 5 минут пока вкладка открыта (для "онлайн сейчас")
+  setInterval(()=>{ trackEvent('visit',null,null); }, 5*60*1000);
 
   try{
     const pid=getPlayerId();
