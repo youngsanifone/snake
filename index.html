@@ -327,11 +327,11 @@
   .lb-loading{font-size:0.8rem;color:var(--text3);text-align:center;padding:16px 0;animation:pulse 1s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
   /* Форма отправки результата */
-  .lb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(260px,82vw);margin-top:6px;}
-  .lb-input{width:100%;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:0.9rem;outline:none;text-align:center;}
+  .lb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(260px,82vw);margin-top:6px;pointer-events:all;}
+  .lb-input{width:100%;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:0.9rem;outline:none;text-align:center;pointer-events:all;-webkit-user-select:text;user-select:text;}
   .lb-input:focus{border-color:#4ade80;}
-  .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;}
-  .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;}
+  .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
+  .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
   /* ДОСТИЖЕНИЯ */
   .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;padding-right:4px;}
   .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
@@ -1894,7 +1894,7 @@ async function shareScore(){
 goShare.addEventListener('click',shareScore);
 goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{passive:false});
 // Лидерборд — отправка
-document.getElementById('lbSubmitBtn').addEventListener('click',async()=>{
+async function doLbSubmit(){
   const name=document.getElementById('lbNameInput').value.trim()||'Аноним';
   lbNickname=name;localStorage.setItem(S+'Nick',name);
   document.getElementById('lbSubmitWrap').style.display='none';
@@ -1902,10 +1902,14 @@ document.getElementById('lbSubmitBtn').addEventListener('click',async()=>{
   const t=document.createElement('div');
   t.className='quest-reward-toast';t.textContent='🌍 В топ!';
   document.body.appendChild(t);setTimeout(()=>t.remove(),1400);
-});
-document.getElementById('lbSkipBtn').addEventListener('click',()=>{
+}
+function doLbSkip(){
   document.getElementById('lbSubmitWrap').style.display='none';
-});
+}
+document.getElementById('lbSubmitBtn').addEventListener('click',doLbSubmit);
+document.getElementById('lbSubmitBtn').addEventListener('touchstart',e=>{e.preventDefault();doLbSubmit();},{passive:false});
+document.getElementById('lbSkipBtn').addEventListener('click',doLbSkip);
+document.getElementById('lbSkipBtn').addEventListener('touchstart',e=>{e.preventDefault();doLbSkip();},{passive:false});
 // Клавиатура
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){e.preventDefault();togglePause();return;}
@@ -1935,7 +1939,11 @@ canvas.addEventListener('touchend',e=>{
   if(Math.abs(dx)<12&&Math.abs(dy)<12) return;
   applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
 },{passive:false});
-document.body.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.body.addEventListener('touchmove',e=>{
+  // Не блокируем скролл внутри инпута
+  if(e.target.tagName==='INPUT') return;
+  e.preventDefault();
+},{passive:false});
 // ── ЗВУК ─────────────────────────────────────────────────────────
 let audioCtx=null;
 function getAudio(){
