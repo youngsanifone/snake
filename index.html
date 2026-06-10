@@ -312,6 +312,26 @@
   .shop-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
   /* Монеты в меню */
   .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:6px;}
+  /* ЛИДЕРБОРД */
+  .lb-tabs{display:flex;gap:6px;margin-bottom:12px;width:min(320px,calc(100vw - 24px));}
+  .lb-tab{flex:1;padding:7px 0;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;}
+  .lb-tab.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 10%,var(--panel));}
+  .lb-list{display:flex;flex-direction:column;gap:6px;width:min(320px,calc(100vw - 24px));max-height:calc(100dvh - 200px);overflow-y:auto;}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:11px;}
+  .lb-rank{font-size:1rem;font-weight:900;width:24px;text-align:center;flex-shrink:0;}
+  .lb-rank.gold{color:#facc15;} .lb-rank.silver{color:#94a3b8;} .lb-rank.bronze{color:#f97316;}
+  .lb-name{flex:1;font-size:0.85rem;font-weight:700;color:var(--text);}
+  .lb-score{font-size:0.82rem;font-weight:800;color:#4ade80;}
+  .lb-meta{font-size:0.65rem;color:var(--text3);}
+  .lb-empty{font-size:0.8rem;color:var(--text3);text-align:center;padding:24px 0;}
+  .lb-loading{font-size:0.8rem;color:var(--text3);text-align:center;padding:16px 0;animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  /* Форма отправки результата */
+  .lb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(260px,82vw);margin-top:6px;}
+  .lb-input{width:100%;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:0.9rem;outline:none;text-align:center;}
+  .lb-input:focus{border-color:#4ade80;}
+  .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;}
+  .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;}
   /* ДОСТИЖЕНИЯ */
   .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));max-height:calc(100dvh - 130px);overflow-y:auto;padding-right:4px;}
   .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
@@ -613,6 +633,12 @@
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
       <div class="go-sub" id="goSub"></div>
+      <!-- Форма отправки в лидерборд -->
+      <div class="lb-submit-wrap" id="lbSubmitWrap" style="display:none;">
+        <input class="lb-input" id="lbNameInput" placeholder="Введи ник" maxlength="16">
+        <button class="lb-submit-btn" id="lbSubmitBtn">🌍 Отправить в топ</button>
+        <button class="lb-skip" id="lbSkipBtn">пропустить</button>
+      </div>
       <button class="go-btn" id="goRetryCur">↺ Продолжить с ур. <span id="goLvlNum">1</span></button>
       <button class="go-btn share" id="goShare">📤 Поделиться</button>
       <button class="go-btn sec" id="goRetry">↺ Заново с ур. 1</button>
@@ -666,18 +692,33 @@
   </div>
   <button class="menu-btn" style="margin-top:16px;" id="btnBackSettings">← Назад</button>
 </div>
-<!-- РЕКОРДЫ -->
+<!-- РЕКОРДЫ + ЛИДЕРБОРД -->
 <div class="screen" id="recordsScreen">
   <div class="rec-title">🏆 Рекорды</div>
-  <div class="rec-list">
-    <div class="rec-row"><span class="rl">Лучший счёт</span><span class="rv" id="rBest">0</span></div>
-    <div class="rec-row"><span class="rl">Макс. уровень</span><span class="rv" id="rLvl">1</span></div>
-    <div class="rec-row"><span class="rl">Игр сыграно</span><span class="rv" id="rGames">0</span></div>
+  <div class="lb-tabs">
+    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Мои</button>
+    <button class="lb-tab" id="tabOnline" onclick="switchLbTab('online')">🌍 Онлайн</button>
+  </div>
+  <!-- Мои рекорды -->
+  <div id="panelMy">
+    <div class="rec-list">
+      <div class="rec-row"><span class="rl">Лучший счёт</span><span class="rv" id="rBest">0</span></div>
+      <div class="rec-row"><span class="rl">Макс. уровень</span><span class="rv" id="rLvl">1</span></div>
+      <div class="rec-row"><span class="rl">Игр сыграно</span><span class="rv" id="rGames">0</span></div>
+    </div>
+  </div>
+  <!-- Онлайн лидерборд -->
+  <div id="panelOnline" style="display:none;">
+    <div class="lb-list" id="lbList"><div class="lb-loading">Загрузка...</div></div>
   </div>
   <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Назад</button>
 </div>
 <script>
 const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
+// ── SUPABASE ──────────────────────────────────────────────────────
+const SB_URL='https://wopvlulqfzecujmfoezr.supabase.co';
+const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
+const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
 const SKINS=[
   {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Зелёный'},
   {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Синий'},
@@ -899,6 +940,58 @@ function buildQuestScreen(){
   document.getElementById('questReset').textContent=`🕐 Сброс через ${h}ч ${m}м`;
 }
 loadQuests();
+// ── ЛИДЕРБОРД ────────────────────────────────────────────────────
+let lbNickname = localStorage.getItem(S+'Nick') || '';
+
+async function fetchLeaderboard(){
+  const el=document.getElementById('lbList');
+  el.innerHTML='<div class="lb-loading">Загрузка...</div>';
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
+    const data=await r.json();
+    if(!data||!data.length){el.innerHTML='<div class="lb-empty">Пока никого нет — будь первым!</div>';return;}
+    const medals=['🥇','🥈','🥉'];
+    const rankClass=['gold','silver','bronze'];
+    el.innerHTML=data.map((row,i)=>`
+      <div class="lb-row">
+        <span class="lb-rank ${rankClass[i]||''}">${medals[i]||i+1}</span>
+        <div style="flex:1;">
+          <div class="lb-name">${escHtml(row.name)}</div>
+          <div class="lb-meta">Ур.${row.level} · ${row.mode||'classic'}</div>
+        </div>
+        <div class="lb-score">${row.score}</div>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<div class="lb-empty">Ошибка загрузки 😞</div>';}
+}
+
+async function submitToLeaderboard(name,score,level,mode){
+  try{
+    await fetch(`${SB_URL}/rest/v1/leaderboard`,{
+      method:'POST',
+      headers:SB_HEADERS,
+      body:JSON.stringify({name,score,level,mode})
+    });
+  }catch(e){console.log('lb submit error',e);}
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function switchLbTab(tab){
+  document.getElementById('tabMy').classList.toggle('active',tab==='my');
+  document.getElementById('tabOnline').classList.toggle('active',tab==='online');
+  document.getElementById('panelMy').style.display=tab==='my'?'':'none';
+  document.getElementById('panelOnline').style.display=tab==='online'?'':'none';
+  if(tab==='online') fetchLeaderboard();
+}
+
+function showLbSubmit(){
+  const wrap=document.getElementById('lbSubmitWrap');
+  if(score<=0){wrap.style.display='none';return;}
+  wrap.style.display='flex';
+  const inp=document.getElementById('lbNameInput');
+  inp.value=lbNickname;
+}
+
 // ── ЭКРАНЫ ───────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1071,6 +1164,7 @@ function openRecords(){
   document.getElementById('rBest').textContent=best;
   document.getElementById('rLvl').textContent=bestLevel;
   document.getElementById('rGames').textContent=gamesPlayed;
+  switchLbTab('my');
   showScreen('recordsScreen');
 }
 document.getElementById('btnBackMenu').addEventListener('click',()=>showScreen('menuScreen'));
@@ -1652,6 +1746,7 @@ function endGame(){
     const lvlEl=document.getElementById('goLvlNum');
     if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
+    showLbSubmit();
   },350);
 }
 // ── DEBUG PANEL ───────────────────────────────────────────────────
@@ -1798,6 +1893,19 @@ async function shareScore(){
 }
 goShare.addEventListener('click',shareScore);
 goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{passive:false});
+// Лидерборд — отправка
+document.getElementById('lbSubmitBtn').addEventListener('click',async()=>{
+  const name=document.getElementById('lbNameInput').value.trim()||'Аноним';
+  lbNickname=name;localStorage.setItem(S+'Nick',name);
+  document.getElementById('lbSubmitWrap').style.display='none';
+  await submitToLeaderboard(name,score,currentLevel,gameMode);
+  const t=document.createElement('div');
+  t.className='quest-reward-toast';t.textContent='🌍 В топ!';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),1400);
+});
+document.getElementById('lbSkipBtn').addEventListener('click',()=>{
+  document.getElementById('lbSubmitWrap').style.display='none';
+});
 // Клавиатура
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){e.preventDefault();togglePause();return;}
