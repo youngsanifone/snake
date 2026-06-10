@@ -1050,7 +1050,7 @@ function loadQuests(){
   questData={day:today,quests};
   saveQuests();
 }
-function saveQuests(){localStorage.setItem(S+'Quests',JSON.stringify(questData));upsertProfile();}
+function saveQuests(){localStorage.setItem(S+'Quests',JSON.stringify(questData));}
 function questTrack(type,value){
   if(!questData) return;
   let changed=false;
