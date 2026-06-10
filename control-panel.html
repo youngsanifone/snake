@@ -9,6 +9,20 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
+/* ── Login overlay ── */
+#loginWrap{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:999}
+.login-box{background:#1e293b;border-radius:16px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.login-logo{font-size:2.4rem;margin-bottom:8px}
+.login-title{color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.login-sub{color:#64748b;font-size:.78rem;margin-bottom:24px}
+.login-input{width:100%;background:#0f172a;border:1.5px solid #334155;color:#fff;padding:11px 14px;border-radius:9px;font-size:.9rem;outline:none;transition:border-color .15s}
+.login-input:focus{border-color:#6366f1}
+.login-input.shake{animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.login-btn{width:100%;margin-top:12px;background:#6366f1;color:#fff;border:none;padding:11px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .15s}
+.login-btn:hover{background:#4f46e5}
+.login-err{color:#f87171;font-size:.76rem;margin-top:8px;min-height:18px}
+
 /* ── Header ── */
 .hdr{background:#0f172a;color:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .hdr-l{display:flex;align-items:center;gap:10px}
@@ -119,6 +133,19 @@ tr:hover td{background:#fafafa}
 </style>
 </head>
 <body>
+
+<!-- Login overlay -->
+<div id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">🐍</div>
+    <div class="login-title">Snake Control Panel</div>
+    <div class="login-sub">Введи пароль для входа</div>
+    <input class="login-input" id="pwInput" type="password" placeholder="Пароль" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Войти</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
 
 <!-- Header -->
 <div class="hdr">
@@ -249,6 +276,42 @@ tr:hover td{background:#fafafa}
 </div><!-- /wrap -->
 
 <script>
+// ── Auth ─────────────────────────────────────────────────
+// SHA-256 hash of the password
+const PWD_HASH='bd19c7167114e3c6317bc65bf1621f0d6eb3cdd42d1a003ced7826818f074057';
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin(){
+  const val=document.getElementById('pwInput').value;
+  const hash=await sha256(val);
+  if(hash===PWD_HASH){
+    sessionStorage.setItem('cp_auth','1');
+    document.getElementById('loginWrap').style.display='none';
+    startApp();
+  }else{
+    const inp=document.getElementById('pwInput');
+    document.getElementById('loginErr').textContent='Неверный пароль';
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    inp.value='';
+    inp.focus();
+  }
+}
+
+function checkAuth(){
+  if(sessionStorage.getItem('cp_auth')==='1'){
+    document.getElementById('loginWrap').style.display='none';
+    startApp();
+  }else{
+    setTimeout(()=>document.getElementById('pwInput').focus(),100);
+  }
+}
+
 const SB_URL='https://wopvlulqfzecujmfoezr.supabase.co';
 const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
 const SB_H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
@@ -449,12 +512,16 @@ function refresh(){
 }
 
 // ── Init ─────────────────────────────────────────────────
-loadLB();
-loadCommits();
-checkGame();
-setInterval(tick,1000);
-setInterval(loadCommits,30000); // commits every 30s
-setInterval(checkGame,60000);   // game status every 60s
+function startApp(){
+  loadLB();
+  loadCommits();
+  checkGame();
+  setInterval(tick,1000);
+  setInterval(loadCommits,30000);
+  setInterval(checkGame,60000);
+}
+
+checkAuth();
 </script>
 </body>
 </html>
