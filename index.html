@@ -500,6 +500,11 @@
 </style>
 </head>
 <body>
+<!-- ЭКРАН ЗАГРУЗКИ -->
+<div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+  <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
+  <div style="font-size:0.8rem;color:var(--text3);">Загрузка...</div>
+</div>
 <div id="unlockNotif"></div>
 <!-- ЭКРАН ПРИВЕТСТВИЯ (первый запуск) -->
 <div class="screen" id="welcomeScreen">
@@ -843,38 +848,25 @@ const SKINS=[
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
 if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
 const S='snake2_';
-// ── ВЕРСИОНИРОВАНИЕ — увеличь DATA_VERSION чтобы сбросить всех ────
-const DATA_VERSION=2;
-(function(){
-  const stored=parseInt(localStorage.getItem(S+'dataVersion')||'0');
-  if(stored<DATA_VERSION){
-    // Очищаем всё кроме player_id (статистика должна остаться)
-    const pid=localStorage.getItem(S+'pid');
-    Object.keys(localStorage).forEach(k=>{ if(k.startsWith(S)) localStorage.removeItem(k); });
-    if(pid) localStorage.setItem(S+'pid',pid);
-    localStorage.setItem(S+'dataVersion',DATA_VERSION);
-  }
-})();
-let theme      = localStorage.getItem(S+'Theme') || 'dark';
-let musicOn    = localStorage.getItem(S+'Music') !== 'off';
-let sfxOn      = localStorage.getItem(S+'Sfx')   !== 'off';
-let difficulty = localStorage.getItem(S+'Diff') || 'normal';
+// ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
+let theme      = 'dark';
+let musicOn    = true;
+let sfxOn      = true;
+let difficulty = 'normal';
 const DIFF_MULT = {easy:0.65, normal:1, hard:1.45};
-let best        = parseInt(localStorage.getItem(S+'Best')||'0');
-let bestLevel   = parseInt(localStorage.getItem(S+'BestLevel')||'1');
-let gamesPlayed = parseInt(localStorage.getItem(S+'Games')||'0');
-let savedLevel  = parseInt(localStorage.getItem(S+'SavedLevel')||'1');
-let coins       = parseInt(localStorage.getItem(S+'Coins')||'0');
-let boughtSkins = new Set(JSON.parse(localStorage.getItem(S+'Bought')||'[]'));
+let best        = 0;
+let bestLevel   = 1;
+let gamesPlayed = 0;
+let savedLevel  = 1;
+let coins       = 0;
+let boughtSkins = new Set();
 let skinIdx     = 0;
-(function(){
-  const s=parseInt(localStorage.getItem(S+'Skin')||'0');
-  skinIdx=isUnlockedIdx(s)?s:0;
-})();
 const skin=()=>SKINS[skinIdx];
 function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
 const isUnlocked=(i)=>isUnlockedIdx(i);
+// ── СОХРАНЕНИЕ ПРОФИЛЯ ───────────────────────────────────────────
 function saveAll(){
+  // 1. Кэш в localStorage (мгновенно)
   localStorage.setItem(S+'Best',best);
   localStorage.setItem(S+'BestLevel',bestLevel);
   localStorage.setItem(S+'Games',gamesPlayed);
@@ -886,6 +878,93 @@ function saveAll(){
   localStorage.setItem(S+'Diff', difficulty);
   localStorage.setItem(S+'Coins', coins);
   localStorage.setItem(S+'Bought', JSON.stringify([...boughtSkins]));
+  // 2. UPSERT в Supabase (async, fire-and-forget)
+  upsertProfile();
+}
+// Собрать объект профиля и отправить в Supabase
+function upsertProfile(){
+  const pid=getPlayerId();
+  fetch(SB_URL+'/rest/v1/players',{
+    method:'POST',
+    headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+    body:JSON.stringify({
+      player_id:pid,
+      nick:lbNickname||'Аноним',
+      coins,best,
+      best_level:bestLevel,
+      games_played:gamesPlayed,
+      saved_level:savedLevel,
+      skin_idx:skinIdx,
+      bought_skins:JSON.stringify([...boughtSkins]),
+      achievements:JSON.stringify([...unlockedAch]),
+      quests:questData?JSON.stringify(questData):null,
+      difficulty,music_on:musicOn,sfx_on:sfxOn,theme,
+      updated_at:new Date().toISOString()
+    })
+  }).catch(()=>{});
+}
+// Применить профиль из Supabase к переменным + записать в localStorage
+function applyProfile(row){
+  lbNickname   = row.nick||'';
+  coins        = row.coins||0;
+  best         = row.best||0;
+  bestLevel    = row.best_level||1;
+  gamesPlayed  = row.games_played||0;
+  savedLevel   = row.saved_level||1;
+  skinIdx      = row.skin_idx||0;
+  boughtSkins  = new Set(JSON.parse(row.bought_skins||'[]'));
+  unlockedAch  = new Set(JSON.parse(row.achievements||'[]'));
+  difficulty   = row.difficulty||'normal';
+  musicOn      = row.music_on!==false;
+  sfxOn        = row.sfx_on!==false;
+  theme        = row.theme||'dark';
+  if(row.quests){
+    try{
+      const q=JSON.parse(row.quests);
+      if(q&&q.day===getDayKey()) questData=q;
+    }catch(e){}
+  }
+  // кэш localStorage
+  localStorage.setItem(S+'Nick',   lbNickname);
+  localStorage.setItem(S+'Best',   best);
+  localStorage.setItem(S+'BestLevel',bestLevel);
+  localStorage.setItem(S+'Games',  gamesPlayed);
+  localStorage.setItem(S+'SavedLevel',savedLevel);
+  localStorage.setItem(S+'Coins',  coins);
+  localStorage.setItem(S+'Skin',   skinIdx);
+  localStorage.setItem(S+'Bought', row.bought_skins||'[]');
+  localStorage.setItem(S+'Ach',    row.achievements||'[]');
+  if(row.quests) localStorage.setItem(S+'Quests',row.quests);
+  localStorage.setItem(S+'Diff',   difficulty);
+  localStorage.setItem(S+'Music',  musicOn?'on':'off');
+  localStorage.setItem(S+'Sfx',    sfxOn?'on':'off');
+  localStorage.setItem(S+'Theme',  theme);
+}
+// Загрузить из localStorage кэша (офлайн fallback)
+function applyLocalCache(){
+  lbNickname   = localStorage.getItem(S+'Nick')||'';
+  coins        = parseInt(localStorage.getItem(S+'Coins')||'0');
+  best         = parseInt(localStorage.getItem(S+'Best')||'0');
+  bestLevel    = parseInt(localStorage.getItem(S+'BestLevel')||'1');
+  gamesPlayed  = parseInt(localStorage.getItem(S+'Games')||'0');
+  savedLevel   = parseInt(localStorage.getItem(S+'SavedLevel')||'1');
+  skinIdx      = parseInt(localStorage.getItem(S+'Skin')||'0');
+  boughtSkins  = new Set(JSON.parse(localStorage.getItem(S+'Bought')||'[]'));
+  unlockedAch  = new Set(JSON.parse(localStorage.getItem(S+'Ach')||'[]'));
+  difficulty   = localStorage.getItem(S+'Diff')||'normal';
+  musicOn      = localStorage.getItem(S+'Music')!=='off';
+  sfxOn        = localStorage.getItem(S+'Sfx')!=='off';
+  theme        = localStorage.getItem(S+'Theme')||'dark';
+}
+// Очистить всё (при сбросе)
+function clearLocalData(){
+  const pid=localStorage.getItem(S+'pid');
+  Object.keys(localStorage).forEach(k=>{if(k.startsWith(S))localStorage.removeItem(k);});
+  if(pid) localStorage.setItem(S+'pid',pid);
+  lbNickname='';coins=0;best=0;bestLevel=1;gamesPlayed=0;
+  savedLevel=1;skinIdx=0;boughtSkins=new Set();
+  unlockedAch=new Set();questData=null;
+  difficulty='normal';musicOn=true;sfxOn=true;theme='dark';
 }
 // ── ДОСТИЖЕНИЯ ───────────────────────────────────────────────────
 const ACHIEVEMENTS=[
@@ -903,10 +982,10 @@ const ACHIEVEMENTS=[
   {id:'time_champ',   icon:'⏱', name:'Чемпион времени',  desc:'Набери 20+ очков за 60 сек'},
   {id:'mirror_5',     icon:'🪞', name:'Зеркальщик',       desc:'Съешь 5 еды в режиме Зеркало'},
 ];
-let unlockedAch=new Set(JSON.parse(localStorage.getItem(S+'Ach')||'[]'));
+let unlockedAch=new Set(); // заполняется из Supabase при initGame()
 let survivalTime=0; // считаем время в режиме выживания
 
-function saveAch(){localStorage.setItem(S+'Ach',JSON.stringify([...unlockedAch]));}
+function saveAch(){localStorage.setItem(S+'Ach',JSON.stringify([...unlockedAch]));upsertProfile();}
 function unlockAch(id){
   if(unlockedAch.has(id)) return;
   unlockedAch.add(id);saveAch();
@@ -978,7 +1057,7 @@ function loadQuests(){
   questData={day:today,quests};
   saveQuests();
 }
-function saveQuests(){localStorage.setItem(S+'Quests',JSON.stringify(questData));}
+function saveQuests(){localStorage.setItem(S+'Quests',JSON.stringify(questData));upsertProfile();}
 function questTrack(type,value){
   if(!questData) return;
   let changed=false;
@@ -1061,7 +1140,7 @@ function buildQuestScreen(){
 }
 loadQuests();
 // ── ЛИДЕРБОРД ────────────────────────────────────────────────────
-let lbNickname = localStorage.getItem(S+'Nick') || '';
+let lbNickname = ''; // заполняется из Supabase при initGame()
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
@@ -1207,33 +1286,57 @@ function buildShopScreen(){
     btn.addEventListener('touchstart',e=>{e.preventDefault();evEquip();},{passive:false});
   });
 }
-refreshMenuUI();
-// ── ПЕРВЫЙ ЗАПУСК — ВЫБОР НИКНЕЙМА ──────────────────────────────
-(function(){
-  const hasNick = localStorage.getItem(S+'Nick');
-  if(hasNick){
+// ── ИНИЦИАЛИЗАЦИЯ ИГРЫ (async — загружает профиль из Supabase) ────
+(async function initGame(){
+  const loading=document.getElementById('loadingScreen');
+  // Вешаем обработчики экрана приветствия здесь (нужны в обоих путях)
+  const welcInp=document.getElementById('welcInput');
+  const welcBtn=document.getElementById('welcBtn');
+  const welcSkip=document.getElementById('welcSkip');
+  function doWelc(raw){
+    const name=(raw||'').trim()||'Аноним';
+    lbNickname=name;
+    localStorage.setItem(S+'Nick',name);
+    const lbInp=document.getElementById('lbNameInput');
+    if(lbInp) lbInp.value=name;
+    // Создаём профиль в Supabase
+    upsertProfile();
     showScreen('menuScreen');
-  } else {
-    showScreen('welcomeScreen');
-    const inp = document.getElementById('welcInput');
-    const btn = document.getElementById('welcBtn');
-    const skip = document.getElementById('welcSkip');
-    function doWelc(raw){
-      const name = (raw||'').trim() || 'Аноним';
-      lbNickname = name;
-      localStorage.setItem(S+'Nick', name);
-      // обновить поле ввода в лидерборде тоже
-      const lbInp = document.getElementById('lbNameInput');
-      if(lbInp) lbInp.value = name;
+    refreshMenuUI();
+  }
+  welcBtn.addEventListener('click',()=>doWelc(welcInp.value));
+  welcBtn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(welcInp.value);},{passive:false});
+  welcSkip.addEventListener('click',()=>doWelc(''));
+  welcSkip.addEventListener('touchstart',e=>{e.preventDefault();doWelc('');},{passive:false});
+  welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
+
+  try{
+    const pid=getPlayerId();
+    const r=await fetch(`${SB_URL}/rest/v1/players?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS});
+    if(!r.ok) throw new Error('fetch error');
+    const rows=await r.json();
+    if(rows.length>0){
+      // Профиль найден — применяем данные из Supabase
+      applyProfile(rows[0]);
+      applyTheme();
+      refreshMenuUI();
+      loading.style.display='none';
       showScreen('menuScreen');
+    } else {
+      // Нет профиля — новый игрок или сброс
+      clearLocalData();
+      loading.style.display='none';
+      showScreen('welcomeScreen');
+      setTimeout(()=>welcInp.focus(),300);
     }
-    btn.addEventListener('click',()=>doWelc(inp.value));
-    btn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(inp.value);},{passive:false});
-    skip.addEventListener('click',()=>doWelc(''));
-    skip.addEventListener('touchstart',e=>{e.preventDefault();doWelc('');},{passive:false});
-    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); doWelc(inp.value); } });
-    // Фокус на инпуте (десктоп)
-    setTimeout(()=>inp.focus(),300);
+  } catch(e){
+    // Офлайн — используем localStorage кэш
+    applyLocalCache();
+    applyTheme();
+    refreshMenuUI();
+    loading.style.display='none';
+    showScreen(lbNickname?'menuScreen':'welcomeScreen');
+    if(!lbNickname) setTimeout(()=>welcInp.focus(),300);
   }
 })();
 // ── АНИМИРОВАННЫЙ ФОН МЕНЮ ───────────────────────────────────────
