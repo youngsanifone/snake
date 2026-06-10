@@ -503,40 +503,40 @@
 <!-- ЭКРАН ЗАГРУЗКИ -->
 <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
-  <div style="font-size:0.8rem;color:var(--text3);">Načítavam...</div>
+  <div style="font-size:0.8rem;color:var(--text3);">Загрузка...</div>
 </div>
 <div id="unlockNotif"></div>
 <!-- ЭКРАН ПРИВЕТСТВИЯ (первый запуск) -->
 <div class="screen" id="welcomeScreen">
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
-    <div class="menu-title">Had</div>
+    <div class="menu-title">Змейка</div>
     <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
-    <input id="welcInput" type="text" maxlength="16" placeholder="Tvoja prezývka..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <button id="welcBtn">▶ &nbsp;HRAŤ!</button>
-    <button id="welcSkip">hrať bez mena</button>
+    <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
+    <button id="welcSkip">играть без имени</button>
   </div>
 </div>
 <!-- МЕНЮ -->
 <div class="screen" id="menuScreen">
   <canvas id="menuBg"></canvas>
   <div class="menu-snake">🐍</div>
-  <div class="menu-title">Had</div>
+  <div class="menu-title">Змейка</div>
   <!-- Statový panel -->
   <div class="menu-stats-bar">
     <div class="msb-item">
       <div class="msb-val" id="menuBest">0</div>
-      <div class="msb-lbl">Rekord</div>
+      <div class="msb-lbl">Рекорд</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" id="menuLevel">1</div>
-      <div class="msb-lbl">Max. úr.</div>
+      <div class="msb-lbl">Макс. ур.</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" style="color:#facc15;" id="menuCoins">0</div>
-      <div class="msb-lbl">🪙 Mincí</div>
+      <div class="msb-lbl">🪙 Монет</div>
     </div>
   </div>
   <!-- Глобальная статистика -->
@@ -546,117 +546,117 @@
     <span id="gStatGames">🎮 ...</span>
   </div>
   <!-- Главная кнопка -->
-  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;HRAŤ</button>
+  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
   <!-- Pokračovať -->
-  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Pokračovať &nbsp;(Úr. <span id="btnContinueLvl">1</span>)</button>
+  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
   <!-- Горизонтальная панель навигации -->
   <div class="menu-nav-bar">
     <button class="mnav-btn clr-yellow" id="btnRecords">
       <div class="mnav-icon">🏆</div>
-      <div class="mnav-label">Rekordy</div>
+      <div class="mnav-label">Рекорды</div>
     </button>
     <button class="mnav-btn clr-purple" id="btnAch">
       <div class="mnav-icon">🏅</div>
-      <div class="mnav-label">Ocenenia</div>
+      <div class="mnav-label">Ачивки</div>
     </button>
     <button class="mnav-btn clr-blue" id="btnQuests" style="position:relative;">
       <div class="mnav-icon">📋</div>
-      <div class="mnav-label">Úlohy</div>
+      <div class="mnav-label">Квесты</div>
     </button>
     <button class="mnav-btn clr-orange" id="btnShop">
       <div class="mnav-icon">🪙</div>
-      <div class="mnav-label">Obchod</div>
+      <div class="mnav-label">Магазин</div>
     </button>
     <button class="mnav-btn" id="btnSettings">
       <div class="mnav-icon">⚙️</div>
-      <div class="mnav-label">Nastavenia</div>
+      <div class="mnav-label">Настройки</div>
     </button>
   </div>
 </div>
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
-  <div class="rec-title">🪙 Obchod</div>
-  <div class="shop-coins" id="shopCoins">🪙 0 mincí</div>
+  <div class="rec-title">🪙 Магазин</div>
+  <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
   <div style="margin-bottom:8px;">
-    <div style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">VÝBER SKINU</div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">ВЫБОР СКИНА</div>
     <div class="skin-row" id="shopSkinRow"></div>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
-  <button class="shop-back" id="shopBack">← Späť</button>
+  <button class="shop-back" id="shopBack">← Назад</button>
 </div>
 <!-- УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ -->
 <div id="achNotif">
   <div class="an-icon" id="anIcon">🏅</div>
   <div class="an-text">
-    <div class="an-title" id="anTitle">Ocenenie!</div>
-    <div class="an-sub" id="anSub">Popis</div>
+    <div class="an-title" id="anTitle">Достижение!</div>
+    <div class="an-sub" id="anSub">Описание</div>
   </div>
 </div>
 <!-- ЭКРАН ДОСТИЖЕНИЙ -->
 <div class="screen" id="achScreen">
-  <div class="rec-title">🏅 Ocenenia</div>
+  <div class="rec-title">🏅 Достижения</div>
   <div class="ach-grid" id="achGrid"></div>
-  <button class="ach-back" id="achBack">← Späť</button>
+  <button class="ach-back" id="achBack">← Назад</button>
 </div>
 <!-- ВЫБОР РЕЖИМА -->
 <div class="screen" id="modeScreen">
-  <div class="mode-title">Výber režimu</div>
-  <div class="mode-sub">Ako chceš hrať?</div>
+  <div class="mode-title">Выбор режима</div>
+  <div class="mode-sub">Как хочешь играть?</div>
   <div class="mode-cards">
     <button class="mode-card" id="modeClassic">
       <div class="mode-card-icon">🐍</div>
       <div>
-        <div class="mode-card-title">Klasika</div>
-        <div class="mode-card-desc">Úrovne, rastúca rýchlosť, bez konca</div>
+        <div class="mode-card-title">Классика</div>
+        <div class="mode-card-desc">Уровни, растущая скорость, без конца</div>
       </div>
     </button>
     <button class="mode-card" id="modeTime">
       <div class="mode-card-icon">⏱</div>
       <div>
-        <div class="mode-card-title">Čas</div>
-        <div class="mode-card-desc">60 sekúnd — nazber čo najviac bodov</div>
+        <div class="mode-card-title">Время</div>
+        <div class="mode-card-desc">60 секунд — набери как можно больше очков</div>
       </div>
     </button>
     <button class="mode-card" id="modeSurvival">
       <div class="mode-card-icon">💀</div>
       <div>
-        <div class="mode-card-title">Prežitie</div>
-        <div class="mode-card-desc">Maximum prekážok, konštantná rýchlosť</div>
+        <div class="mode-card-title">Выживание</div>
+        <div class="mode-card-desc">Максимум препятствий, постоянная скорость</div>
       </div>
     </button>
     <button class="mode-card" id="modeMirror">
       <div class="mode-card-icon">🪞</div>
       <div>
-        <div class="mode-card-title">Zrkadlo</div>
-        <div class="mode-card-desc">Ľavo = pravo, pravo = ľavo. Vyskúšaj!</div>
+        <div class="mode-card-title">Зеркало</div>
+        <div class="mode-card-desc">Лево = право, право = лево. Попробуй!</div>
       </div>
     </button>
   </div>
-  <button class="mode-back" id="modeBack">← Späť</button>
+  <button class="mode-back" id="modeBack">← Назад</button>
 </div>
 <!-- ЭКРАН УРОВНЯ -->
 <div class="screen" id="levelScreen">
-  <div class="lvl-label">Úroveň</div>
+  <div class="lvl-label">Уровень</div>
   <div class="lvl-num" id="lvlNum">1</div>
   <div class="lvl-goal" id="lvlGoal">Zjedz 5 jedál</div>
 </div>
 <!-- ИГРА -->
 <div class="screen" id="gameScreen">
   <div class="hud">
-    <div>Skóre: <span id="score">0</span></div>
+    <div>Счёт: <span id="score">0</span></div>
     <div class="lvl-badge" id="hudLvl">Úr. 1</div>
     <div id="hudTimerWrap" style="display:none;"><span class="hud-timer" id="hudTimer">60</span></div>
-    <div>Rekord: <span id="bestHud">0</span></div>
+    <div>Рекорд: <span id="bestHud">0</span></div>
   </div>
   <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
   <div class="wrap">
     <canvas id="c" width="560" height="560"></canvas>
     <div id="pauseMenu">
-      <div class="pm-title">⏸ PAUZA</div>
+      <div class="pm-title">⏸ ПАУЗА</div>
       <div class="pm-info" id="pmInfo"></div>
-      <button class="pm-btn resume" id="pmResume">▶ Pokračovať</button>
-      <button class="pm-btn secondary" id="pmRestart">↺ Začať úroveň znova</button>
-      <button class="pm-btn secondary" id="pmMenu">⌂ Hlavné menu</button>
+      <button class="pm-btn resume" id="pmResume">▶ Продолжить</button>
+      <button class="pm-btn secondary" id="pmRestart">↺ Начать уровень заново</button>
+      <button class="pm-btn secondary" id="pmMenu">⌂ Главное меню</button>
     </div>
     <div id="levelUpOverlay">
       <div class="lu-text">LEVEL UP!</div>
@@ -672,17 +672,17 @@
       </div>
       <div class="dbg-section">— бонусы —</div>
       <div class="dbg-grid3">
-        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Štít</button>
+        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
         <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Turbo</button>
-        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Mraz</button>
+        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Заморозка</button>
         <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Bomba</button>
         <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Zlato</button>
         <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Inv.</button>
       </div>
       <div class="dbg-section">— уровень —</div>
       <div class="dbg-grid2">
-        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Naplniť bar</button>
-        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ Ďalšia úroveň</button>
+        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
+        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ Следующий уровень</button>
       </div>
       <div class="dbg-grid5">
         <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
@@ -695,18 +695,18 @@
       <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Všetky skiny</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Všetky ocenenia</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Все скины</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Все достижения</button>
         <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Сбросить всё</button>
       </div>
     </div>
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
       <div class="go-sub" id="goSub"></div>
-      <button class="go-btn" id="goRetryCur">↺ Pokračovať od úr. <span id="goLvlNum">1</span></button>
-      <button class="go-btn share" id="goShare">📤 Zdieľať</button>
-      <button class="go-btn sec" id="goRetry">↺ Znova od úr. 1</button>
-      <button class="go-btn sec" id="goMenu">⌂ Hlavné menu</button>
+      <button class="go-btn" id="goRetryCur">↺ Продолжить с ур. <span id="goLvlNum">1</span></button>
+      <button class="go-btn share" id="goShare">📤 Поделиться</button>
+      <button class="go-btn sec" id="goRetry">↺ Заново с ур. 1</button>
+      <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
     </div>
   </div>
   <div class="dpad">
@@ -720,63 +720,63 @@
     <button class="dpad-btn" id="btnDown">▼</button>
     <div class="dpad-empty"></div>
   </div>
-  <div class="kb-hint">↑↓←→ / WASD · SPACE — pauza</div>
+  <div class="kb-hint">↑↓←→ / WASD · SPACE — пауза</div>
 </div>
 <!-- КВЕСТЫ -->
 <div class="screen" id="questScreen">
-  <div class="rec-title">📋 Úlohy</div>
+  <div class="rec-title">📋 Квесты</div>
   <div class="quest-grid" id="questGrid"></div>
-  <div class="quest-reset" id="questReset">Reset o polnoci</div>
-  <button class="shop-back" id="questBack">← Späť</button>
+  <div class="quest-reset" id="questReset">Сброс в полночь</div>
+  <button class="shop-back" id="questBack">← Назад</button>
 </div>
 <!-- НАСТРОЙКИ -->
 <div class="screen" id="settingsScreen">
-  <div class="rec-title">⚙️ Nastavenia</div>
+  <div class="rec-title">⚙️ Настройки</div>
   <div class="rec-list">
     <div class="rec-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-      <span class="rl">Obtiažnosť</span>
+      <span class="rl">Сложность</span>
       <div class="diff-row">
-        <button class="diff-btn" data-diff="easy">😌 Ľahká</button>
-        <button class="diff-btn" data-diff="normal">😐 Normál</button>
-        <button class="diff-btn" data-diff="hard">😤 Hardcore</button>
+        <button class="diff-btn" data-diff="easy">😌 Легко</button>
+        <button class="diff-btn" data-diff="normal">😐 Нормально</button>
+        <button class="diff-btn" data-diff="hard">😤 Хардкор</button>
       </div>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎵 Hudba</span>
+      <span class="rl">🎵 Музыка</span>
       <button class="diff-btn" id="btnMusicToggle">zap.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🔊 Zvukové efekty</span>
+      <span class="rl">🔊 Звуковые эффекты</span>
       <button class="diff-btn" id="btnSfxToggle">zap.</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎨 Téma</span>
-      <button class="diff-btn" id="btnThemeToggle">🌙 Tmavá</button>
+      <span class="rl">🎨 Тема</span>
+      <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
     </div>
   </div>
   <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
-  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Späť</button>
+  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
 <!-- РЕКОРДЫ + ЛИДЕРБОРД -->
 <div class="screen" id="recordsScreen">
-  <div class="rec-title">🏆 Rekordy</div>
+  <div class="rec-title">🏆 Рекорды</div>
   <div class="lb-tabs">
-    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Moje</button>
+    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Мои</button>
     <button class="lb-tab" id="tabOnline" onclick="switchLbTab('online')">🌍 Online</button>
   </div>
   <!-- Moje rekordy -->
   <div id="panelMy">
     <div class="rec-list">
-      <div class="rec-row"><span class="rl">Najlepšie skóre</span><span class="rv" id="rBest">0</span></div>
-      <div class="rec-row"><span class="rl">Max. úroveň</span><span class="rv" id="rLvl">1</span></div>
-      <div class="rec-row"><span class="rl">Hier odohratých</span><span class="rv" id="rGames">0</span></div>
+      <div class="rec-row"><span class="rl">Лучший счёт</span><span class="rv" id="rBest">0</span></div>
+      <div class="rec-row"><span class="rl">Макс. уровень</span><span class="rv" id="rLvl">1</span></div>
+      <div class="rec-row"><span class="rl">Партий сыграно</span><span class="rv" id="rGames">0</span></div>
     </div>
   </div>
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
-    <div class="lb-list" id="lbList"><div class="lb-loading">Načítavam...</div></div>
+    <div class="lb-list" id="lbList"><div class="lb-loading">Загрузка...</div></div>
   </div>
-  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Späť</button>
+  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Назад</button>
 </div>
 <script>
 const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
@@ -1131,7 +1131,7 @@ let lbNickname = ''; // заполняется из Supabase при initGame()
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
-  el.innerHTML='<div class="lb-loading">Načítavam...</div>';
+  el.innerHTML='<div class="lb-loading">Загрузка...</div>';
   try{
     const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
     const data=await r.json();
@@ -1492,7 +1492,7 @@ document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
 function applyTheme(){
   document.documentElement.dataset.theme = theme;
   const btn = document.getElementById('btnThemeToggle');
-  if(btn) btn.textContent = theme==='light' ? '☀️ Svetlá' : '🌙 Tmavá';
+  if(btn) btn.textContent = theme==='light' ? '☀️ Svetlá' : '🌙 Тёмная';
   document.querySelector('meta[name="theme-color"]').content = theme==='light' ? '#eef2f7' : '#0a0a0f';
 }
 function toggleTheme(){
@@ -2047,7 +2047,7 @@ function endGame(){
     // В режимах Время/Выживание/Зеркало кнопка "Продолжить с уровня" → "Сыграть ещё"
     const retryCurBtn=document.getElementById('goRetryCur');
     if(gameMode!=='classic') retryCurBtn.innerHTML=`↺ Hrať znova`;
-    else retryCurBtn.innerHTML=`↺ Pokračovať od úr. ${currentLevel}`;
+    else retryCurBtn.innerHTML=`↺ Продолжить с ур. ${currentLevel}`;
     const lvlEl=document.getElementById('goLvlNum');
     if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
@@ -2191,10 +2191,10 @@ async function shareScore(){
   try{
     await navigator.clipboard.writeText(text);
     goShare.textContent='✓ Skopírované!';
-    setTimeout(()=>goShare.textContent='📤 Zdieľať',2000);
+    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
   }catch(_){
     goShare.textContent='✗ Chyba';
-    setTimeout(()=>goShare.textContent='📤 Zdieľať',2000);
+    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
   }
 }
 goShare.addEventListener('click',shareScore);
