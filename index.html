@@ -753,6 +753,10 @@
       <span class="rl">🎨 Тема</span>
       <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
     </div>
+    <div class="rec-row" style="justify-content:space-between;">
+      <span class="rl" id="settLangLbl">🌐 Jazyk</span>
+      <button class="diff-btn" id="btnLangToggle">RU</button>
+    </div>
   </div>
   <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
@@ -784,6 +788,274 @@ const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
 const SB_URL='https://wopvlulqfzecujmfoezr.supabase.co';
 const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
 const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+
+// ── JAZYK / ЯЗЫК ─────────────────────────────────────────────────
+let currentLang='ru';
+const TRANSLATIONS={
+  sk:{
+    appTitle:'Had',loading:'Načítavam...',anon:'Anonym',
+    welcSub:'Ahoj! Zadaj svoje meno pre tabuľku rekordov 🌍',
+    welcPlaceholder:'Tvoja prezývka...',
+    welcBtn:'▶ &nbsp;HRAŤ!',welcSkip:'hrať bez mena',
+    menuStatBest:'Rekord',menuStatLvl:'Max. úr.',menuStatCoins:'🪙 Mincí',
+    btnPlay:'▶ &nbsp;HRAŤ',
+    navRecords:'Rekordy',navAch:'Ocenenia',navQuests:'Úlohy',navShop:'Obchod',navSettings:'Nastavenia',
+    shopTitle:'🪙 Obchod',shopSkinLabel:'VÝBER SKINU',
+    achTitle:'🏅 Ocenenia',achNotifTitle:'Ocenenie!',
+    modeTitle:'Výber režimu',modeSub:'Ako chceš hrať?',
+    modeClassicTitle:'Klasika',modeClassicDesc:'Úrovne, rastúca rýchlosť, bez konca',
+    modeTimeTitle:'Čas',modeTimeDesc:'60 sekúnd — nazber čo najviac bodov',
+    modeSurvivalTitle:'Prežitie',modeSurvivalDesc:'Maximum prekážok, konštantná rýchlosť',
+    modeMirrorTitle:'Zrkadlo',modeMirrorDesc:'Ľavo = pravo, pravo = ľavo. Vyskúšaj!',
+    lvlLabel:'Úroveň',hudScore:'Skóre:',hudRecord:'Rekord:',
+    pauseTitle:'⏸ PAUZA',pauseResume:'▶ Pokračovať',
+    pauseRestart:'↺ Začať úroveň znova',pauseMenu:'⌂ Hlavné menu',
+    goRetryMore:'↺ Hrať znova',goRetryCurPrefix:'↺ Pokračovať od úr. ',
+    goShare:'📤 Zdieľať',goRetry:'↺ Znova od úr. 1',goMenu:'⌂ Hlavné menu',
+    questTitle:'📋 Úlohy',questBack:'← Späť',questReset:'Reset o polnoci',
+    questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
+    settingsTitle:'⚙️ Nastavenia',settingsDiff:'Obtiažnosť',
+    diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
+    settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
+    settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
+    settingsLang:'🌐 Jazyk',langBtn:'RU',
+    soundOn:'zap.',soundOff:'vyp.',
+    btnReset:'🗑 Resetovať postup',btnBack:'← Späť',
+    recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
+    recBest:'Najlepšie skóre',recLvl:'Max. úroveň',recGames:'Hier odohratých',
+    lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',
+    shopBack:'← Späť',achBack:'← Späť',
+    shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
+    shopCoinsFmt:(n)=>`🪙 ${n} mincí`,
+    shopLevelFmt:(n)=>`Úroveň ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} mincí`,
+    skinLvlFmt:(n)=>`Úr.${n}`,
+    levelUpSub:(n)=>`Úroveň ${n}`,
+    unlockSkin:(e,name)=>`🔓 Odomknutý skin ${e} ${name}!`,
+    lvlGoalFmt:(n)=>`Zjedz ${n} jedál`,
+    hudTimeSuffix:'s',
+    hudModeSurvival:'💀 PREŽITIE',hudModeTime:'⏱ ČAS',hudModeLvl:(n)=>`Úr. ${n}`,
+    shieldHud:'ŠTÍT',mirrorHud:'ZRK',
+    floatShield:'🛡 ŠTÍT!',floatTurbo:'⚡ TURBO!',floatFreeze:'❄ STOP!',floatBomb:'💣 BOOM!',floatBlock:'🛡 BLOK!',
+    floatBarFull:'⚡ BAR PLNÝ',floatAllSkins:'🔓 VŠETKY SKINY!',
+    floatGoldFood:'⭐ ZLATÉ JEDLO',floatInvOn:'♾ NEZRANITEĽNOSŤ ZAP',floatInvOff:'♾ VYP',
+    floatAllAch:'🏅 VŠETKY OCENENIA!',floatBought:'🪙 Kúpené!',
+    goMsgNewRecord:'🏆 Nový rekord!',goMsgTimeUp:'⏱ Čas vypršal!',
+    goMsgSurvived:'💀 Prežil!',goMsgGameOver:'💀 Koniec hry',
+    goModeLbl:{time:'⏱ Čas',survival:'💀 Prežitie',mirror:'🪞 Zrkadlo'},
+    goModeLblClassic:(n)=>`Úroveň: ${n}`,
+    goSubFmt:(score,mode)=>`Skóre: ${score} · ${mode}`,
+    pauseInfoFmt:(lvl,score)=>`Úroveň ${lvl} · Skóre: ${score}`,
+    resetConfirm:'Resetovať celý postup? Mince, rekordy, ocenenia budú vymazané. Prezývka zostane.',
+    shareTitle:'🐍 Had',
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Nazbieral som ${score} bodov v Hadovi (${mode})!\nNajlepší výsledok: ${best} 🏆\nZahraj si: https://youngsanifone.github.io/snake/`,
+    shareModes:{classic:(n)=>`úroveň ${n}`,time:'režim Čas',survival:'režim Prežitie',mirror:'režim Zrkadlo'},
+    shareCopied:'✓ Skopírované!',shareError:'✗ Chyba',
+    globalPlayers:(n)=>`🌍 ${n.toLocaleString('sk')} ${n===1?'hráč':n<5?'hráči':'hráčov'}`,
+    globalGames:(n)=>`🎮 ${n.toLocaleString('sk')} ${n===1?'hra':n<5?'hry':'hier'}`,
+    questResetFmt:(h,m)=>`🕐 Reset o ${h}h ${m}m`,
+    dbgFillBar:'⚡ Naplniť bar',dbgNextLvl:'⏭ Ďalšia úroveň',
+    dbgShield:'🛡 Štít',dbgTurbo:'⚡ Turbo',dbgFreeze:'❄ Mraz',
+    dbgBomb:'💣 Bomba',dbgGold:'⭐ Zlato',dbgInv:'♾ Inv.',
+    dbgAllSkins:'🔓 Všetky skiny',dbgAllAch:'🏅 Všetky ocenenia',dbgResetAll:'🗑 Resetovať všetko',
+    kbHint:'↑↓←→ / WASD · SPACE — pauza',
+    skinNames:['Zelený','Modrý','Červený','Zlatý','Fialový','Ružový','Tmavý','Oceán','Oheň'],
+    achNames:['Prvé sústo','Desiatka','Combo majster','Zlatokop','Pod ochranou','Demolačník','Rýchlik','Mraziak','Úroveň 5','Úroveň 10','Preživší','Časový šampión','Zrkadlár'],
+    achDescs:['Zjedz prvé jedlo','Zjedz 10 jedál za jednu hru','Dosiahni combo x3 (5+ za sebou)','Zjedz zlaté jedlo','Zober štít','Použi bombu','Použi turbo','Použi mrazenie','Dosiahni 5. úroveň','Dosiahni 10. úroveň','Prežij 30 sek. v Prežití','Nazber 20+ bodov za 60 sek.','Zjedz 5 jedál v režime Zrkadlo'],
+    questTitles:['Jedák','Bodovač','Hráč','Horolezec','Zlatokop','Zberateľ','Combo'],
+    questMakes:[
+      (n)=>`Zjedz ${n} jedál za deň`,
+      (n)=>`Nazber ${n} bodov za deň`,
+      (n)=>`Zahraj ${n===1?'1-krát':`${n}-krát`}`,
+      (n)=>`Dosiahni úroveň ${n}`,
+      (n)=>`Zjedz ${n} zlatých jedál`,
+      (n)=>`Zober ${n===1?'1 bonus':`${n} bonusy`}`,
+      (n)=>`Dosiahni combo ×${n}`,
+    ],
+  },
+  ru:{
+    appTitle:'Змейка',loading:'Загрузка...',anon:'Аноним',
+    welcSub:'Привет! Введи своё имя для таблицы рекордов 🌍',
+    welcPlaceholder:'Твой ник...',
+    welcBtn:'▶ &nbsp;ПОЕХАЛИ!',welcSkip:'играть без имени',
+    menuStatBest:'Рекорд',menuStatLvl:'Ур. макс',menuStatCoins:'🪙 Монет',
+    btnPlay:'▶ &nbsp;ИГРАТЬ',
+    navRecords:'Рекорды',navAch:'Ачивки',navQuests:'Квесты',navShop:'Магазин',navSettings:'Настройки',
+    shopTitle:'🪙 Магазин',shopSkinLabel:'ВЫБОР СКИНА',
+    achTitle:'🏅 Достижения',achNotifTitle:'Достижение!',
+    modeTitle:'Выбор режима',modeSub:'Как хочешь играть?',
+    modeClassicTitle:'Классика',modeClassicDesc:'Уровни, растущая скорость, бесконечно',
+    modeTimeTitle:'Время',modeTimeDesc:'60 секунд — набери максимум очков',
+    modeSurvivalTitle:'Выживание',modeSurvivalDesc:'Максимум препятствий, скорость постоянная',
+    modeMirrorTitle:'Зеркало',modeMirrorDesc:'Лево = право, право = лево. Попробуй!',
+    lvlLabel:'Уровень',hudScore:'Счёт:',hudRecord:'Рекорд:',
+    pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продолжить',
+    pauseRestart:'↺ Начать уровень заново',pauseMenu:'⌂ Главное меню',
+    goRetryMore:'↺ Сыграть ещё',goRetryCurPrefix:'↺ Продолжить с ур. ',
+    goShare:'📤 Поделиться',goRetry:'↺ Заново с ур. 1',goMenu:'⌂ Главное меню',
+    questTitle:'📋 Квесты',questBack:'← Назад',questReset:'Сброс в полночь',
+    questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
+    settingsTitle:'⚙️ Настройки',settingsDiff:'Сложность',
+    diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
+    settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
+    settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
+    settingsLang:'🌐 Язык',langBtn:'SK',
+    soundOn:'вкл',soundOff:'выкл',
+    btnReset:'🗑 Сбросить прогресс',btnBack:'← Назад',
+    recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
+    recBest:'Лучший счёт',recLvl:'Макс. уровень',recGames:'Игр сыграно',
+    lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',
+    shopBack:'← Назад',achBack:'← Назад',
+    shopEquipped:'Надет',shopEquip:'Надеть',shopBought:T().shopBought,
+    shopCoinsFmt:(n)=>`🪙 ${n} монет`,
+    shopLevelFmt:(n)=>`Уровень ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} монет`,
+    skinLvlFmt:(n)=>`Ур.${n}`,
+    levelUpSub:(n)=>`Уровень ${n}`,
+    unlockSkin:(e,name)=>`🔓 Разблокирован скин ${e} ${name}!`,
+    lvlGoalFmt:(n)=>`Съешь ${n} еды`,
+    hudTimeSuffix:'с',
+    hudModeSurvival:'💀 ВЫЖИВАНИЕ',hudModeTime:'⏱ ВРЕМЯ',hudModeLvl:(n)=>`Ур. ${n}`,
+    shieldHud:'ЩИТ',mirrorHud:'ЗЕРК',
+    floatShield:'🛡 ЩИТ!',floatTurbo:'⚡ ТУРБО!',floatFreeze:'❄ СТОП!',floatBomb:'💣 БАБАХ!',floatBlock:'🛡 БЛОК!',
+    floatBarFull:'⚡ БАР ЗАПОЛНЕН',floatAllSkins:'🔓 ВСЕ СКИНЫ!',
+    floatGoldFood:'⭐ ЗОЛОТАЯ ЕДА',floatInvOn:'♾ НЕУЯЗВИМОСТЬ ВКЛ',floatInvOff:'♾ ВЫКЛ',
+    floatAllAch:'🏅 ВСЕ АЧИВКИ!',floatBought:'🪙 Куплено!',
+    goMsgNewRecord:'🏆 Новый рекорд!',goMsgTimeUp:'⏱ Время вышло!',
+    goMsgSurvived:'💀 Выжил!',goMsgGameOver:'💀 Конец игры',
+    goModeLbl:{time:'⏱ Время',survival:'💀 Выживание',mirror:'🪞 Зеркало'},
+    goModeLblClassic:(n)=>`Уровень: ${n}`,
+    goSubFmt:(score,mode)=>`Счёт: ${score} · ${mode}`,
+    pauseInfoFmt:(lvl,score)=>`Уровень ${lvl} · Счёт: ${score}`,
+    resetConfirm:'Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.',
+    shareTitle:'🐍 Змейка',
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Набрал ${score} очков в Змейке (${mode})!\nЛучший результат: ${best} 🏆\nСыграй сам: https://youngsanifone.github.io/snake/`,
+    shareModes:{classic:(n)=>`уровень ${n}`,time:'режим Время',survival:'режим Выживание',mirror:'режим Зеркало'},
+    shareCopied:'✓ Скопировано!',shareError:'✗ Ошибка',
+    globalPlayers:(n)=>`🌍 ${n.toLocaleString('ru')} ${n===1?'игрок':n<5?'игрока':'игроков'}`,
+    globalGames:(n)=>`🎮 ${n.toLocaleString('ru')} ${n===1?'партия':n<5?'партии':'партий'}`,
+    questResetFmt:(h,m)=>`🕐 Сброс через ${h}ч ${m}м`,
+    dbgFillBar:'⚡ Заполнить бар',dbgNextLvl:'⏭ След. уровень',
+    dbgShield:'🛡 Щит',dbgTurbo:'⚡ Турбо',dbgFreeze:'❄ Заморозка',
+    dbgBomb:'💣 Бомба',dbgGold:'⭐ Золото',dbgInv:'♾ Инв.',
+    dbgAllSkins:'🔓 Все скины',dbgAllAch:'🏅 Все ачивки',dbgResetAll:'🗑 Сбросить всё',
+    kbHint:'↑↓←→ / WASD · SPACE — пауза',
+    skinNames:['Зелёный','Синий','Красный','Золотой','Фиолетовый','Розовый','Тёмный','Океан','Огонь'],
+    achNames:['Первый укус','Десятка','Комбо-мастер','Золотоискатель','Под защитой','Подрывник','Спидстер','Заморозка','Уровень 5','Уровень 10','Выживший','Чемпион времени','Зеркальщик'],
+    achDescs:['Съешь первую еду','Съешь 10 еды за одну игру','Сделай комбо x3 (5+ подряд)','Съешь золотую еду','Подбери щит-предмет','Используй бомбу','Используй ускорение','Используй заморозку','Достигни 5-го уровня','Достигни 10-го уровня','Продержись 30 сек в Выживании','Набери 20+ очков за 60 сек','Съешь 5 еды в режиме Зеркало'],
+    questTitles:['Обжора','Очкарик','Игроман','Скалолаз','Золотоискатель','Коллекционер','Комбо'],
+    questMakes:[
+      (n)=>`Съешь ${n} еды за день`,
+      (n)=>`Набери ${n} очков за день`,
+      (n)=>`Сыграй ${n===1?'1 раз':`${n} раза`}`,
+      (n)=>`Достигни уровня ${n}`,
+      (n)=>`Съешь ${n} золотой еды`,
+      (n)=>`Подбери ${n===1?'1 бонус':`${n} бонуса`}`,
+      (n)=>`Набери комбо ×${n}`,
+    ],
+  }
+};
+function T(){return TRANSLATIONS[currentLang];}
+function applyLang(){
+  const L=T();
+  document.documentElement.lang=currentLang;
+  document.title=L.appTitle;
+  const metaTitle=document.querySelector('meta[name="apple-mobile-web-app-title"]');
+  if(metaTitle)metaTitle.content=L.appTitle;
+  SKINS.forEach((s,i)=>{if(L.skinNames[i])s.name=L.skinNames[i];});
+  ACHIEVEMENTS.forEach((a,i)=>{if(L.achNames[i])a.name=L.achNames[i];if(L.achDescs[i])a.desc=L.achDescs[i];});
+  QUEST_POOL.forEach((q,i)=>{if(L.questTitles[i])q.title=L.questTitles[i];if(L.questMakes[i])q.make=L.questMakes[i];});
+  const welcSubEl=document.querySelector('.welc-sub');if(welcSubEl)welcSubEl.textContent=L.welcSub;
+  const welcInpEl=document.getElementById('welcInput');if(welcInpEl)welcInpEl.placeholder=L.welcPlaceholder;
+  const welcBtnEl=document.getElementById('welcBtn');if(welcBtnEl)welcBtnEl.innerHTML=L.welcBtn;
+  const welcSkipEl=document.getElementById('welcSkip');if(welcSkipEl)welcSkipEl.textContent=L.welcSkip;
+  document.querySelectorAll('.menu-title').forEach(el=>el.textContent=L.appTitle);
+  const msblbls=document.querySelectorAll('.msb-lbl');
+  if(msblbls[0])msblbls[0].textContent=L.menuStatBest;
+  if(msblbls[1])msblbls[1].textContent=L.menuStatLvl;
+  if(msblbls[2])msblbls[2].textContent=L.menuStatCoins;
+  const btnPlayEl=document.getElementById('btnPlay');if(btnPlayEl)btnPlayEl.innerHTML=L.btnPlay;
+  [{id:'btnRecords',k:'navRecords'},{id:'btnAch',k:'navAch'},{id:'btnQuests',k:'navQuests'},{id:'btnShop',k:'navShop'},{id:'btnSettings',k:'navSettings'}].forEach(({id,k})=>{
+    const el=document.getElementById(id);if(el){const lb=el.querySelector('.mnav-label');if(lb)lb.textContent=L[k];}
+  });
+  const shopT=document.querySelector('#shopScreen .rec-title');if(shopT)shopT.textContent=L.shopTitle;
+  const shopBk=document.getElementById('shopBack');if(shopBk)shopBk.textContent=L.shopBack;
+  const achT=document.querySelector('#achScreen .rec-title');if(achT)achT.textContent=L.achTitle;
+  const anTitleEl=document.getElementById('anTitle');if(anTitleEl)anTitleEl.textContent=L.achNotifTitle;
+  const achBk=document.getElementById('achBack');if(achBk)achBk.textContent=L.achBack;
+  const modeT=document.querySelector('.mode-title');if(modeT)modeT.textContent=L.modeTitle;
+  const modeS=document.querySelector('.mode-sub');if(modeS)modeS.textContent=L.modeSub;
+  const mTitles=document.querySelectorAll('.mode-card-title');
+  const mDescs=document.querySelectorAll('.mode-card-desc');
+  ['modeClassicTitle','modeTimeTitle','modeSurvivalTitle','modeMirrorTitle'].forEach((k,i)=>{if(mTitles[i])mTitles[i].textContent=L[k];});
+  ['modeClassicDesc','modeTimeDesc','modeSurvivalDesc','modeMirrorDesc'].forEach((k,i)=>{if(mDescs[i])mDescs[i].textContent=L[k];});
+  const modeBk=document.getElementById('modeBack');if(modeBk)modeBk.textContent=L.questBack;
+  const lvlLbl=document.querySelector('.lvl-label');if(lvlLbl)lvlLbl.textContent=L.lvlLabel;
+  const hudEl=document.querySelector('.hud');
+  if(hudEl){
+    const divs=hudEl.querySelectorAll(':scope>div:not(.lvl-badge):not(#hudTimerWrap)');
+    if(divs[0]){const sp=divs[0].querySelector('span');if(sp){divs[0].innerHTML='';divs[0].append(L.hudScore+' ',sp);}}
+    if(divs[1]){const sp=divs[1].querySelector('span');if(sp){divs[1].innerHTML='';divs[1].append(L.hudRecord+' ',sp);}}
+  }
+  const pmT=document.querySelector('.pm-title');if(pmT)pmT.textContent=L.pauseTitle;
+  const pmR=document.getElementById('pmResume');if(pmR)pmR.textContent=L.pauseResume;
+  const pmRs=document.getElementById('pmRestart');if(pmRs)pmRs.textContent=L.pauseRestart;
+  const pmM=document.getElementById('pmMenu');if(pmM)pmM.textContent=L.pauseMenu;
+  const goSh=document.getElementById('goShare');if(goSh)goSh.textContent=L.goShare;
+  const goRt=document.getElementById('goRetry');if(goRt)goRt.textContent=L.goRetry;
+  const goMn=document.getElementById('goMenu');if(goMn)goMn.textContent=L.goMenu;
+  const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
+  const questBk=document.getElementById('questBack');if(questBk)questBk.textContent=L.questBack;
+  const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
+  const setRls=document.querySelectorAll('#settingsScreen .rl');
+  if(setRls[0])setRls[0].textContent=L.settingsDiff;
+  if(setRls[1])setRls[1].textContent=L.settingsMusic;
+  if(setRls[2])setRls[2].textContent=L.settingsSfx;
+  if(setRls[3])setRls[3].textContent=L.settingsTheme;
+  if(setRls[4])setRls[4].textContent=L.settingsLang;
+  document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
+    if(b.dataset.diff==='easy')b.textContent=L.diffEasy;
+    else if(b.dataset.diff==='normal')b.textContent=L.diffNormal;
+    else if(b.dataset.diff==='hard')b.textContent=L.diffHard;
+  });
+  const btnRst=document.getElementById('btnResetProgress');if(btnRst)btnRst.textContent=L.btnReset;
+  const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
+  const btnLangEl=document.getElementById('btnLangToggle');if(btnLangEl)btnLangEl.textContent=L.langBtn;
+  const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
+  const tabMyEl=document.getElementById('tabMy');if(tabMyEl)tabMyEl.textContent=L.tabMy;
+  const tabOnlEl=document.getElementById('tabOnline');if(tabOnlEl)tabOnlEl.textContent=L.tabOnline;
+  const recRls=document.querySelectorAll('#panelMy .rl');
+  if(recRls[0])recRls[0].textContent=L.recBest;
+  if(recRls[1])recRls[1].textContent=L.recLvl;
+  if(recRls[2])recRls[2].textContent=L.recGames;
+  const btnBkMenu=document.getElementById('btnBackMenu');if(btnBkMenu)btnBkMenu.textContent=L.btnBack;
+  const loadTxt=document.querySelector('#loadingScreen div:last-child');if(loadTxt)loadTxt.textContent=L.loading;
+  const kbHintEl=document.querySelector('.kb-hint');if(kbHintEl)kbHintEl.textContent=L.kbHint;
+  document.querySelectorAll('#debugPanel .dbg-btn').forEach(b=>{
+    const fn=b.getAttribute('onclick')||'';
+    if(fn.includes("'shield'"))b.textContent=L.dbgShield;
+    else if(fn.includes("'speed'"))b.textContent=L.dbgTurbo;
+    else if(fn.includes("'freeze'"))b.textContent=L.dbgFreeze;
+    else if(fn.includes("'bomb'"))b.textContent=L.dbgBomb;
+    else if(fn.includes('dbgGoldFood'))b.textContent=L.dbgGold;
+    else if(fn.includes('dbgToggleInv'))b.textContent=L.dbgInv;
+    else if(fn.includes('dbgFillBar'))b.textContent=L.dbgFillBar;
+    else if(fn.includes('dbgNextLevel'))b.textContent=L.dbgNextLvl;
+    else if(fn.includes('dbgUnlockAll()'))b.textContent=L.dbgAllSkins;
+    else if(fn.includes('dbgUnlockAllAch'))b.textContent=L.dbgAllAch;
+    else if(fn.includes('dbgResetAll'))b.textContent=L.dbgResetAll;
+  });
+  updateSoundToggles();
+  applyTheme();
+}
+function toggleLang(){
+  currentLang=currentLang==='sk'?'ru':'sk';
+  localStorage.setItem(S+'Lang',currentLang);
+  applyLang();
+  buildAchScreen();
+  buildQuestScreen();
+  buildShopScreen();
+  buildSkinRow();
+}
+
 
 // ── ГЛОБАЛЬНАЯ СТАТИСТИКА ─────────────────────────────────────────
 // Получить/создать уникальный ID игрока
@@ -878,7 +1150,7 @@ function upsertProfile(){
     headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({
       player_id:pid,
-      nick:lbNickname||'Аноним',
+      nick:lbNickname||T().anon,
       coins,best,
       best_level:bestLevel,
       games_played:gamesPlayed,
@@ -944,6 +1216,7 @@ function applyLocalCache(){
   musicOn      = localStorage.getItem(S+'Music')!=='off';
   sfxOn        = localStorage.getItem(S+'Sfx')!=='off';
   theme        = localStorage.getItem(S+'Theme')||'dark';
+  currentLang  = localStorage.getItem(S+'Lang')||'ru';
 }
 // Очистить всё (при сбросе)
 function clearLocalData(){
@@ -1065,7 +1338,7 @@ function questTrack(type,value){
 }
 function showQuestComplete(q){
   document.getElementById('anIcon').textContent=q.icon;
-  document.getElementById('anTitle').textContent='Задание выполнено!';
+  document.getElementById('anTitle').textContent=T().questDone;
   document.getElementById('anSub').textContent=q.title+': '+q.desc;
   const notif=document.getElementById('achNotif');
   notif.classList.add('show');
@@ -1114,7 +1387,7 @@ function buildQuestScreen(){
       <div class="quest-footer">
         <div class="quest-pbar"><div class="quest-pfill" style="width:${pct}%"></div></div>
         <div class="quest-cnt">${q.progress}/${q.goal}</div>
-        <button class="quest-claim" data-i="${i}" ${!done||q.claimed?'disabled':''}>${q.claimed?'✓ Получено':'Забрать'}</button>
+        <button class="quest-claim" data-i="${i}" ${!done||q.claimed?'disabled':''}>${q.claimed?T().questClaimed:T().questClaim}</button>
       </div>`;
     grid.appendChild(card);
   });
@@ -1125,7 +1398,7 @@ function buildQuestScreen(){
   });
   const ms=new Date().setHours(24,0,0,0)-Date.now();
   const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
-  document.getElementById('questReset').textContent=`🕐 Сброс через ${h}ч ${m}м`;
+  document.getElementById('questReset').textContent=T().questResetFmt(h,m);
 }
 loadQuests();
 // ── ЛИДЕРБОРД ────────────────────────────────────────────────────
@@ -1133,11 +1406,11 @@ let lbNickname = ''; // заполняется из Supabase при initGame()
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
-  el.innerHTML='<div class="lb-loading">Загрузка...</div>';
+  el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
     const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
     const data=await r.json();
-    if(!data||!data.length){el.innerHTML='<div class="lb-empty">Пока никого — будь первым!</div>';return;}
+    if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
     const rankClass=['gold','silver','bronze'];
     el.innerHTML=data.map((row,i)=>`
@@ -1145,11 +1418,11 @@ async function fetchLeaderboard(){
         <span class="lb-rank ${rankClass[i]||''}">${medals[i]||i+1}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">Ур.${row.level} · ${{classic:'Классика',time:'Время',survival:'Выживание',mirror:'Зеркало'}[row.mode]||'Классика'}</div>
+          <div class="lb-meta">Ур.${row.level} · ${({classic:T().modeClassicTitle,time:T().modeTimeTitle,survival:T().modeSurvivalTitle,mirror:T().modeMirrorTitle})[row.mode]||T().modeClassicTitle}</div>
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
-  }catch(e){el.innerHTML='<div class="lb-empty">Ошибка загрузки 😞</div>';}
+  }catch(e){el.innerHTML='<div class="lb-empty">'+T().lbError+'</div>';}
 }
 
 async function submitToLeaderboard(name,score,level,mode){
@@ -1197,7 +1470,7 @@ function buildSkinRow(){
     const unlocked=isUnlocked(i);
     const b=document.createElement('button');
     b.className='skin-btn'+(i===skinIdx?' active':'')+(unlocked?'':' locked');
-    b.innerHTML=`<span>${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:'Úr.'+s.unlockLevel}</span>`;
+    b.innerHTML=`<span>${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
     if(unlocked){
       const sel=()=>{skinIdx=i;saveAll();buildSkinRow();buildShopScreen();};
       b.addEventListener('click',sel);
@@ -1222,7 +1495,7 @@ function refreshMenuUI(){
 }
 // ── МАГАЗИН ──────────────────────────────────────────────────────
 function buildShopScreen(){
-  document.getElementById('shopCoins').textContent='🪙 '+coins+' монет';
+  document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
   const grid=document.getElementById('shopGrid');
   grid.innerHTML='';
   SKINS.forEach((s,i)=>{
@@ -1233,19 +1506,19 @@ function buildShopScreen(){
     card.className='shop-card';
     let btnHtml='';
     if(skinIdx===i && owned){
-      btnHtml=`<button class="shop-btn equipped" disabled>Oblečený</button>`;
+      btnHtml=`<button class="shop-btn equipped" disabled>${T().shopEquipped}</button>`;
     } else if(owned){
-      btnHtml=`<button class="shop-btn equip" data-i="${i}">Obliecť</button>`;
+      btnHtml=`<button class="shop-btn equip" data-i="${i}">${T().shopEquip}</button>`;
     } else if(s.price){
       btnHtml=`<button class="shop-btn buy" data-i="${i}" ${tooExpensive?'disabled':''}>🪙 ${s.price}</button>`;
     } else {
-      btnHtml=`<button class="shop-btn buy" disabled>Úr. ${s.unlockLevel}</button>`;
+      btnHtml=`<button class="shop-btn buy" disabled>${T().skinLvlFmt(s.unlockLevel)}</button>`;
     }
     card.innerHTML=`
       <span style="font-size:1.6rem">${s.emoji}</span>
       <div style="flex:1">
         <div style="font-weight:600;font-size:0.9rem">${s.name}</div>
-        <div style="font-size:0.75rem;color:var(--text3)">${owned?'Куплено':s.price?'🪙 '+s.price+' монет':'Уровень '+s.unlockLevel}</div>
+        <div style="font-size:0.75rem;color:var(--text3)">${owned?T().shopBought:s.price?T().shopCoinPriceFmt(s.price):T().shopLevelFmt(s.unlockLevel)}</div>
       </div>
       ${btnHtml}
     `;
@@ -1261,7 +1534,7 @@ function buildShopScreen(){
       boughtSkins.add(i);
       skinIdx=i;
       saveAll();
-      spawnFloatText&&spawnFloatText(0,0,'🪙 Куплено!','#facc15');
+      spawnFloatText&&spawnFloatText(0,0,T().floatBought,'#facc15');
       buildShopScreen(); // перерисовать
     };
     btn.addEventListener('click',evBuy);
@@ -1285,7 +1558,7 @@ function buildShopScreen(){
   const welcBtn=document.getElementById('welcBtn');
   const welcSkip=document.getElementById('welcSkip');
   function doWelc(raw){
-    const name=(raw||'').trim()||'Аноним';
+    const name=(raw||'').trim()||T().anon;
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
     // Создаём профиль в Supabase
@@ -1316,7 +1589,9 @@ function buildShopScreen(){
     if(rows.length>0){
       // Профиль найден — применяем данные из Supabase
       applyProfile(rows[0]);
+      currentLang = localStorage.getItem(S+'Lang')||'ru';
       applyTheme();
+      applyLang();
       refreshMenuUI();
       loading.style.display='none';
       showScreen('menuScreen');
@@ -1331,6 +1606,7 @@ function buildShopScreen(){
     // Офлайн — используем localStorage кэш
     applyLocalCache();
     applyTheme();
+    applyLang();
     refreshMenuUI();
     loading.style.display='none';
     showScreen(lbNickname?'menuScreen':'welcomeScreen');
@@ -1465,10 +1741,10 @@ document.getElementById('btnBackSettings').addEventListener('click',()=>showScre
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 // ── СБРОС ПРОГРЕССА ───────────────────────────────────────────────
 async function doResetProgress(){
-  if(!confirm('Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.')) return;
+  if(!confirm(T().resetConfirm)) return;
   // 1. Сбрасываем профиль в Supabase до нуля (сохраняем ник и pid)
   const pid=localStorage.getItem(S+'pid');
-  const nick=localStorage.getItem(S+'Nick')||'Аноним';
+  const nick=localStorage.getItem(S+'Nick')||T().anon;
   if(pid){
     await fetch(SB_URL+'/rest/v1/players',{
       method:'POST',
@@ -1491,6 +1767,8 @@ async function doResetProgress(){
 }
 document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
 document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
+document.getElementById('btnLangToggle').addEventListener('click',toggleLang);
+document.getElementById('btnLangToggle').addEventListener('touchstart',e=>{e.preventDefault();toggleLang();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   const set=()=>{ difficulty=b.dataset.diff; saveAll(); updateDiffBtns(); };
   b.addEventListener('click',set);
@@ -1499,7 +1777,7 @@ document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
 function applyTheme(){
   document.documentElement.dataset.theme = theme;
   const btn = document.getElementById('btnThemeToggle');
-  if(btn) btn.textContent = theme==='light' ? '☀️ Светлая' : '🌙 Тёмная';
+  if(btn) btn.textContent = theme==='light' ? T().themeLight : T().themeDark;
   document.querySelector('meta[name="theme-color"]').content = theme==='light' ? '#eef2f7' : '#0a0a0f';
 }
 function toggleTheme(){
@@ -1514,9 +1792,9 @@ applyTheme();
   btn.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
 })();
 function updateSoundToggles(){
-  document.getElementById('btnMusicToggle').textContent = musicOn ? 'вкл.' : 'выкл.';
+  document.getElementById('btnMusicToggle').textContent = musicOn ? T().soundOn : T().soundOff;
   document.getElementById('btnMusicToggle').classList.toggle('active', musicOn);
-  document.getElementById('btnSfxToggle').textContent   = sfxOn   ? 'вкл.' : 'выкл.';
+  document.getElementById('btnSfxToggle').textContent   = sfxOn   ? T().soundOn : T().soundOff;
   document.getElementById('btnSfxToggle').classList.toggle('active', sfxOn);
 }
 function bindToggle(id, getFn, setFn){
@@ -1529,7 +1807,7 @@ bindToggle('btnSfxToggle',   ()=>sfxOn,   v=>{ sfxOn=v; });
 // ── УВЕДОМЛЕНИЕ ──────────────────────────────────────────────────
 function showLevelUp(nextLvl, callback){
   const ov=document.getElementById('levelUpOverlay');
-  document.getElementById('luSub').textContent='Уровень '+nextLvl;
+  document.getElementById('luSub').textContent=T().levelUpSub(nextLvl);
   ov.classList.remove('show');
   void ov.offsetWidth; // сбрасываем анимацию чтобы она заново запустилась
   ov.classList.add('show');
@@ -1537,7 +1815,7 @@ function showLevelUp(nextLvl, callback){
 }
 function showUnlock(s){
   const n=document.getElementById('unlockNotif');
-  n.textContent=`🔓 Odomknutý skin ${s.emoji} ${s.name}!`;
+  n.textContent=T().unlockSkin(s.emoji,s.name);
   n.style.display='block';
   setTimeout(()=>n.style.display='none',2800);
 }
@@ -1565,7 +1843,7 @@ function beginLevel(lvl){
   currentLevel=lvl;
   levelData=getLevelData(lvl);
   document.getElementById('lvlNum').textContent=lvl;
-  document.getElementById('lvlGoal').textContent=`Съешь ${levelData.foodNeeded} еды`;
+  document.getElementById('lvlGoal').textContent=T().lvlGoalFmt(levelData.foodNeeded);
   // Зеркальный режим — меняем иконки d-pad и добавляем рамку
   const mirror=gameMode==='mirror';
   document.getElementById('btnLeft').textContent  = mirror ? '▶' : '◀';
@@ -1678,17 +1956,17 @@ function applyBonus(type){
   if(type==='freeze')  unlockAch('freeze_user');
   if(type==='shield'){
     shieldActive=true;
-    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'🛡 ЩИТ!','#38bdf8');
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatShield,'#38bdf8');
   } else if(type==='speed'){
     speedBoost=4000; // 4 sek. turbo
-    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'⚡ TURBO!','#fb923c');
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatTurbo,'#fb923c');
   } else if(type==='freeze'){
     freezeActive=3000; // 3 sek. spomalenie
-    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'❄ STOP!','#67e8f9');
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatFreeze,'#67e8f9');
   } else if(type==='bomb'){
     // ničíme všetky prekážky
     obstacles=[];
-    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,'💣 BOOM!','#f87171');
+    spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatBomb,'#f87171');
     // взрывные частицы
     for(let i=0;i<30;i++){
       const a=Math.random()*Math.PI*2,spd=2+Math.random()*5;
@@ -1705,18 +1983,18 @@ function startGame(){
   showScreen('gameScreen');
   // Настраиваем HUD под режим
   if(gameMode==='time'){
-    hudLvl.textContent='⏱ ВРЕМЯ';
+    hudLvl.textContent=T().hudModeTime;
     timeLeft=TIME_MODE_DURATION;
     document.getElementById('hudTimerWrap').style.display='';
     document.getElementById('hudTimer').textContent='60';
     document.getElementById('hudTimer').classList.remove('urgent');
     document.getElementById('progWrap').style.display='none';
   } else if(gameMode==='survival'){
-    hudLvl.textContent='💀 ВЫЖИВАНИЕ';
+    hudLvl.textContent=T().hudModeSurvival;
     document.getElementById('hudTimerWrap').style.display='none';
     document.getElementById('progWrap').style.display='none';
   } else {
-    hudLvl.textContent='Úr. '+currentLevel;
+    hudLvl.textContent=T().hudModeLvl(currentLevel);
     document.getElementById('hudTimerWrap').style.display='none';
     document.getElementById('progWrap').style.display='';
   }
@@ -1859,6 +2137,7 @@ function loop(ts){
       playGoldEat();
       unlockAch('gold_eater');
       questTrack('eat_gold',1);
+      questTrack('eat_food',1);  // золото — тоже еда
       questTrack('score',score);
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
@@ -2046,20 +2325,20 @@ function endGame(){
   trackEvent('game_over',score,gameMode); // глобальная статистика
   ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
-    if(gameMode==='time')          goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '⏱ Время вышло!';
-    else if(gameMode==='survival') goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Выжил!';
-    else                           goMsg.textContent = isNewRecord ? '🏆 Новый рекорд!' : '💀 Конец игры';
-    const modeLbl = gameMode==='time' ? '⏱ Время' : gameMode==='survival' ? '💀 Выживание' : gameMode==='mirror' ? '🪞 Зеркало' : `Уровень: ${currentLevel}`;
-    goSub.textContent=`Счёт: ${score} · ${modeLbl}`;
+    if(gameMode==='time')          goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgTimeUp;
+    else if(gameMode==='survival') goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgSurvived;
+    else                           goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgGameOver;
+    const modeLbl = gameMode==='time' ? T().goModeLbl.time : gameMode==='survival' ? T().goModeLbl.survival : gameMode==='mirror' ? T().goModeLbl.mirror : T().goModeLblClassic(currentLevel);
+    goSub.textContent=T().goSubFmt(score,modeLbl);
     // В режимах Время/Выживание/Зеркало кнопка "Продолжить с уровня" → "Сыграть ещё"
     const retryCurBtn=document.getElementById('goRetryCur');
-    if(gameMode!=='classic') retryCurBtn.innerHTML=`↺ Играть снова`;
-    else retryCurBtn.innerHTML=`↺ Продолжить с ур. ${currentLevel}`;
+    if(gameMode!=='classic') retryCurBtn.textContent=T().goRetryMore;
+    else retryCurBtn.textContent=T().goRetryCurPrefix+currentLevel;
     const lvlEl=document.getElementById('goLvlNum');
     if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
     // Авто-отправка в лидерборд если score > 0
-    if(score>0) submitToLeaderboard(lbNickname||'Аноним',score,currentLevel,gameMode);
+    if(score>0) submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);
   },350);
 }
 // ── DEBUG PANEL ───────────────────────────────────────────────────
@@ -2100,7 +2379,7 @@ function dbgNextLevel(){
 function dbgUnlockAll(){
   bestLevel=SKINS.reduce((m,s)=>Math.max(m,s.unlockLevel||0),0)+1;
   saveAll();refreshMenuUI();
-  spawnFloatText(W/2,H/2-20,'🔓 ВСЕ СКИНЫ!','#a78bfa');
+  spawnFloatText(W/2,H/2-20,T().floatAllSkins,'#a78bfa');
 }
 function dbgSetLevel(n){
   debugPanel.classList.remove('open');
@@ -2129,7 +2408,7 @@ function dbgCoins(n){
 function dbgUnlockAllAch(){
   ACHIEVEMENTS.forEach(a=>{if(!unlockedAch.has(a.id)){unlockedAch.add(a.id);}});
   saveAch();
-  spawnFloatText(W/2,H/2-20,'🏅 ВСЕ ДОСТИЖЕНИЯ!','#4ade80');
+  spawnFloatText(W/2,H/2-20,T().floatAllAch,'#4ade80');
 }
 function dbgResetAll(){
   localStorage.clear();location.reload();
@@ -2148,7 +2427,7 @@ function togglePause(){
     lastTs=0;playMusic();animId=requestAnimationFrame(loop);
   } else {
     paused=true;
-    pmInfo.textContent=`Уровень ${currentLevel} · Счёт: ${score}`;
+    pmInfo.textContent=T().pauseInfoFmt(currentLevel,score);
     pauseMenu.style.display='flex';
     btnPause.textContent='▶';
     pauseMusic();
@@ -2166,7 +2445,7 @@ pmResume.addEventListener('click',togglePause);
 pmResume.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
-pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||'Аноним',score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
+pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
 // Game over кнопки
 const goRetryCur=document.getElementById('goRetryCur');
@@ -2186,22 +2465,22 @@ goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{pa
 const goShare=document.getElementById('goShare');
 function buildShareText(){
   const modeEmoji={classic:'🐍',time:'⏱',survival:'💀',mirror:'🪞'}[gameMode]||'🐍';
-  const modeName={classic:`уровень ${currentLevel}`,time:'режим Время',survival:'режим Выживание',mirror:'режим Зеркало'}[gameMode];
-  return `${modeEmoji} Набрал ${score} очков в Змейке (${modeName})!\nЛучший результат: ${best} 🏆\nСыграй: https://youngsanifone.github.io/snake/`;
+  const modeName=gameMode==='classic'?T().shareModes.classic(currentLevel):(T().shareModes[gameMode]||T().shareModes.classic(currentLevel));
+  return T().shareFmt(modeEmoji,score,modeName,best);
 }
 async function shareScore(){
   const text=buildShareText();
   if(navigator.share){
-    try{ await navigator.share({title:'🐍 Had',text}); return; }catch(_){}
+    try{ await navigator.share({title:T().shareTitle,text}); return; }catch(_){}
   }
   // Fallback — копируем в буфер
   try{
     await navigator.clipboard.writeText(text);
-    goShare.textContent='✓ Skopírované!';
-    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
+    goShare.textContent=T().shareCopied;
+    setTimeout(()=>goShare.textContent=T().goShare,2000);
   }catch(_){
-    goShare.textContent='✗ Ошибка';
-    setTimeout(()=>goShare.textContent='📤 Поделиться',2000);
+    goShare.textContent=T().shareError;
+    setTimeout(()=>goShare.textContent=T().goShare,2000);
   }
 }
 goShare.addEventListener('click',shareScore);
