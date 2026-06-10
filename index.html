@@ -1158,12 +1158,21 @@ async function fetchLeaderboard(){
 
 async function submitToLeaderboard(name,score,level,mode){
   try{
-    await fetch(`${SB_URL}/rest/v1/leaderboard`,{
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard`,{
       method:'POST',
-      headers:SB_HEADERS,
+      headers:{...SB_HEADERS,'Prefer':'return=minimal'},
       body:JSON.stringify({name,score,level,mode})
     });
-  }catch(e){console.log('lb submit error',e);}
+    if(!r.ok){
+      const txt=await r.text();
+      console.error('lb submit failed',r.status,txt);
+      return false;
+    }
+    return true;
+  }catch(e){
+    console.error('lb submit error',e);
+    return false;
+  }
 }
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -2144,7 +2153,7 @@ pmResume.addEventListener('click',togglePause);
 pmResume.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
-pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
+pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
 // Game over кнопки
 const goRetryCur=document.getElementById('goRetryCur');
@@ -2158,7 +2167,7 @@ goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();
 },{passive:false});
 goRetry.addEventListener('click',()=>{stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();refreshMenuUI();showScreen('menuScreen');});
+goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 // Поделиться
 const goShare=document.getElementById('goShare');
@@ -2189,9 +2198,11 @@ async function doLbSubmit(){
   const name=document.getElementById('lbNameInput').value.trim()||'Аноним';
   lbNickname=name;localStorage.setItem(S+'Nick',name);
   document.getElementById('lbSubmitWrap').style.display='none';
-  await submitToLeaderboard(name,score,currentLevel,gameMode);
+  upsertProfile(); // sync updated nick to profile too
+  const ok=await submitToLeaderboard(name,score,currentLevel,gameMode);
   const t=document.createElement('div');
-  t.className='quest-reward-toast';t.textContent='🌍 В топ!';
+  t.className='quest-reward-toast';
+  t.textContent=ok?'🌍 В топ!':'⚠️ Ошибка отправки';
   document.body.appendChild(t);setTimeout(()=>t.remove(),1400);
 }
 function doLbSkip(){
