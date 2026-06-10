@@ -2139,7 +2139,7 @@ pmResume.addEventListener('click',togglePause);
 pmResume.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
-pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
+pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||'Аноним',score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
 // Game over кнопки
 const goRetryCur=document.getElementById('goRetryCur');
