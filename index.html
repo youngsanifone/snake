@@ -865,6 +865,8 @@ function saveAll(){
   localStorage.setItem(S+'Diff', difficulty);
   localStorage.setItem(S+'Coins', coins);
   localStorage.setItem(S+'Bought', JSON.stringify([...boughtSkins]));
+  localStorage.setItem(S+'Ach',   JSON.stringify([...unlockedAch]));
+  if(questData) localStorage.setItem(S+'Quests', JSON.stringify(questData));
   // 2. UPSERT в Supabase (async, fire-and-forget)
   upsertProfile();
 }
@@ -873,7 +875,7 @@ function upsertProfile(){
   const pid=getPlayerId();
   fetch(SB_URL+'/rest/v1/players',{
     method:'POST',
-    headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+    headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({
       player_id:pid,
       nick:lbNickname||'Аноним',
@@ -1416,6 +1418,7 @@ document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDe
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('modeBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 document.getElementById('btnAch').addEventListener('click',()=>{buildAchScreen();showScreen('achScreen');});
+document.getElementById('btnAch').addEventListener('touchstart',e=>{e.preventDefault();buildAchScreen();showScreen('achScreen');},{passive:false});
 document.getElementById('btnQuests').addEventListener('click',()=>{buildQuestScreen();showScreen('questScreen');});
 document.getElementById('btnQuests').addEventListener('touchstart',e=>{e.preventDefault();buildQuestScreen();showScreen('questScreen');},{passive:false});
 document.getElementById('questBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
@@ -1427,11 +1430,15 @@ document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDe
 document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
 document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeClassic').addEventListener('touchstart',e=>{e.preventDefault();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeTime').addEventListener('touchstart',e=>{e.preventDefault();gameMode='time';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.preventDefault();gameMode='survival';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);});
+document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();initMp3();beginLevel(savedLevel);});
-document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();beginLevel(savedLevel);},{passive:false});
+document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();initMp3();beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
 document.getElementById('btnRecords').addEventListener('touchstart',e=>{e.preventDefault();openRecords();},{passive:false});
 // ── РЕКОРДЫ ──────────────────────────────────────────────────────
@@ -1465,7 +1472,7 @@ async function doResetProgress(){
   if(pid){
     await fetch(SB_URL+'/rest/v1/players',{
       method:'POST',
-      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
       body:JSON.stringify({
         player_id:pid,nick,
         coins:0,best:0,best_level:1,games_played:0,saved_level:1,
@@ -1507,9 +1514,9 @@ applyTheme();
   btn.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
 })();
 function updateSoundToggles(){
-  document.getElementById('btnMusicToggle').textContent = musicOn ? 'zap.' : 'vyp.';
+  document.getElementById('btnMusicToggle').textContent = musicOn ? 'вкл.' : 'выкл.';
   document.getElementById('btnMusicToggle').classList.toggle('active', musicOn);
-  document.getElementById('btnSfxToggle').textContent   = sfxOn   ? 'zap.' : 'vyp.';
+  document.getElementById('btnSfxToggle').textContent   = sfxOn   ? 'вкл.' : 'выкл.';
   document.getElementById('btnSfxToggle').classList.toggle('active', sfxOn);
 }
 function bindToggle(id, getFn, setFn){
