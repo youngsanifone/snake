@@ -843,6 +843,18 @@ const SKINS=[
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
 if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
 const S='snake2_';
+// ── ВЕРСИОНИРОВАНИЕ — увеличь DATA_VERSION чтобы сбросить всех ────
+const DATA_VERSION=2;
+(function(){
+  const stored=parseInt(localStorage.getItem(S+'dataVersion')||'0');
+  if(stored<DATA_VERSION){
+    // Очищаем всё кроме player_id (статистика должна остаться)
+    const pid=localStorage.getItem(S+'pid');
+    Object.keys(localStorage).forEach(k=>{ if(k.startsWith(S)) localStorage.removeItem(k); });
+    if(pid) localStorage.setItem(S+'pid',pid);
+    localStorage.setItem(S+'dataVersion',DATA_VERSION);
+  }
+})();
 let theme      = localStorage.getItem(S+'Theme') || 'dark';
 let musicOn    = localStorage.getItem(S+'Music') !== 'off';
 let sfxOn      = localStorage.getItem(S+'Sfx')   !== 'off';
