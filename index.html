@@ -82,16 +82,22 @@
   }
   @keyframes glow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
   /* СКИНЫ */
-  .skin-row{display:flex;gap:5px;margin-bottom:clamp(4px,1vh,8px);}
+  .skin-row{display:flex;gap:5px;margin-bottom:clamp(4px,1vh,8px);flex-wrap:wrap;justify-content:center;}
   .skin-btn{
-    width:clamp(32px,9vw,42px);height:clamp(36px,10vw,48px);border-radius:11px;border:2px solid var(--border2);
+    width:clamp(36px,9vw,44px);height:clamp(40px,10vw,50px);border-radius:11px;border:2px solid var(--border2);
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    font-size:1.1rem;background:transparent;gap:2px;
+    background:transparent;gap:2px;padding:0;overflow:hidden;
   }
   .skin-btn.active{border-color:#4ade80;transform:scale(1.12);background:var(--panel);}
   .skin-btn.locked{opacity:0.38;cursor:default;filter:grayscale(0.8);}
-  .skin-lbl{font-size:0.4rem;color:var(--text2);line-height:1;}
+  .skin-emoji{
+    font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+    font-size:1.1rem;line-height:1;display:block;width:100%;text-align:center;
+    height:1.25rem;overflow:hidden;
+  }
+  .skin-lbl{font-size:0.38rem;color:var(--text2);line-height:1;display:block;
+    width:100%;text-align:center;overflow:hidden;white-space:nowrap;padding:0 2px;}
   /* СТАТС-БАР МЕНЮ */
   .menu-stats-bar{
     display:flex;align-items:center;
@@ -510,7 +516,7 @@
 <div class="screen" id="welcomeScreen">
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
-    <div class="menu-title">Had</div>
+    <div class="menu-title">Змейка</div>
     <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
     <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
@@ -521,7 +527,7 @@
 <div class="screen" id="menuScreen">
   <canvas id="menuBg"></canvas>
   <div class="menu-snake">🐍</div>
-  <div class="menu-title">Had</div>
+  <div class="menu-title">Змейка</div>
   <!-- Statový panel -->
   <div class="menu-stats-bar">
     <div class="msb-item">
@@ -576,9 +582,9 @@
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
   <div class="rec-title">🪙 Магазин</div>
-  <div class="shop-coins" id="shopCoins">🪙 0 mincí</div>
+  <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
   <div style="margin-bottom:8px;">
-    <div style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">VÝBER SKINU</div>
+    <div id="shopSkinLabel" style="font-size:0.65rem;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">ВЫБОР СКИНА</div>
     <div class="skin-row" id="shopSkinRow"></div>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
@@ -588,7 +594,7 @@
 <div id="achNotif">
   <div class="an-icon" id="anIcon">🏅</div>
   <div class="an-text">
-    <div class="an-title" id="anTitle">Ocenenie!</div>
+    <div class="an-title" id="anTitle">Достижение!</div>
     <div class="an-sub" id="anSub">Popis</div>
   </div>
 </div>
@@ -600,7 +606,7 @@
 </div>
 <!-- ВЫБОР РЕЖИМА -->
 <div class="screen" id="modeScreen">
-  <div class="mode-title">Výber režimu</div>
+  <div class="mode-title">Выбор режима</div>
   <div class="mode-sub">Как хочешь играть?</div>
   <div class="mode-cards">
     <button class="mode-card" id="modeClassic">
@@ -670,7 +676,7 @@
         <div class="dbg-stats" id="dbgStats" style="flex:1;text-align:right;">Ур.— · 🪙—</div>
         <button class="dbg-btn red" style="padding:3px 10px;font-size:0.85rem;margin-left:8px;" onclick="dbgClose()">✕</button>
       </div>
-      <div class="dbg-section">— bonusy —</div>
+      <div class="dbg-section">— бонусы —</div>
       <div class="dbg-grid3">
         <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Štít</button>
         <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Turbo</button>
@@ -691,7 +697,7 @@
         <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
         <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
       </div>
-      <div class="dbg-section">— zdroje —</div>
+      <div class="dbg-section">— ресурсы —</div>
       <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
@@ -736,21 +742,21 @@
     <div class="rec-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
       <span class="rl">Сложность</span>
       <div class="diff-row">
-        <button class="diff-btn" data-diff="easy">😌 Ľahká</button>
-        <button class="diff-btn" data-diff="normal">😐 Normál</button>
-        <button class="diff-btn" data-diff="hard">😤 Hardcore</button>
+        <button class="diff-btn" data-diff="easy">😌 Лёгкая</button>
+        <button class="diff-btn" data-diff="normal">😐 Нормал</button>
+        <button class="diff-btn" data-diff="hard">😤 Хардкор</button>
       </div>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl">🎵 Музыка</span>
-      <button class="diff-btn" id="btnMusicToggle">zap.</button>
+      <button class="diff-btn" id="btnMusicToggle">вкл</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
       <span class="rl">🔊 Звуковые эффекты</span>
-      <button class="diff-btn" id="btnSfxToggle">zap.</button>
+      <button class="diff-btn" id="btnSfxToggle">вкл</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎨 Téma</span>
+      <span class="rl">🎨 Тема</span>
       <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
     </div>
     <div class="rec-row" style="justify-content:space-between;">
@@ -819,7 +825,7 @@ const TRANSLATIONS={
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
     settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
-    settingsLang:'🌐 Jazyk',langBtn:'RU',
+    settingsLang:'🌐 Jazyk',langBtn:'🇸🇰 SK',
     soundOn:'zap.',soundOff:'vyp.',
     btnReset:'🗑 Resetovať postup',btnBack:'← Späť',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
@@ -900,7 +906,7 @@ const TRANSLATIONS={
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
     settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
-    settingsLang:'🌐 Язык',langBtn:'SK',
+    settingsLang:'🌐 Язык',langBtn:'🇷🇺 RU',
     soundOn:'вкл',soundOff:'выкл',
     btnReset:'🗑 Сбросить прогресс',btnBack:'← Назад',
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
@@ -953,6 +959,87 @@ const TRANSLATIONS={
       (n)=>`Подбери ${n===1?'1 бонус':`${n} бонуса`}`,
       (n)=>`Набери комбо ×${n}`,
     ],
+  },
+  en:{
+    appTitle:'Snake',loading:'Loading...',anon:'Anonymous',
+    welcSub:'Hello! Enter your name for the leaderboard 🌍',
+    welcPlaceholder:'Your nickname...',
+    welcBtn:'▶ &nbsp;PLAY!',welcSkip:'play without name',
+    menuStatBest:'Best',menuStatLvl:'Max Lvl',menuStatCoins:'🪙 Coins',
+    btnPlay:'▶ &nbsp;PLAY',
+    contBtnPrefix:'⏩ Continue (Lvl ',
+    navRecords:'Records',navAch:'Achiev.',navQuests:'Quests',navShop:'Shop',navSettings:'Settings',
+    shopTitle:'🪙 Shop',shopSkinLabel:'CHOOSE SKIN',
+    achTitle:'🏅 Achievements',achNotifTitle:'Achievement!',
+    modeTitle:'Select Mode',modeSub:'How do you want to play?',
+    modeClassicTitle:'Classic',modeClassicDesc:'Levels, increasing speed, endless',
+    modeTimeTitle:'Time',modeTimeDesc:'60 seconds — score as many points as possible',
+    modeSurvivalTitle:'Survival',modeSurvivalDesc:'Maximum obstacles, constant speed',
+    modeMirrorTitle:'Mirror',modeMirrorDesc:'Left = right, right = left. Try it!',
+    lvlLabel:'Level',hudScore:'Score:',hudRecord:'Best:',
+    pauseTitle:'⏸ PAUSE',pauseResume:'▶ Resume',
+    pauseRestart:'↺ Restart level',pauseMenu:'⌂ Main menu',
+    goRetryMore:'↺ Play again',goRetryCurPrefix:'↺ Continue from lvl ',
+    goShare:'📤 Share',goRetry:'↺ Restart from lvl 1',goMenu:'⌂ Main menu',
+    questTitle:'📋 Quests',questBack:'← Back',questReset:'Resets at midnight',
+    questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
+    settingsTitle:'⚙️ Settings',settingsDiff:'Difficulty',
+    diffEasy:'😌 Easy',diffNormal:'😐 Normal',diffHard:'😤 Hardcore',
+    settingsMusic:'🎵 Music',settingsSfx:'🔊 Sound effects',
+    settingsTheme:'🎨 Theme',themeLight:'☀️ Light',themeDark:'🌙 Dark',
+    settingsLang:'🌐 Language',langBtn:'🇷🇺 RU',
+    soundOn:'on',soundOff:'off',
+    btnReset:'🗑 Reset progress',btnBack:'← Back',
+    recTitle:'🏆 Records',tabMy:'👤 My',tabOnline:'🌍 Online',
+    recBest:'Best score',recLvl:'Max level',recGames:'Games played',
+    lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',
+    shopBack:'← Back',achBack:'← Back',
+    shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
+    shopCoinsFmt:(n)=>`🪙 ${n} coins`,
+    shopLevelFmt:(n)=>`Level ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} coins`,
+    skinLvlFmt:(n)=>`Lvl ${n}`,
+    levelUpSub:(n)=>`Level ${n}`,
+    unlockSkin:(e,name)=>`🔓 Unlocked skin ${e} ${name}!`,
+    lvlGoalFmt:(n)=>`Eat ${n} food`,
+    hudTimeSuffix:'s',
+    hudModeSurvival:'💀 SURVIVAL',hudModeTime:'⏱ TIME',hudModeLvl:(n)=>`Lvl ${n}`,
+    shieldHud:'SHIELD',mirrorHud:'MIRR',
+    floatShield:'🛡 SHIELD!',floatTurbo:'⚡ TURBO!',floatFreeze:'❄ STOP!',floatBomb:'💣 BOOM!',floatBlock:'🛡 BLOCK!',
+    floatBarFull:'⚡ BAR FULL',floatAllSkins:'🔓 ALL SKINS!',
+    floatGoldFood:'⭐ GOLDEN FOOD',floatInvOn:'♾ INVINCIBILITY ON',floatInvOff:'♾ OFF',
+    floatAllAch:'🏅 ALL ACHIEVEMENTS!',floatBought:'🪙 Bought!',
+    goMsgNewRecord:'🏆 New record!',goMsgTimeUp:'⏱ Time\'s up!',
+    goMsgSurvived:'💀 Survived!',goMsgGameOver:'💀 Game over',
+    goModeLbl:{time:'⏱ Time',survival:'💀 Survival',mirror:'🪞 Mirror'},
+    goModeLblClassic:(n)=>`Level: ${n}`,
+    goSubFmt:(score,mode)=>`Score: ${score} · ${mode}`,
+    pauseInfoFmt:(lvl,score)=>`Level ${lvl} · Score: ${score}`,
+    resetConfirm:'Reset all progress? Coins, records, achievements will be deleted. Nickname stays.',
+    shareTitle:'🐍 Snake',
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Scored ${score} points in Snake (${mode})!\nBest: ${best} 🏆\nPlay now: https://youngsanifone.github.io/snake/`,
+    shareModes:{classic:(n)=>`level ${n}`,time:'Time mode',survival:'Survival mode',mirror:'Mirror mode'},
+    shareCopied:'✓ Copied!',shareError:'✗ Error',
+    globalPlayers:(n)=>`🌍 ${n.toLocaleString('en')} ${n===1?'player':'players'}`,
+    globalGames:(n)=>`🎮 ${n.toLocaleString('en')} ${n===1?'game':'games'}`,
+    questResetFmt:(h,m)=>`🕐 Reset in ${h}h ${m}m`,
+    dbgFillBar:'⚡ Fill bar',dbgNextLvl:'⏭ Next level',
+    dbgShield:'🛡 Shield',dbgTurbo:'⚡ Turbo',dbgFreeze:'❄ Freeze',
+    dbgBomb:'💣 Bomb',dbgGold:'⭐ Gold',dbgInv:'♾ Inv.',
+    dbgAllSkins:'🔓 All skins',dbgAllAch:'🏅 All achiev.',dbgResetAll:'🗑 Reset all',
+    kbHint:'↑↓←→ / WASD · SPACE — pause',
+    skinNames:['Green','Blue','Red','Golden','Purple','Pink','Dark','Ocean','Fire'],
+    achNames:['First bite','Ten food','Combo master','Gold digger','Protected','Demolisher','Speedster','Freezer','Level 5','Level 10','Survivor','Time champ','Mirror player'],
+    achDescs:['Eat first food','Eat 10 food in one game','Get combo ×3 (5+ in a row)','Eat golden food','Pick up a shield','Use a bomb','Use speed boost','Use freeze','Reach level 5','Reach level 10','Survive 30 sec in Survival','Score 20+ pts in 60 sec','Eat 5 food in Mirror mode'],
+    questTitles:['Glutton','Scorer','Gamer','Climber','Gold digger','Collector','Combo'],
+    questMakes:[
+      (n)=>`Eat ${n} food today`,
+      (n)=>`Score ${n} points today`,
+      (n)=>`Play ${n===1?'once':`${n} times`}`,
+      (n)=>`Reach level ${n}`,
+      (n)=>`Eat ${n} golden food`,
+      (n)=>`Pick up ${n===1?'1 bonus':`${n} bonuses`}`,
+      (n)=>`Get combo ×${n}`,
+    ],
   }
 };
 function T(){return TRANSLATIONS[currentLang];}
@@ -981,6 +1068,7 @@ function applyLang(){
     const el=document.getElementById(id);if(el){const lb=el.querySelector('.mnav-label');if(lb)lb.textContent=L[k];}
   });
   const shopT=document.querySelector('#shopScreen .rec-title');if(shopT)shopT.textContent=L.shopTitle;
+  const shopSkinLbl=document.getElementById('shopSkinLabel');if(shopSkinLbl)shopSkinLbl.textContent=L.shopSkinLabel;
   const shopBk=document.getElementById('shopBack');if(shopBk)shopBk.textContent=L.shopBack;
   const achT=document.querySelector('#achScreen .rec-title');if(achT)achT.textContent=L.achTitle;
   const anTitleEl=document.getElementById('anTitle');if(anTitleEl)anTitleEl.textContent=L.achNotifTitle;
@@ -1051,7 +1139,7 @@ function applyLang(){
   applyTheme();
 }
 function toggleLang(){
-  currentLang=currentLang==='sk'?'ru':'sk';
+  currentLang=currentLang==='ru'?'sk':currentLang==='sk'?'en':'ru';
   localStorage.setItem(S+'Lang',currentLang);
   applyLang();
   buildAchScreen();
@@ -1109,7 +1197,7 @@ const SKINS=[
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
-if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
+if(localStorage.getItem('snakeVer')!=='2'){Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');}
 const S='snake2_';
 currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
@@ -1161,9 +1249,9 @@ function upsertProfile(){
       games_played:gamesPlayed,
       saved_level:savedLevel,
       skin_idx:skinIdx,
-      bought_skins:JSON.stringify([...boughtSkins]),
-      achievements:JSON.stringify([...unlockedAch]),
-      quests:questData?JSON.stringify(questData):null,
+      bought_skins:[...boughtSkins],
+      achievements:[...unlockedAch],
+      quests:questData||null,
       difficulty,music_on:musicOn,sfx_on:sfxOn,theme,
       updated_at:new Date().toISOString()
     })
@@ -1178,15 +1266,15 @@ function applyProfile(row){
   gamesPlayed  = row.games_played||0;
   savedLevel   = row.saved_level||1;
   skinIdx      = row.skin_idx||0;
-  boughtSkins  = new Set(JSON.parse(row.bought_skins||'[]'));
-  unlockedAch  = new Set(JSON.parse(row.achievements||'[]'));
+  boughtSkins  = new Set(Array.isArray(row.bought_skins)?row.bought_skins:JSON.parse(row.bought_skins||'[]'));
+  unlockedAch  = new Set(Array.isArray(row.achievements)?row.achievements:JSON.parse(row.achievements||'[]'));
   difficulty   = row.difficulty||'normal';
   musicOn      = row.music_on!==false;
   sfxOn        = row.sfx_on!==false;
   theme        = row.theme||'dark';
   if(row.quests){
     try{
-      const q=JSON.parse(row.quests);
+      const q=typeof row.quests==='object'?row.quests:JSON.parse(row.quests);
       if(q&&q.day===getDayKey()) questData=q;
     }catch(e){}
   }
@@ -1198,13 +1286,16 @@ function applyProfile(row){
   localStorage.setItem(S+'SavedLevel',savedLevel);
   localStorage.setItem(S+'Coins',  coins);
   localStorage.setItem(S+'Skin',   skinIdx);
-  localStorage.setItem(S+'Bought', row.bought_skins||'[]');
-  localStorage.setItem(S+'Ach',    row.achievements||'[]');
-  if(row.quests) localStorage.setItem(S+'Quests',row.quests);
+  localStorage.setItem(S+'Bought', JSON.stringify(Array.isArray(row.bought_skins)?row.bought_skins:[]));
+  localStorage.setItem(S+'Ach',    JSON.stringify(Array.isArray(row.achievements)?row.achievements:[]));
+  if(row.quests) localStorage.setItem(S+'Quests',typeof row.quests==='object'?JSON.stringify(row.quests):row.quests);
   localStorage.setItem(S+'Diff',   difficulty);
   localStorage.setItem(S+'Music',  musicOn?'on':'off');
   localStorage.setItem(S+'Sfx',    sfxOn?'on':'off');
   localStorage.setItem(S+'Theme',  theme);
+  // Refresh live HUD elements if they exist
+  const _bestHud=document.getElementById('bestHud');if(_bestHud)_bestHud.textContent=best;
+  if(typeof refreshMenuUI==='function')refreshMenuUI();
 }
 // Загрузить из localStorage кэша (офлайн fallback)
 function applyLocalCache(){
@@ -1418,7 +1509,7 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=3`,{headers:SB_HEADERS});
     const data=await r.json();
     if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
@@ -1480,7 +1571,7 @@ function buildSkinRow(){
     const unlocked=isUnlocked(i);
     const b=document.createElement('button');
     b.className='skin-btn'+(i===skinIdx?' active':'')+(unlocked?'':' locked');
-    b.innerHTML=`<span>${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
+    b.innerHTML=`<span class="skin-emoji">${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
     if(unlocked){
       const sel=()=>{skinIdx=i;saveAll();buildSkinRow();buildShopScreen();};
       b.addEventListener('click',sel);
@@ -2102,8 +2193,8 @@ function loop(ts){
     else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`            ,skin().foodColor);
     playEat();
     // Достижения — еда
-    if(levelScore===1&&score===1) unlockAch('first_bite');
-    if(score>=10) unlockAch('ten_food');
+    if(totalFood===1) unlockAch('first_bite');
+    if(totalFood>=10) unlockAch('ten_food');
     if(combo>=5) unlockAch('combo_master');
     // Квесты — еда
     questTrack('eat_food',1);
@@ -2347,7 +2438,7 @@ function endGame(){
     // В режимах Время/Выживание/Зеркало кнопка "Продолжить с уровня" → "Сыграть ещё"
     const retryCurBtn=document.getElementById('goRetryCur');
     if(gameMode!=='classic') retryCurBtn.textContent=T().goRetryMore;
-    else retryCurBtn.textContent=T().goRetryCurPrefix+currentLevel;
+    else retryCurBtn.innerHTML=T().goRetryCurPrefix+'<span id="goLvlNum">'+currentLevel+'</span>';
     const lvlEl=document.getElementById('goLvlNum');
     if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
