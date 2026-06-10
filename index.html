@@ -1085,8 +1085,8 @@ async function fetchGlobalStats(){
     const d=await r.json();
     const p=d.total_players||0;
     const g=d.total_games||0;
-    document.getElementById('gStatPlayers').textContent=`🌍 ${p.toLocaleString('ru')} ${p===1?'игрок':p%10>=2&&p%10<=4&&(p%100<10||p%100>=20)?'игрока':'игроков'}`;
-    document.getElementById('gStatGames').textContent=`🎮 ${g.toLocaleString('ru')} ${g===1?'партия':g%10>=2&&g%10<=4&&(g%100<10||g%100>=20)?'партии':'партий'}`;
+    document.getElementById('gStatPlayers').textContent=T().globalPlayers(p);
+    document.getElementById('gStatGames').textContent=T().globalGames(g);
   }catch(e){}
 }
 fetchGlobalStats();
@@ -1107,6 +1107,7 @@ const SKINS=[
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
 if(localStorage.getItem('snakeVer')!=='2'){localStorage.clear();localStorage.setItem('snakeVer','2');}
 const S='snake2_';
+currentLang=localStorage.getItem(S+'Lang')||'sk';
 // ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
 let theme      = 'dark';
 let musicOn    = true;
@@ -2061,7 +2062,7 @@ function loop(ts){
         shieldActive=false;
         invincible=2000;
         playHit();
-        spawnFloatText(head.x,head.y-R-10,'🛡 BLOK!','#38bdf8');
+        spawnFloatText(head.x,head.y-R-10,T().floatBlock,'#38bdf8');
       } else {
         playHit();endGame();return;
       }
@@ -2289,11 +2290,11 @@ function draw(){
   });
   // HUD активных эффектов (правый верхний угол канваса)
   const effects=[];
-  if(shieldActive)    effects.push({icon:'🛡',color:'#38bdf8',label:'ЩИТ'});
+  if(shieldActive)    effects.push({icon:'🛡',color:'#38bdf8',label:T().shieldHud});
   if(speedBoost>0)    effects.push({icon:'⚡',color:'#fb923c',label:Math.ceil(speedBoost/1000)+'s'});
   if(freezeActive>0)  effects.push({icon:'❄',color:'#67e8f9',label:Math.ceil(freezeActive/1000)+'s'});
   if(invincible>0&&invincible<1800) effects.push({icon:'✨',color:'#a78bfa',label:''});
-  if(gameMode==='mirror')           effects.push({icon:'🪞',color:'#e879f9',label:'ZRK'});
+  if(gameMode==='mirror')           effects.push({icon:'🪞',color:'#e879f9',label:T().mirrorHud});
   effects.forEach((ef,i)=>{
     const ex=W-18,ey=18+i*28;
     ctx.save();
@@ -2363,7 +2364,7 @@ function dbgFillBar(){
   if(!running) return;
   levelScore=levelData.foodNeeded-1;
   updateProg();
-  spawnFloatText(W/2,H/2-20,'⚡ BAR PLNÝ','#facc15');
+  spawnFloatText(W/2,H/2-20,T().floatBarFull,'#facc15');
 }
 function dbgNextLevel(){
   if(!running) return;
@@ -2392,13 +2393,13 @@ function dbgSetLevel(n){
 function dbgGoldFood(){
   if(!running) return;
   goldFood={x:food.x+R*3,y:food.y,life:GOLD_LIFETIME};
-  spawnFloatText(W/2,H/2-20,'⭐ ZLATÉ JEDLO','#facc15');
+  spawnFloatText(W/2,H/2-20,T().floatGoldFood,'#facc15');
 }
 let dbgInvOn=false;
 function dbgToggleInv(){
   dbgInvOn=!dbgInvOn;
   document.getElementById('dbgInvBtn').classList.toggle('active-toggle',dbgInvOn);
-  spawnFloatText(W/2,H/2-20,dbgInvOn?'♾ NEZRANITEĽNOSŤ ZAP':'♾ VYP','#c4b5fd');
+  spawnFloatText(W/2,H/2-20,dbgInvOn?T().floatInvOn:T().floatInvOff,'#c4b5fd');
 }
 function dbgCoins(n){
   coins+=n; saveAll(); refreshMenuUI();
@@ -2457,8 +2458,8 @@ goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();
   if(gameMode!=='classic'){savedLevel=1;saveAll();}
   beginLevel(gameMode==='classic'?currentLevel:1);
 },{passive:false});
-goRetry.addEventListener('click',()=>{stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
-goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
+goRetry.addEventListener('click',()=>{stopMusic();savedLevel=1;saveAll();beginLevel(1);});
+goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 // Поделиться
