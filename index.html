@@ -810,14 +810,7 @@ function trackEvent(event,score,mode){
     body:JSON.stringify({player_id:pid,event,score:score||null,mode:mode||null})
   }).catch(()=>{});
 }
-// Визит — один раз в сутки
-(function(){
-  const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem(S+'lastVisit')!==today){
-    localStorage.setItem(S+'lastVisit',today);
-    trackEvent('visit',null,null);
-  }
-})();
+// Визит — вызывается из initGame() после объявления S
 // Загрузить и показать глобальную статистику
 async function fetchGlobalStats(){
   try{
@@ -1309,6 +1302,15 @@ function buildShopScreen(){
   welcSkip.addEventListener('click',()=>doWelc(''));
   welcSkip.addEventListener('touchstart',e=>{e.preventDefault();doWelc('');},{passive:false});
   welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
+
+  // Трекинг визита (один раз в сутки)
+  (function(){
+    const today=new Date().toISOString().slice(0,10);
+    if(localStorage.getItem(S+'lastVisit')!==today){
+      localStorage.setItem(S+'lastVisit',today);
+      trackEvent('visit',null,null);
+    }
+  })();
 
   try{
     const pid=getPlayerId();
