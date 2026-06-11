@@ -366,12 +366,12 @@
   .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
   .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
   /* ДОСТИЖЕНИЯ */
-  #achScreen{overflow:hidden;padding:10px 0 0;}
+  #achScreen{padding:10px 0 20px;}
   .ach-cnt{font-size:0.72rem;color:var(--text3);margin-bottom:6px;}
-  .ach-tabs{display:flex;width:min(340px,calc(100vw - 24px));border-bottom:1.5px solid var(--border);flex-shrink:0;margin-bottom:2px;}
+  .ach-tabs{display:flex;width:min(340px,calc(100vw - 24px));border-bottom:1.5px solid var(--border);flex-shrink:0;margin-bottom:8px;}
   .ach-tab{flex:1;padding:8px 4px;font-size:0.72rem;font-weight:700;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color 0.15s,border-color 0.15s;margin-bottom:-1.5px;}
   .ach-tab.active{color:#4ade80;border-bottom-color:#4ade80;}
-  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:8px 12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;}
+  .ach-scroll{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;padding:0 12px;}
   .ach-card{width:min(340px,calc(100vw - 24px));display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .ach-card.unlocked{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
@@ -380,7 +380,7 @@
   .ach-card.unlocked .ach-name{color:#4ade80;}
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
   .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;width:min(340px,calc(100vw - 24px));}
-  .ach-back{position:sticky;bottom:0;flex-shrink:0;width:100%;padding:10px 0 12px;background:var(--bg);border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;text-align:center;touch-action:manipulation;border-top:1px solid var(--border);}
+  .ach-back{flex-shrink:0;margin-top:14px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:8px 24px;touch-action:manipulation;}
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
