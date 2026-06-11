@@ -1573,7 +1573,7 @@ async function fetchLeaderboard(){
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
     // leaderboard_best = VIEW: DISTINCT ON (name), best score per player, no duplicates
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS}); // view on game_results
     const data=await r.json();
     if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
@@ -1593,7 +1593,7 @@ async function fetchLeaderboard(){
 
 async function submitToLeaderboard(name,score,level,mode){
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard`,{
+    const r=await fetch(`${SB_URL}/rest/v1/game_results`,{
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
       body:JSON.stringify({name,score,level,mode})
