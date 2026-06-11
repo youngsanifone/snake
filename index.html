@@ -57,12 +57,13 @@
     font-family:'Segoe UI',sans-serif;
     display:flex;flex-direction:column;
     align-items:center;justify-content:center;
-    touch-action:none;user-select:none;-webkit-user-select:none;
+    touch-action:pan-y;user-select:none;-webkit-user-select:none;
   }
   html[data-theme="light"] body{background:#cdd5e0;}
   .screen{
     display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
     width:100%;max-width:600px;
+    touch-action:pan-y;
     min-height:100vh;
     min-height:100dvh;
     min-height:-webkit-fill-available;
@@ -210,7 +211,7 @@
   @keyframes zoomIn{from{transform:scale(0.2);opacity:0;}to{transform:scale(1);opacity:1;}}
   .lvl-goal{font-size:0.88rem;color:var(--text2);margin-top:10px;}
   /* ИГРА */
-  #gameScreen{gap:5px;padding:5px 0;overflow:hidden;}
+  #gameScreen{gap:5px;padding:5px 0;overflow:hidden;touch-action:none;}
   .hud{display:flex;gap:clamp(8px,3vw,24px);font-size:clamp(0.68rem,2.4vw,0.85rem);color:var(--text2);align-items:center;}
   .hud span{color:var(--text);font-weight:bold;}
   .lvl-badge{background:linear-gradient(135deg,#166534,#15803d);color:#fff;
@@ -218,7 +219,7 @@
   .prog-wrap{width:min(560px,calc(min(600px,100vw) - 12px));height:5px;background:var(--hud-bg);border-radius:3px;overflow:hidden;}
   .prog-bar{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width 0.3s;}
   .wrap{position:relative;display:inline-block;flex-shrink:0;}
-  canvas{border:2px solid var(--canvas-border);border-radius:8px;background:var(--canvas-bg);display:block;
+  canvas{border:2px solid var(--canvas-border);border-radius:8px;background:var(--canvas-bg);display:block;touch-action:none;
     --csz:min(560px,calc(min(600px,100vw) - 12px),calc(100dvh - 260px));
     width:var(--csz);height:var(--csz);}
   /* ПАУЗА */
