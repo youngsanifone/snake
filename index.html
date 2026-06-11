@@ -365,24 +365,21 @@
   .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
   .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
   /* ДОСТИЖЕНИЯ */
-  #achScreen{padding:0;overflow:hidden;justify-content:flex-start;}
-  .ach-header{display:flex;align-items:center;gap:0;padding:12px 14px 10px;background:var(--panel2);border-bottom:1px solid var(--border);flex-shrink:0;width:100%;}
-  .ach-header-back{background:transparent;border:none;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;padding:4px 6px;touch-action:manipulation;flex-shrink:0;}
-  .ach-header-title{flex:1;text-align:center;font-size:0.88rem;font-weight:800;color:var(--text);letter-spacing:1.5px;}
-  .ach-header-cnt{font-size:0.72rem;color:var(--text3);min-width:32px;text-align:right;flex-shrink:0;}
-  .ach-tabs{display:flex;width:100%;border-bottom:1.5px solid var(--border);flex-shrink:0;background:var(--panel2);}
-  .ach-tab{flex:1;padding:9px 4px;font-size:0.72rem;font-weight:700;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color 0.15s,border-color 0.15s;margin-bottom:-1.5px;}
+  #achScreen{overflow:hidden;padding:10px 0 0;}
+  .ach-cnt{font-size:0.72rem;color:var(--text3);margin-bottom:6px;}
+  .ach-tabs{display:flex;width:min(340px,calc(100vw - 24px));border-bottom:1.5px solid var(--border);flex-shrink:0;margin-bottom:2px;}
+  .ach-tab{flex:1;padding:8px 4px;font-size:0.72rem;font-weight:700;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color 0.15s,border-color 0.15s;margin-bottom:-1.5px;}
   .ach-tab.active{color:#4ade80;border-bottom-color:#4ade80;}
-  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px 24px;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;}
-  .ach-card{width:min(560px,calc(100vw - 24px));}
-  .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
+  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:8px 12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;}
+  .ach-card{width:min(340px,calc(100vw - 24px));display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .ach-card.unlocked{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
   .ach-icon.locked{filter:grayscale(1);opacity:0.4;}
   .ach-name{font-size:0.85rem;font-weight:700;color:var(--text);}
   .ach-card.unlocked .ach-name{color:#4ade80;}
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
-  .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;width:min(560px,calc(100vw - 24px));}
+  .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;width:min(340px,calc(100vw - 24px));}
+  .ach-back{position:sticky;bottom:0;flex-shrink:0;width:100%;padding:10px 0 12px;background:var(--bg);border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;text-align:center;touch-action:manipulation;border-top:1px solid var(--border);}
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
@@ -639,17 +636,15 @@
 </div>
 <!-- ЭКРАН ДОСТИЖЕНИЙ -->
 <div class="screen" id="achScreen">
-  <div class="ach-header">
-    <button class="ach-header-back" id="achBack">← Назад</button>
-    <span class="ach-header-title" id="achHeaderTitle">🏅 ДОСТИЖЕНИЯ</span>
-    <span class="ach-header-cnt" id="achCounter">0/0</span>
-  </div>
+  <div class="rec-title" id="achHeaderTitle">🏅 Достижения</div>
+  <div class="ach-cnt" id="achCounter">0/0 открыто</div>
   <div class="ach-tabs" id="achTabs">
     <button class="ach-tab active" id="achTabAll" data-filter="all">Все</button>
     <button class="ach-tab" id="achTabUnlocked" data-filter="unlocked">✅ Открытые</button>
     <button class="ach-tab" id="achTabLocked" data-filter="locked">🔒 Закрытые</button>
   </div>
   <div class="ach-scroll" id="achGrid"></div>
+  <button class="ach-back" id="achBack">← Назад</button>
 </div>
 <!-- ВЫБОР РЕЖИМА -->
 <div class="screen" id="modeScreen">
@@ -1411,7 +1406,7 @@ function buildAchScreen(){
   const total=ACHIEVEMENTS.length;
   const unlockedCount=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id)).length;
   const cntEl=document.getElementById('achCounter');
-  if(cntEl)cntEl.textContent=`${unlockedCount}/${total}`;
+  if(cntEl)cntEl.textContent=`${unlockedCount}/${total} открыто`;
   // tabs active state
   document.querySelectorAll('.ach-tab').forEach(t=>{
     t.classList.toggle('active',t.dataset.filter===achFilter);
