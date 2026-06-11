@@ -53,20 +53,22 @@
     height:100dvh; /* Safari 15.4+ — правильная высота без адресной строки */
     min-height:-webkit-fill-available; /* старый Safari */
     overflow:hidden;
-    background:var(--bg);color:var(--text);transition:var(--transition);
+    background:#050508;color:var(--text);transition:var(--transition);
     font-family:'Segoe UI',sans-serif;
     display:flex;flex-direction:column;
     align-items:center;justify-content:center;
     touch-action:none;user-select:none;-webkit-user-select:none;
   }
+  html[data-theme="light"] body{background:#cdd5e0;}
   .screen{
     display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
-    width:100%;
+    width:100%;max-width:600px;
     min-height:100vh;
     min-height:100dvh;
     min-height:-webkit-fill-available;
     overflow-y:auto;overflow-x:hidden;
     padding:10px 0 20px;
+    background:var(--bg);
   }
   .screen.active{display:flex;}
   /* Меню — центрировать если контент меньше экрана, иначе flex-start со скроллом */
@@ -213,11 +215,11 @@
   .hud span{color:var(--text);font-weight:bold;}
   .lvl-badge{background:linear-gradient(135deg,#166534,#15803d);color:#fff;
     padding:2px 10px;border-radius:20px;font-weight:bold;font-size:0.78rem;}
-  .prog-wrap{width:min(560px,calc(100vw - 12px));height:5px;background:var(--hud-bg);border-radius:3px;overflow:hidden;}
+  .prog-wrap{width:min(560px,calc(min(600px,100vw) - 12px));height:5px;background:var(--hud-bg);border-radius:3px;overflow:hidden;}
   .prog-bar{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width 0.3s;}
   .wrap{position:relative;display:inline-block;flex-shrink:0;}
   canvas{border:2px solid var(--canvas-border);border-radius:8px;background:var(--canvas-bg);display:block;
-    --csz:min(560px,calc(100vw - 12px),calc(100dvh - 260px));
+    --csz:min(560px,calc(min(600px,100vw) - 12px),calc(100dvh - 260px));
     width:var(--csz);height:var(--csz);}
   /* ПАУЗА */
   #pauseMenu{position:absolute;top:0;left:0;width:100%;height:100%;
@@ -534,8 +536,12 @@
   /* ПК: скрываем dpad если мышь */
   @media (hover:hover) and (pointer:fine){
     .dpad,.kb-hint{display:none;}
-    #c{--csz:min(580px,90vh)!important;width:var(--csz)!important;height:var(--csz)!important;}
-    .prog-wrap{width:min(580px,90vh);}
+    #c{--csz:min(560px,calc(100vmin - 80px),calc(600px - 20px))!important;width:var(--csz)!important;height:var(--csz)!important;}
+    .prog-wrap{width:min(560px,calc(600px - 20px));}
+  }
+  /* Десктоп: тонкая тень по краям колонки */
+  @media (min-width:601px){
+    .screen{box-shadow:0 0 60px rgba(0,0,0,0.6);}
   }
 </style>
 </head>
@@ -1827,7 +1833,7 @@ function buildShopPreview(){
 (function(){
   const bc=document.getElementById('menuBg');
   const bx=bc.getContext('2d');
-  function resize(){ bc.width=window.innerWidth; bc.height=window.innerHeight; }
+  function resize(){ bc.width=Math.min(600,window.innerWidth); bc.height=window.innerHeight; }
   resize(); window.addEventListener('resize',resize);
   let t=0;
   // Несколько змеек с разными параметрами
