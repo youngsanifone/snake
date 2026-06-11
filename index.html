@@ -343,8 +343,6 @@
   .shop-btn.equip{background:#4ade80;color:#0f0f0f;}
   .shop-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
   .shop-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
-  /* Монеты в меню */
-  .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:6px;}
   /* ЛИДЕРБОРД */
   .lb-tabs{display:flex;gap:6px;margin-bottom:12px;width:min(320px,calc(100vw - 24px));}
   .lb-tab{flex:1;padding:7px 0;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;}
@@ -806,6 +804,7 @@
       <span class="rl" id="settLangLbl">🌐 Язык</span>
       <button class="diff-btn" id="btnLangToggle">RU</button>
     </div>
+    <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
   </div>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
@@ -875,6 +874,10 @@ const TRANSLATIONS={
     lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',
     shopBack:'← Späť',achBack:'← Späť',achTabAll:'Všetky',achTabUnlocked:'✅ Otvorené',achTabLocked:'🔒 Zatvorené',
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
+    shopNotEnough:'Nedostatok mincí',
+    achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
+    achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
+    achEmptyLocked:'Všetky ocenenia sú už otvorené!',
     shopCoinsFmt:(n)=>`🪙 ${n} mincí`,
     shopLevelFmt:(n)=>`Úroveň ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} mincí`,
     skinLvlFmt:(n)=>`Úr.${n}`,
@@ -956,6 +959,10 @@ const TRANSLATIONS={
     lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',
     shopBack:'← Назад',achBack:'← Назад',achTabAll:'Все',achTabUnlocked:'✅ Открытые',achTabLocked:'🔒 Закрытые',
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
+    shopNotEnough:'Не хватает монет',
+    achCounterFmt:(u,t)=>`${u}/${t} открыто`,
+    achEmptyUnlocked:'Пока нет открытых достижений',
+    achEmptyLocked:'Все достижения уже открыты!',
     shopCoinsFmt:(n)=>`🪙 ${n} монет`,
     shopLevelFmt:(n)=>`Уровень ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} монет`,
     skinLvlFmt:(n)=>`Ур.${n}`,
@@ -1037,6 +1044,10 @@ const TRANSLATIONS={
     lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',
     shopBack:'← Back',achBack:'← Back',achTabAll:'All',achTabUnlocked:'✅ Unlocked',achTabLocked:'🔒 Locked',
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
+    shopNotEnough:'Not enough coins',
+    achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
+    achEmptyUnlocked:'No achievements unlocked yet',
+    achEmptyLocked:'All achievements unlocked!',
     shopCoinsFmt:(n)=>`🪙 ${n} coins`,
     shopLevelFmt:(n)=>`Level ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} coins`,
     skinLvlFmt:(n)=>`Lvl ${n}`,
@@ -1154,6 +1165,7 @@ function applyLang(){
     else if(b.dataset.diff==='hard')b.textContent=L.diffHard;
   });
   const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
+  const btnRstEl=document.getElementById('btnResetProgress');if(btnRstEl)btnRstEl.textContent=L.btnReset;
   const btnLangEl=document.getElementById('btnLangToggle');if(btnLangEl)btnLangEl.textContent=L.langBtn;
   const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
   const tabMyEl=document.getElementById('tabMy');if(tabMyEl)tabMyEl.textContent=L.tabMy;
@@ -1240,7 +1252,7 @@ const SKINS=[
 ];
 // ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
 // Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
-if(localStorage.getItem('snakeVer')!=='2'){Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');}
+if(localStorage.getItem('snakeVer')!=='2'){const _keepPid=localStorage.getItem('snake2_pid');Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');if(_keepPid)localStorage.setItem('snake2_pid',_keepPid);}
 const S='snake2_';
 currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
@@ -1407,7 +1419,7 @@ function buildAchScreen(){
   const total=ACHIEVEMENTS.length;
   const unlockedCount=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id)).length;
   const cntEl=document.getElementById('achCounter');
-  if(cntEl)cntEl.textContent=`${unlockedCount}/${total} открыто`;
+  if(cntEl)cntEl.textContent=T().achCounterFmt(unlockedCount,total);
   // tabs active state
   document.querySelectorAll('.ach-tab').forEach(t=>{
     t.classList.toggle('active',t.dataset.filter===achFilter);
@@ -1421,7 +1433,7 @@ function buildAchScreen(){
   if(list.length===0){
     const empty=document.createElement('div');
     empty.className='ach-empty';
-    empty.textContent=achFilter==='unlocked'?'Пока нет открытых достижений':'Все достижения уже открыты!';
+    empty.textContent=achFilter==='unlocked'?T().achEmptyUnlocked:T().achEmptyLocked;
     grid.appendChild(empty);
     return;
   }
@@ -1488,7 +1500,8 @@ function questTrack(type,value){
     if(q.claimed||q.progress>=q.goal) return;
     if(q.type!==type) return;
     const wasComplete=q.progress>=q.goal;
-    if(type==='score'||type==='reach_level'||type==='combo'){
+    // reach_level/combo — максимум достигнутого; остальные (еда/очки/игры/бонусы) — копятся за день
+    if(type==='reach_level'||type==='combo'){
       if(value>q.progress){q.progress=Math.min(value,q.goal);changed=true;}
     } else {
       q.progress=Math.min(q.progress+value,q.goal);changed=true;
@@ -1586,7 +1599,7 @@ async function fetchLeaderboard(){
         <span class="lb-rank ${rankClass[i]||''}">${medals[i]||`<span style="font-size:.72rem;color:#64748b">${i+1}</span>`}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">Ур.${row.level} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
+          <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
@@ -1612,7 +1625,7 @@ async function submitToLeaderboard(name,score,level,mode){
   }
 }
 
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function switchLbTab(tab){
   document.getElementById('tabMy').classList.toggle('active',tab==='my');
@@ -1719,12 +1732,12 @@ function buildShopPreview(){
     btnDisabled = true;
   } else if(tooExpensive){
     sub = T().shopCoinPriceFmt(s.price);
-    btnText = '🪙 ' + s.price + ' — ' + T().lbError.replace('😞','').trim();
+    btnText = '🪙 ' + s.price + ' — ' + T().shopNotEnough;
     btnClass = 'buy';
     btnDisabled = true;
   } else {
     sub = T().shopCoinPriceFmt(s.price);
-    btnText = '🪙 ' + T().shopCoinsFmt(s.price);
+    btnText = T().shopCoinPriceFmt(s.price);
     btnClass = 'buy';
   }
 
@@ -1746,7 +1759,6 @@ function buildShopPreview(){
       skinIdx = i;
       shopPreviewIdx = i;
       saveAll();
-      spawnFloatText && spawnFloatText(0, 0, T().floatBought, '#facc15');
     } else if(btnClass === 'equip'){
       skinIdx = i;
       saveAll();
@@ -1932,14 +1944,16 @@ document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI(
 document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeClassic').addEventListener('touchstart',e=>{e.preventDefault();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';savedLevel=1;saveAll();beginLevel(1);});
-document.getElementById('modeTime').addEventListener('touchstart',e=>{e.preventDefault();gameMode='time';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';savedLevel=1;saveAll();beginLevel(1);});
-document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.preventDefault();gameMode='survival';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);});
-document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();beginLevel(savedLevel);});
-document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();beginLevel(savedLevel);},{passive:false});
+// Режимы Время/Выживание/Зеркало НЕ трогают savedLevel — это сохранение Классики
+document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';beginLevel(1);});
+document.getElementById('modeTime').addEventListener('touchstart',e=>{e.preventDefault();gameMode='time';beginLevel(1);},{passive:false});
+document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';beginLevel(1);});
+document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.preventDefault();gameMode='survival';beginLevel(1);},{passive:false});
+document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';beginLevel(1);});
+document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';beginLevel(1);},{passive:false});
+// «Продолжить» — всегда Классика с сохранённого уровня
+document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();gameMode='classic';beginLevel(savedLevel);});
+document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();gameMode='classic';beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
 document.getElementById('btnRecords').addEventListener('touchstart',e=>{e.preventDefault();openRecords();},{passive:false});
 // ── РЕКОРДЫ ──────────────────────────────────────────────────────
@@ -1992,6 +2006,8 @@ async function doResetProgress(){
 }
 document.getElementById('btnLangToggle').addEventListener('click',toggleLang);
 document.getElementById('btnLangToggle').addEventListener('touchstart',e=>{e.preventDefault();toggleLang();},{passive:false});
+document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
+document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   const set=()=>{ difficulty=b.dataset.diff; saveAll(); updateDiffBtns(); };
   b.addEventListener('click',set);
@@ -2065,8 +2081,17 @@ let currentLevel=1,levelData=null;
 function beginLevel(lvl){
   currentLevel=lvl;
   levelData=getLevelData(lvl);
-  document.getElementById('lvlNum').textContent=lvl;
-  document.getElementById('lvlGoal').textContent=T().lvlGoalFmt(levelData.foodNeeded);
+  // Заставка перед игрой: для Время/Выживание показываем режим, а не "Съешь N еды"
+  const lvlLabelEl=document.querySelector('.lvl-label');
+  const lvlNumEl=document.getElementById('lvlNum');
+  const lvlGoalEl=document.getElementById('lvlGoal');
+  if(gameMode==='time'){
+    lvlLabelEl.textContent=T().modeTimeTitle;lvlNumEl.textContent='60';lvlGoalEl.textContent=T().modeTimeDesc;
+  } else if(gameMode==='survival'){
+    lvlLabelEl.textContent=T().modeSurvivalTitle;lvlNumEl.textContent='∞';lvlGoalEl.textContent=T().modeSurvivalDesc;
+  } else {
+    lvlLabelEl.textContent=T().lvlLabel;lvlNumEl.textContent=lvl;lvlGoalEl.textContent=T().lvlGoalFmt(levelData.foodNeeded);
+  }
   // Зеркальный режим — меняем иконки d-pad и добавляем рамку
   const mirror=gameMode==='mirror';
   document.getElementById('btnLeft').textContent  = mirror ? '▶' : '◀';
@@ -2086,11 +2111,15 @@ const scoreEl=document.getElementById('score'),bestHud=document.getElementById('
 const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('progBar');
 const btnPause=document.getElementById('btnPause');
 bestHud.textContent=best;
-let path,dir,nextDir,food,obstacles,particles,floatTexts;
+let path,dir,nextDir,food,obstacles,particles=[],floatTexts=[];
 let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
 let invincible=0;   // мс неуязвимости (щит при старте уровня)
 let combo=0;        // счётчик подряд съеденной еды
+const COMBO_WINDOW=8000; // окно комбо: ешь следующую еду в течение 8 сек
+let comboTimer=0;        // мс до сброса комбо
+let sessionStartBest=0;  // рекорд на момент старта игры (для «Новый рекорд!»)
+let obsRespawnIn=0;      // мс до респавна препятствий (Выживание после бомбы)
 // Золотая еда
 let goldFood=null;       // {x,y} или null
 let goldFoodLife=0;      // сколько мс осталось жить
@@ -2116,6 +2145,7 @@ const BONUS_COLORS={shield:'#38bdf8',speed:'#fb923c',freeze:'#67e8f9',bomb:'#f87
 const BONUS_ICONS={shield:'🛡',speed:'⚡',freeze:'❄',bomb:'💣'};
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function spawnFloatText(x,y,text,color){
+  if(!floatTexts) return;
   floatTexts.push({x,y,text,color,alpha:1,vy:-1.8});
 }
 function spawnParticles(x,y,color){
@@ -2153,8 +2183,9 @@ function spawnGoldFood(){
   goldFoodLife=GOLD_LIFETIME;
 }
 function spawnBonus(){
-  // выбираем случайный тип
-  const type=BONUS_TYPES[Math.floor(Math.random()*BONUS_TYPES.length)];
+  // выбираем случайный тип; бомба не спавнится если препятствий нет (бесполезна)
+  const types=obstacles.length?BONUS_TYPES:BONUS_TYPES.filter(t=>t!=='bomb');
+  const type=types[Math.floor(Math.random()*types.length)];
   let p,tries=0;
   do{p={x:BONUS_RADIUS+25+Math.random()*(W-BONUS_RADIUS*2-50),y:BONUS_RADIUS+25+Math.random()*(H-BONUS_RADIUS*2-50)};}
   while(++tries<60&&(
@@ -2187,8 +2218,10 @@ function applyBonus(type){
     freezeActive=3000; // 3 sek. spomalenie
     spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatFreeze,'#67e8f9');
   } else if(type==='bomb'){
-    // ničíme všetky prekážky
+    // уничтожаем все препятствия
     obstacles=[];
+    // в Выживании препятствия возвращаются через 6 сек (иначе режим теряет смысл)
+    if(gameMode==='survival') obsRespawnIn=6000;
     spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatBomb,'#f87171');
     // взрывные частицы
     for(let i=0;i<30;i++){
@@ -2200,6 +2233,26 @@ function applyBonus(type){
 }
 function updateProg(){
   progBar.style.width=Math.min(100,Math.round(levelScore/levelData.foodNeeded*100))+'%';
+}
+// Режимы с уровнями: Классика и Зеркало
+const isLevelMode=()=>gameMode==='classic'||gameMode==='mirror';
+// Завершение уровня (единая логика для обычной и золотой еды)
+function levelComplete(){
+  running=false;cancelAnimationFrame(animId);
+  const newLvl=currentLevel+1;
+  if(currentLevel>=bestLevel){
+    bestLevel=newLvl;
+    SKINS.forEach((s,i)=>{
+      if(s.unlockLevel===bestLevel){
+        skinIdx=i;   // автоматически переключаем на новый скин
+        showUnlock(s);
+      }
+    });
+  }
+  if(gameMode==='classic') savedLevel=newLvl; // сохранение — только для Классики
+  questTrack('reach_level',newLvl);
+  saveAll();refreshMenuUI();
+  showLevelUp(newLvl,()=>beginLevel(newLvl));
 }
 function startGame(){
   if(animId) cancelAnimationFrame(animId);
@@ -2228,8 +2281,9 @@ function startGame(){
   goldFood=null;goldFoodLife=0;goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
   bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
   shieldActive=false;speedBoost=0;freezeActive=0;
-  survivalTime=0;
-  invincible=2000; combo=0;
+  survivalTime=0;obsRespawnIn=0;
+  invincible=2000; combo=0; comboTimer=0;
+  sessionStartBest=best; // запоминаем рекорд до игры — для «Новый рекорд!»
   scoreEl.textContent=0;updateProg();
   // Выживание: сразу максимум препятствий
   if(gameMode==='survival') levelData={...levelData,obsCount:22,speed:3.5*DIFF_MULT[difficulty]};
@@ -2247,6 +2301,10 @@ function loop(ts){
   if(invincible>0) invincible-=dt;
   if(speedBoost>0) speedBoost-=dt;
   if(freezeActive>0) freezeActive-=dt;
+  // Окно комбо: не съел еду вовремя — комбо сгорает
+  if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0)combo=0;}
+  // Выживание: респавн препятствий после бомбы
+  if(obsRespawnIn>0){obsRespawnIn-=dt;if(obsRespawnIn<=0)spawnObstacles();}
   // Режим Выживание: считаем время
   if(gameMode==='survival') survivalTime+=dt;
   // Режим Время: обратный отсчёт
@@ -2256,7 +2314,7 @@ function loop(ts){
     const timerEl=document.getElementById('hudTimer');
     timerEl.textContent=secs;
     if(secs<=10) timerEl.classList.add('urgent'); else timerEl.classList.remove('urgent');
-    if(timeLeft<=0){playHit();endGame();return;}
+    if(timeLeft<=0){endGame();return;} // время вышло — без звука удара
   }
   // скорость: ускорение +60%, заморозка -50%, иначе базовая
   const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
@@ -2297,7 +2355,7 @@ function loop(ts){
     if(len>=totalLen){path=path.slice(0,i+1);break;}
   }
   if(dist(head,food)<R+FR){
-    combo++;
+    combo++;comboTimer=COMBO_WINDOW;
     const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
@@ -2314,26 +2372,12 @@ function loop(ts){
     if(totalFood===1) unlockAch('first_bite');
     if(totalFood>=10) unlockAch('ten_food');
     if(combo>=5) unlockAch('combo_master');
-    // Квесты — еда
+    // Квесты — еда (очки копятся за день, а не максимум за игру)
     questTrack('eat_food',1);
-    questTrack('score',score);
+    questTrack('score',pts);
     questTrack('combo',combo);
-    if(gameMode==='classic'&&levelScore>=levelData.foodNeeded){
-      running=false;cancelAnimationFrame(animId);
-      const newLvl=currentLevel+1;
-      if(currentLevel>=bestLevel){
-        bestLevel=newLvl;
-        SKINS.forEach((s,i)=>{
-          if(s.unlockLevel===bestLevel){
-            skinIdx=i;   // автоматически переключаем на новый скин
-            showUnlock(s);
-          }
-        });
-      }
-      savedLevel=newLvl;
-      questTrack('reach_level',newLvl);
-      saveAll();refreshMenuUI();
-      showLevelUp(newLvl, ()=>beginLevel(newLvl));
+    if(isLevelMode()&&levelScore>=levelData.foodNeeded){
+      levelComplete();
       return;
     }
     spawnFood();
@@ -2348,6 +2392,7 @@ function loop(ts){
     } else if(dist(head,goldFood)<R+GFR){
       // съели!
       const pts=3;
+      combo++;comboTimer=COMBO_WINDOW; // золото тоже поддерживает комбо
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
       coins+=pts;
@@ -2361,26 +2406,13 @@ function loop(ts){
       unlockAch('gold_eater');
       questTrack('eat_gold',1);
       questTrack('eat_food',1);  // золото — тоже еда
-      questTrack('score',score);
+      questTrack('score',pts);
+      questTrack('combo',combo);
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
-      // проверяем завершение уровня (только в классике)
-      if(gameMode==='classic'&&levelScore>=levelData.foodNeeded){
-        running=false;cancelAnimationFrame(animId);
-        const newLvl=currentLevel+1;
-        if(currentLevel>=bestLevel){
-          bestLevel=newLvl;
-          SKINS.forEach((s,i)=>{
-          if(s.unlockLevel===bestLevel){
-            skinIdx=i;   // автоматически переключаем на новый скин
-            showUnlock(s);
-          }
-        });
-        }
-        savedLevel=newLvl;
-        questTrack('reach_level',newLvl);
-        saveAll();refreshMenuUI();
-        showLevelUp(newLvl,()=>beginLevel(newLvl));
+      // проверяем завершение уровня (Классика и Зеркало)
+      if(isLevelMode()&&levelScore>=levelData.foodNeeded){
+        levelComplete();
         return;
       }
     }
@@ -2542,7 +2574,8 @@ function endGame(){
   if(gameMode==='survival'&&survivalTime>=30000) unlockAch('survivor');
   if(gameMode==='time'&&score>=20) unlockAch('time_champ');
   if(gameMode==='mirror'&&totalFood>=5) unlockAch('mirror_5');
-  const isNewRecord = score > 0 && score > best; // рекорд — ДО saveAll()
+  // Сравниваем с рекордом НА МОМЕНТ СТАРТА игры (best обновляется живьём во время игры)
+  const isNewRecord = score > 0 && score > sessionStartBest;
   if(score>best){best=score;bestHud.textContent=best;}
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
   trackEvent('game_over',score,gameMode); // глобальная статистика
@@ -2553,9 +2586,10 @@ function endGame(){
     else                           goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgGameOver;
     const modeLbl = gameMode==='time' ? T().goModeLbl.time : gameMode==='survival' ? T().goModeLbl.survival : gameMode==='mirror' ? T().goModeLbl.mirror : T().goModeLblClassic(currentLevel);
     goSub.textContent=T().goSubFmt(score,modeLbl);
-    // В режимах Время/Выживание/Зеркало кнопка "Продолжить с уровня" → "Сыграть ещё"
+    // В режимах Время/Выживание кнопка "Продолжить с уровня" → "Сыграть ещё";
+    // Классика и Зеркало (режимы с уровнями) — продолжить с текущего уровня
     const retryCurBtn=document.getElementById('goRetryCur');
-    if(gameMode!=='classic') retryCurBtn.textContent=T().goRetryMore;
+    if(!isLevelMode()) retryCurBtn.textContent=T().goRetryMore;
     else retryCurBtn.innerHTML=T().goRetryCurPrefix+'<span id="goLvlNum">'+currentLevel+'</span>';
     const lvlEl=document.getElementById('goLvlNum');
     if(lvlEl) lvlEl.textContent=currentLevel;
@@ -2574,13 +2608,15 @@ document.getElementById('score').addEventListener('click',()=>{
   dbgTapTimer=setTimeout(()=>dbgTapCount=0,1500);
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
-function dbgOpen(){debugPanel.classList.add('open');dbgUpdateStats();document.getElementById('dbgTab').style.display='none';}
-function dbgClose(){debugPanel.classList.remove('open');document.getElementById('dbgTab').style.display='block';}
+function dbgOpen(){debugPanel.classList.add('open');dbgUpdateStats();}
+// dbgTab остаётся скрытым — панель открывается только 5 тапами по счёту или клавишей `
+function dbgClose(){debugPanel.classList.remove('open');}
 function dbgBonus(type){
   if(!running) return;
-  // немедленно применяем эффект — не ждём пока предмет появится на поле
-  bonusItem={x:food.x,y:food.y,type};
-  bonusLife=1; // мгновенно "подбираем"
+  // применяем эффект сразу на голове змейки
+  bonusItem={x:path[0].x,y:path[0].y,type};
+  applyBonus(type);
+  resetBonus();
 }
 function dbgFillBar(){
   if(!running) return;
@@ -2591,16 +2627,12 @@ function dbgFillBar(){
 function dbgNextLevel(){
   if(!running) return;
   levelScore=levelData.foodNeeded;
-  // триггерим переход вручную
-  running=false;cancelAnimationFrame(animId);
   debugPanel.classList.remove('open');
-  const newLvl=currentLevel+1;
-  if(currentLevel>=bestLevel){bestLevel=newLvl;}
-  savedLevel=newLvl;saveAll();refreshMenuUI();
-  showLevelUp(newLvl,()=>beginLevel(newLvl));
+  levelComplete(); // единая логика (включая разблокировку скинов)
 }
 function dbgUnlockAll(){
-  bestLevel=SKINS.reduce((m,s)=>Math.max(m,s.unlockLevel||0),0)+1;
+  // через boughtSkins — не портим bestLevel (статистику игрока)
+  SKINS.forEach((s,i)=>boughtSkins.add(i));
   saveAll();refreshMenuUI();
   spawnFloatText(W/2,H/2-20,T().floatAllSkins,'#a78bfa');
 }
@@ -2614,7 +2646,8 @@ function dbgSetLevel(n){
 }
 function dbgGoldFood(){
   if(!running) return;
-  goldFood={x:food.x+R*3,y:food.y,life:GOLD_LIFETIME};
+  goldFood={x:food.x+R*3,y:food.y};
+  goldFoodLife=GOLD_LIFETIME; // иначе исчезнет в первом же кадре
   spawnFloatText(W/2,H/2-20,T().floatGoldFood,'#facc15');
 }
 let dbgInvOn=false;
@@ -2634,7 +2667,9 @@ function dbgUnlockAllAch(){
   spawnFloatText(W/2,H/2-20,T().floatAllAch,'#4ade80');
 }
 function dbgResetAll(){
-  localStorage.clear();location.reload();
+  // чистим только ключи игры — не трогаем чужие данные origin
+  Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));
+  location.reload();
 }
 function dbgUpdateStats(){
   const el=document.getElementById('dbgStats');
@@ -2660,8 +2695,11 @@ function applyDir(nd){
   if(!running||paused) return;
   // Зеркальный режим — инвертируем горизонталь
   if(gameMode==='mirror') nd={x:-nd.x, y:nd.y};
-  // Проверяем против nextDir — защита от разворота на 180°
-  if(!(nd.x===-nextDir.x&&nd.y===-nextDir.y)) nextDir=nd;
+  // Защита от разворота на 180°: проверяем и nextDir, и реально применённый dir
+  // (два быстрых нажатия за один кадр иначе разворачивали змейку в саму себя)
+  if(nd.x===-nextDir.x&&nd.y===-nextDir.y) return;
+  if(dir&&nd.x===-dir.x&&nd.y===-dir.y) return;
+  nextDir=nd;
 }
 // Пауза кнопки
 pmResume.addEventListener('click',togglePause);
@@ -2672,16 +2710,14 @@ pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
 // Game over кнопки
 const goRetryCur=document.getElementById('goRetryCur');
-goRetryCur.addEventListener('click',()=>{
-  if(gameMode!=='classic'){savedLevel=1;saveAll();}
-  beginLevel(gameMode==='classic'?currentLevel:1);
-});
-goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();
-  if(gameMode!=='classic'){savedLevel=1;saveAll();}
-  beginLevel(gameMode==='classic'?currentLevel:1);
-},{passive:false});
-goRetry.addEventListener('click',()=>{stopMusic();savedLevel=1;saveAll();beginLevel(1);});
-goRetry.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();savedLevel=1;saveAll();beginLevel(1);},{passive:false});
+// Классика/Зеркало — продолжить с текущего уровня; Время/Выживание — заново (savedLevel не трогаем)
+const retryCurAct=()=>beginLevel(isLevelMode()?currentLevel:1);
+goRetryCur.addEventListener('click',retryCurAct);
+goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();retryCurAct();},{passive:false});
+// «Заново с ур. 1» — сбрасывает сохранение только в Классике
+const retryAct=()=>{stopMusic();if(gameMode==='classic'){savedLevel=1;saveAll();}beginLevel(1);};
+goRetry.addEventListener('click',retryAct);
+goRetry.addEventListener('touchstart',e=>{e.preventDefault();retryAct();},{passive:false});
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 // Поделиться
@@ -2711,6 +2747,8 @@ goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{pas
 // Лидерборд — отправка
 // Клавиатура
 document.addEventListener('keydown',e=>{
+  // В текстовых полях (ник и т.п.) клавиши работают как обычно — пробел не = пауза
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
   if(e.code==='Space'){e.preventDefault();togglePause();return;}
   if(!running||paused) return;
   const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0},
@@ -2739,9 +2777,11 @@ canvas.addEventListener('touchend',e=>{
   applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
 },{passive:false});
 document.body.addEventListener('touchmove',e=>{
-  // Не блокируем скролл внутри инпута
+  // Не блокируем скролл в инпутах и внутри debug-панели
   if(e.target.tagName==='INPUT') return;
-  e.preventDefault();
+  if(e.target.closest&&e.target.closest('#debugPanel')) return;
+  // Блокируем жесты ТОЛЬКО на игровом экране (иначе ломается скролл меню/ачивок/магазина)
+  if(e.target.closest&&e.target.closest('#gameScreen')) e.preventDefault();
 },{passive:false});
 // ── ЗВУК ─────────────────────────────────────────────────────────
 let audioCtx=null;
