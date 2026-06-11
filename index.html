@@ -1531,17 +1531,19 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard?select=name,score,level,mode&order=score.desc&limit=3`,{headers:SB_HEADERS});
+    // leaderboard_best = VIEW: DISTINCT ON (name), best score per player, no duplicates
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
     const data=await r.json();
     if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
     const rankClass=['gold','silver','bronze'];
+    const modeMap={classic:T().modeClassicTitle,time:T().modeTimeTitle,survival:T().modeSurvivalTitle,mirror:T().modeMirrorTitle};
     el.innerHTML=data.map((row,i)=>`
       <div class="lb-row">
-        <span class="lb-rank ${rankClass[i]||''}">${medals[i]||i+1}</span>
+        <span class="lb-rank ${rankClass[i]||''}">${medals[i]||`<span style="font-size:.72rem;color:#64748b">${i+1}</span>`}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">Ур.${row.level} · ${({classic:T().modeClassicTitle,time:T().modeTimeTitle,survival:T().modeSurvivalTitle,mirror:T().modeMirrorTitle})[row.mode]||T().modeClassicTitle}</div>
+          <div class="lb-meta">Ур.${row.level} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
