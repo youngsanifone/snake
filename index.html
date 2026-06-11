@@ -1186,7 +1186,7 @@ function trackEvent(event,score,mode){
   fetch(SB_URL+'/rest/v1/player_events',{
     method:'POST',
     headers:SB_HEADERS,
-    body:JSON.stringify({player_id:pid,event,score:score??null,mode:mode||null})
+    body:JSON.stringify({player_id:pid,event,score:score??0,mode:mode||'classic'})
   }).catch(()=>{});
 }
 // Визит — вызывается из initGame() после объявления S
@@ -1272,7 +1272,7 @@ function upsertProfile(){
       skin_idx:skinIdx,
       bought_skins:[...boughtSkins],
       achievements:[...unlockedAch],
-      quests:questData||null,
+      quests:questData||[],
       difficulty,music_on:musicOn,sfx_on:sfxOn,theme,
       updated_at:new Date().toISOString()
     })
