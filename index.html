@@ -371,7 +371,8 @@
   .ach-tabs{display:flex;width:100%;border-bottom:1.5px solid var(--border);flex-shrink:0;background:var(--panel2);}
   .ach-tab{flex:1;padding:9px 4px;font-size:0.72rem;font-weight:700;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color 0.15s,border-color 0.15s;margin-bottom:-1.5px;}
   .ach-tab.active{color:#4ade80;border-bottom-color:#4ade80;}
-  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px 24px;display:flex;flex-direction:column;gap:7px;width:100%;}
+  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px 24px;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;}
+  .ach-card{width:min(560px,calc(100vw - 24px));}
   .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .ach-card.unlocked{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
@@ -379,7 +380,7 @@
   .ach-name{font-size:0.85rem;font-weight:700;color:var(--text);}
   .ach-card.unlocked .ach-name{color:#4ade80;}
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
-  .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;}
+  .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;width:min(560px,calc(100vw - 24px));}
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
