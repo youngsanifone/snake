@@ -363,7 +363,15 @@
   .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
   .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
   /* ДОСТИЖЕНИЯ */
-  .ach-grid{display:flex;flex-direction:column;gap:7px;width:min(340px,calc(100vw - 24px));padding-right:4px;padding-bottom:4px;}
+  #achScreen{padding:0;overflow:hidden;justify-content:flex-start;}
+  .ach-header{display:flex;align-items:center;gap:0;padding:12px 14px 10px;background:var(--panel2);border-bottom:1px solid var(--border);flex-shrink:0;width:100%;}
+  .ach-header-back{background:transparent;border:none;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;padding:4px 6px;touch-action:manipulation;flex-shrink:0;}
+  .ach-header-title{flex:1;text-align:center;font-size:0.88rem;font-weight:800;color:var(--text);letter-spacing:1.5px;}
+  .ach-header-cnt{font-size:0.72rem;color:var(--text3);min-width:32px;text-align:right;flex-shrink:0;}
+  .ach-tabs{display:flex;width:100%;border-bottom:1.5px solid var(--border);flex-shrink:0;background:var(--panel2);}
+  .ach-tab{flex:1;padding:9px 4px;font-size:0.72rem;font-weight:700;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color 0.15s,border-color 0.15s;margin-bottom:-1.5px;}
+  .ach-tab.active{color:#4ade80;border-bottom-color:#4ade80;}
+  .ach-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px 24px;display:flex;flex-direction:column;gap:7px;width:100%;}
   .ach-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
   .ach-card.unlocked{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
   .ach-icon{font-size:1.6rem;flex-shrink:0;width:36px;text-align:center;}
@@ -371,7 +379,7 @@
   .ach-name{font-size:0.85rem;font-weight:700;color:var(--text);}
   .ach-card.unlocked .ach-name{color:#4ade80;}
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
-  .ach-back{flex-shrink:0;margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
+  .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;}
   /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
@@ -624,9 +632,17 @@
 </div>
 <!-- ЭКРАН ДОСТИЖЕНИЙ -->
 <div class="screen" id="achScreen">
-  <div class="rec-title">🏅 Достижения</div>
-  <div class="ach-grid" id="achGrid"></div>
-  <button class="ach-back" id="achBack">← Назад</button>
+  <div class="ach-header">
+    <button class="ach-header-back" id="achBack">← Назад</button>
+    <span class="ach-header-title" id="achHeaderTitle">🏅 ДОСТИЖЕНИЯ</span>
+    <span class="ach-header-cnt" id="achCounter">0/0</span>
+  </div>
+  <div class="ach-tabs" id="achTabs">
+    <button class="ach-tab active" id="achTabAll" data-filter="all">Все</button>
+    <button class="ach-tab" id="achTabUnlocked" data-filter="unlocked">✅ Открытые</button>
+    <button class="ach-tab" id="achTabLocked" data-filter="locked">🔒 Закрытые</button>
+  </div>
+  <div class="ach-scroll" id="achGrid"></div>
 </div>
 <!-- ВЫБОР РЕЖИМА -->
 <div class="screen" id="modeScreen">
@@ -854,7 +870,7 @@ const TRANSLATIONS={
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
     recBest:'Najlepšie skóre',recLvl:'Max. úroveň',recGames:'Hier odohratých',
     lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',
-    shopBack:'← Späť',achBack:'← Späť',
+    shopBack:'← Späť',achBack:'← Späť',achTabAll:'Všetky',achTabUnlocked:'✅ Otvorené',achTabLocked:'🔒 Zatvorené',
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopCoinsFmt:(n)=>`🪙 ${n} mincí`,
     shopLevelFmt:(n)=>`Úroveň ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} mincí`,
@@ -935,7 +951,7 @@ const TRANSLATIONS={
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
     recBest:'Лучший счёт',recLvl:'Макс. уровень',recGames:'Игр сыграно',
     lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',
-    shopBack:'← Назад',achBack:'← Назад',
+    shopBack:'← Назад',achBack:'← Назад',achTabAll:'Все',achTabUnlocked:'✅ Открытые',achTabLocked:'🔒 Закрытые',
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopCoinsFmt:(n)=>`🪙 ${n} монет`,
     shopLevelFmt:(n)=>`Уровень ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} монет`,
@@ -1016,7 +1032,7 @@ const TRANSLATIONS={
     recTitle:'🏆 Records',tabMy:'👤 My',tabOnline:'🌍 Online',
     recBest:'Best score',recLvl:'Max level',recGames:'Games played',
     lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',
-    shopBack:'← Back',achBack:'← Back',
+    shopBack:'← Back',achBack:'← Back',achTabAll:'All',achTabUnlocked:'✅ Unlocked',achTabLocked:'🔒 Locked',
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopCoinsFmt:(n)=>`🪙 ${n} coins`,
     shopLevelFmt:(n)=>`Level ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} coins`,
@@ -1093,9 +1109,12 @@ function applyLang(){
   const shopT=document.querySelector('#shopScreen .rec-title');if(shopT)shopT.textContent=L.shopTitle;
   const shopSkinLbl=document.getElementById('shopSkinLabel');if(shopSkinLbl)shopSkinLbl.textContent=L.shopSkinLabel;
   const shopBk=document.getElementById('shopBack');if(shopBk)shopBk.textContent=L.shopBack;
-  const achT=document.querySelector('#achScreen .rec-title');if(achT)achT.textContent=L.achTitle;
+  const achHT=document.getElementById('achHeaderTitle');if(achHT)achHT.textContent=L.achTitle;
   const anTitleEl=document.getElementById('anTitle');if(anTitleEl)anTitleEl.textContent=L.achNotifTitle;
   const achBk=document.getElementById('achBack');if(achBk)achBk.textContent=L.achBack;
+  const achTabAllEl=document.getElementById('achTabAll');if(achTabAllEl)achTabAllEl.textContent=L.achTabAll;
+  const achTabUnlockedEl=document.getElementById('achTabUnlocked');if(achTabUnlockedEl)achTabUnlockedEl.textContent=L.achTabUnlocked;
+  const achTabLockedEl=document.getElementById('achTabLocked');if(achTabLockedEl)achTabLockedEl.textContent=L.achTabLocked;
   const modeT=document.querySelector('.mode-title');if(modeT)modeT.textContent=L.modeTitle;
   const modeS=document.querySelector('.mode-sub');if(modeS)modeS.textContent=L.modeSub;
   const mTitles=document.querySelectorAll('.mode-card-title');
@@ -1379,10 +1398,31 @@ function unlockAch(id){
   notif.classList.add('show');
   setTimeout(()=>notif.classList.remove('show'),3000);
 }
+let achFilter='all';
 function buildAchScreen(){
+  // counter
+  const total=ACHIEVEMENTS.length;
+  const unlockedCount=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id)).length;
+  const cntEl=document.getElementById('achCounter');
+  if(cntEl)cntEl.textContent=`${unlockedCount}/${total}`;
+  // tabs active state
+  document.querySelectorAll('.ach-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.filter===achFilter);
+  });
+  // filter
+  let list=ACHIEVEMENTS;
+  if(achFilter==='unlocked')list=ACHIEVEMENTS.filter(a=>unlockedAch.has(a.id));
+  else if(achFilter==='locked')list=ACHIEVEMENTS.filter(a=>!unlockedAch.has(a.id));
   const grid=document.getElementById('achGrid');
   grid.innerHTML='';
-  ACHIEVEMENTS.forEach(a=>{
+  if(list.length===0){
+    const empty=document.createElement('div');
+    empty.className='ach-empty';
+    empty.textContent=achFilter==='unlocked'?'Пока нет открытых достижений':'Все достижения уже открыты!';
+    grid.appendChild(empty);
+    return;
+  }
+  list.forEach(a=>{
     const unlocked=unlockedAch.has(a.id);
     const card=document.createElement('div');
     card.className='ach-card'+(unlocked?' unlocked':'');
@@ -1862,14 +1902,27 @@ document.getElementById('btnPlay').addEventListener('click',openModeScreen);
 document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
 document.getElementById('modeBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('modeBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
-document.getElementById('btnAch').addEventListener('click',()=>{buildAchScreen();showScreen('achScreen');});
-document.getElementById('btnAch').addEventListener('touchstart',e=>{e.preventDefault();buildAchScreen();showScreen('achScreen');},{passive:false});
+document.getElementById('btnAch').addEventListener('click',()=>{achFilter='all';buildAchScreen();showScreen('achScreen');});
+document.getElementById('btnAch').addEventListener('touchstart',e=>{e.preventDefault();achFilter='all';buildAchScreen();showScreen('achScreen');},{passive:false});
 document.getElementById('btnQuests').addEventListener('click',()=>{buildQuestScreen();showScreen('questScreen');});
 document.getElementById('btnQuests').addEventListener('touchstart',e=>{e.preventDefault();buildQuestScreen();showScreen('questScreen');},{passive:false});
 document.getElementById('questBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
 document.getElementById('questBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('achBack').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('achBack').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
+document.getElementById('achTabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.ach-tab');
+  if(!tab)return;
+  achFilter=tab.dataset.filter;
+  buildAchScreen();
+});
+document.getElementById('achTabs').addEventListener('touchstart',e=>{
+  const tab=e.target.closest('.ach-tab');
+  if(!tab)return;
+  e.preventDefault();
+  achFilter=tab.dataset.filter;
+  buildAchScreen();
+},{passive:false});
 document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();showScreen('shopScreen');});
 document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();showScreen('shopScreen');},{passive:false});
 document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
