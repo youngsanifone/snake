@@ -876,6 +876,7 @@ const TRANSLATIONS={
     shopNotEnough:'Nedostatok mincí',
     tapToStart:'Šípka / swipe — štart!',
     restoreFound:(nick,best,lvl,coins)=>`Našiel sa profil «${nick}»: rekord ${best}, úroveň ${lvl}, 🪙 ${coins}. Obnoviť tento postup?`,
+    nickTaken:(n)=>`Prezývka «${n}» je už obsadená. Zvoľ inú.`,
     achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
     achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
     achEmptyLocked:'Všetky ocenenia sú už otvorené!',
@@ -963,6 +964,7 @@ const TRANSLATIONS={
     shopNotEnough:'Не хватает монет',
     tapToStart:'Стрелка / свайп — старт!',
     restoreFound:(nick,best,lvl,coins)=>`Найден профиль «${nick}»: рекорд ${best}, уровень ${lvl}, 🪙 ${coins}. Восстановить этот прогресс?`,
+    nickTaken:(n)=>`Ник «${n}» уже занят. Введи другой ник.`,
     achCounterFmt:(u,t)=>`${u}/${t} открыто`,
     achEmptyUnlocked:'Пока нет открытых достижений',
     achEmptyLocked:'Все достижения уже открыты!',
@@ -1050,6 +1052,7 @@ const TRANSLATIONS={
     shopNotEnough:'Not enough coins',
     tapToStart:'Arrow / swipe to start!',
     restoreFound:(nick,best,lvl,coins)=>`Found profile "${nick}": best ${best}, level ${lvl}, 🪙 ${coins}. Restore this progress?`,
+    nickTaken:(n)=>`Nickname "${n}" is already taken. Pick another one.`,
     achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
     achEmptyUnlocked:'No achievements unlocked yet',
     achEmptyLocked:'All achievements unlocked!',
@@ -1817,7 +1820,8 @@ function buildShopPreview(){
         if(r.ok){
           const rows=await r.json();
           const p=rows[0];
-          if(p&&p.player_id!==getPlayerId()&&((p.best||0)>0||(p.coins||0)>0||(p.games_played||0)>0)){
+          if(p&&p.player_id!==getPlayerId()){
+            // Ник уже существует: либо восстанавливаем этот профиль, либо просим другой ник
             if(confirm(T().restoreFound(p.nick,p.best||0,p.best_level||1,p.coins||0))){
               localStorage.setItem(S+'pid',p.player_id);
               setCookie(S+'pid',p.player_id);
@@ -1826,6 +1830,12 @@ function buildShopPreview(){
               showScreen('menuScreen');
               refreshMenuUI();
               return;
+            } else {
+              alert(T().nickTaken(name));
+              welcInp.style.borderColor='#ef4444';
+              setTimeout(()=>welcInp.style.borderColor='',600);
+              welcInp.select();welcInp.focus();
+              return; // дубликат не создаём
             }
           }
         }
