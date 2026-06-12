@@ -876,6 +876,7 @@ const TRANSLATIONS={
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopNotEnough:'Nedostatok mincí',
     tapToStart:'Šípka / swipe — štart!',
+    restoreFound:(nick,best,lvl,coins)=>`Našiel sa profil «${nick}»: rekord ${best}, úroveň ${lvl}, 🪙 ${coins}. Obnoviť tento postup?`,
     achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
     achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
     achEmptyLocked:'Všetky ocenenia sú už otvorené!',
@@ -962,6 +963,7 @@ const TRANSLATIONS={
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopNotEnough:'Не хватает монет',
     tapToStart:'Стрелка / свайп — старт!',
+    restoreFound:(nick,best,lvl,coins)=>`Найден профиль «${nick}»: рекорд ${best}, уровень ${lvl}, 🪙 ${coins}. Восстановить этот прогресс?`,
     achCounterFmt:(u,t)=>`${u}/${t} открыто`,
     achEmptyUnlocked:'Пока нет открытых достижений',
     achEmptyLocked:'Все достижения уже открыты!',
@@ -1048,6 +1050,7 @@ const TRANSLATIONS={
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopNotEnough:'Not enough coins',
     tapToStart:'Arrow / swipe to start!',
+    restoreFound:(nick,best,lvl,coins)=>`Found profile "${nick}": best ${best}, level ${lvl}, 🪙 ${coins}. Restore this progress?`,
     achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
     achEmptyUnlocked:'No achievements unlocked yet',
     achEmptyLocked:'All achievements unlocked!',
@@ -1208,13 +1211,22 @@ function toggleLang(){
 
 
 // ── ГЛОБАЛЬНАЯ СТАТИСТИКА ─────────────────────────────────────────
-// Получить/создать уникальный ID игрока
+// Cookie-помощники: дубль-хранилище для pid (живёт даже если localStorage почистили)
+function getCookie(name){
+  const m=document.cookie.match('(?:^|; )'+name+'=([^;]*)');
+  return m?decodeURIComponent(m[1]):null;
+}
+function setCookie(name,val){
+  document.cookie=name+'='+encodeURIComponent(val)+';max-age=34560000;path=/;SameSite=Lax';
+}
+// Получить/создать уникальный ID игрока (localStorage + cookie дубль)
 function getPlayerId(){
-  let pid=localStorage.getItem(S+'pid');
+  let pid=localStorage.getItem(S+'pid')||getCookie(S+'pid');
   if(!pid){
     pid=crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);
-    localStorage.setItem(S+'pid',pid);
   }
+  localStorage.setItem(S+'pid',pid);
+  setCookie(S+'pid',pid);
   return pid;
 }
 // Отправить событие в Supabase (fire-and-forget)
@@ -1295,9 +1307,12 @@ function saveAll(){
 }
 // Собрать объект профиля и отправить в Supabase
 function upsertProfile(){
+  // Защита: не перезаписываем облако нулями, пока профиль не загружен/не создан
+  if(!profileLoaded) return;
   const pid=getPlayerId();
   fetch(SB_URL+'/rest/v1/players',{
     method:'POST',
+    keepalive:true, // завершается даже при закрытии вкладки
     headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({
       player_id:pid,
@@ -1354,6 +1369,7 @@ function applyProfile(row){
   // Refresh live HUD elements if they exist
   const _bestHud=document.getElementById('bestHud');if(_bestHud)_bestHud.textContent=best;
   if(typeof refreshMenuUI==='function')refreshMenuUI();
+  profileLoaded=true;
 }
 // Загрузить из localStorage кэша (офлайн fallback)
 function applyLocalCache(){
@@ -1372,6 +1388,8 @@ function applyLocalCache(){
   theme        = localStorage.getItem(S+'Theme')||'dark';
   currentLang  = localStorage.getItem(S+'Lang')||'ru';
   const _bestHudCached=document.getElementById('bestHud');if(_bestHudCached)_bestHudCached.textContent=best;
+  // Профиль считается загруженным только если в кэше реально был игрок (есть ник)
+  if(lbNickname) profileLoaded=true;
 }
 // Очистить всё (при сбросе)
 function clearLocalData(){
@@ -1585,6 +1603,7 @@ function buildQuestScreen(){
 loadQuests();
 // ── ЛИДЕРБОРД ────────────────────────────────────────────────────
 let lbNickname = ''; // заполняется из Supabase при initGame()
+let profileLoaded = false; // true после загрузки/создания профиля — до этого облако не трогаем
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
@@ -1780,11 +1799,35 @@ function buildShopPreview(){
   const welcInp=document.getElementById('welcInput');
   const welcBtn=document.getElementById('welcBtn');
   const welcSkip=document.getElementById('welcSkip');
-  function doWelc(raw){
+  async function doWelc(raw){
     const name=(raw||'').trim()||T().anon;
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
+    // Если игрок с таким ником уже есть в облаке — предлагаем восстановить прогресс
+    // (спасает при смене браузера/устройства или очистке хранилища)
+    const anonNames=['Аноним','Anonym','Anonymous'];
+    if(!anonNames.includes(name)){
+      try{
+        const r=await fetch(`${SB_URL}/rest/v1/players?nick=eq.${encodeURIComponent(name)}&select=*&order=updated_at.desc&limit=1`,{headers:SB_HEADERS});
+        if(r.ok){
+          const rows=await r.json();
+          const p=rows[0];
+          if(p&&p.player_id!==getPlayerId()&&((p.best||0)>0||(p.coins||0)>0||(p.games_played||0)>0)){
+            if(confirm(T().restoreFound(p.nick,p.best||0,p.best_level||1,p.coins||0))){
+              localStorage.setItem(S+'pid',p.player_id);
+              setCookie(S+'pid',p.player_id);
+              applyProfile(p);
+              applyLang();
+              showScreen('menuScreen');
+              refreshMenuUI();
+              return;
+            }
+          }
+        }
+      }catch(e){}
+    }
     // Создаём профиль в Supabase
+    profileLoaded=true;
     upsertProfile();
     showScreen('menuScreen');
     refreshMenuUI();
@@ -1802,7 +1845,11 @@ function buildShopPreview(){
   // И при возвращении на вкладку
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible') trackEvent('visit',null,null);
+    // Уход со вкладки — сохраняем всё (keepalive доносит запрос даже после закрытия)
+    if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
   });
+  // Закрытие/перезагрузка вкладки — финальное сохранение
+  window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
 
   try{
     const pid=getPlayerId();
