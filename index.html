@@ -875,6 +875,7 @@ const TRANSLATIONS={
     shopBack:'← Späť',achBack:'← Späť',achTabAll:'Všetky',achTabUnlocked:'✅ Otvorené',achTabLocked:'🔒 Zatvorené',
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopNotEnough:'Nedostatok mincí',
+    tapToStart:'Šípka / swipe — štart!',
     achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
     achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
     achEmptyLocked:'Všetky ocenenia sú už otvorené!',
@@ -960,6 +961,7 @@ const TRANSLATIONS={
     shopBack:'← Назад',achBack:'← Назад',achTabAll:'Все',achTabUnlocked:'✅ Открытые',achTabLocked:'🔒 Закрытые',
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopNotEnough:'Не хватает монет',
+    tapToStart:'Стрелка / свайп — старт!',
     achCounterFmt:(u,t)=>`${u}/${t} открыто`,
     achEmptyUnlocked:'Пока нет открытых достижений',
     achEmptyLocked:'Все достижения уже открыты!',
@@ -1045,6 +1047,7 @@ const TRANSLATIONS={
     shopBack:'← Back',achBack:'← Back',achTabAll:'All',achTabUnlocked:'✅ Unlocked',achTabLocked:'🔒 Locked',
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopNotEnough:'Not enough coins',
+    tapToStart:'Arrow / swipe to start!',
     achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
     achEmptyUnlocked:'No achievements unlocked yet',
     achEmptyLocked:'All achievements unlocked!',
@@ -1792,16 +1795,14 @@ function buildShopPreview(){
   welcSkip.addEventListener('touchstart',e=>{e.preventDefault();doWelc('');},{passive:false});
   welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
 
-  // Трекинг визита (один раз в сутки)
-  (function(){
-    const today=new Date().toISOString().slice(0,10);
-    if(localStorage.getItem(S+'lastVisit')!==today){
-      localStorage.setItem(S+'lastVisit',today);
-      trackEvent('visit',null,null);
-    }
-  })();
+  // Визит — при КАЖДОМ открытии игры (иначе игрок не виден в «онлайн» панели до 5 минут)
+  trackEvent('visit',null,null);
   // Heartbeat — пинг каждые 5 минут пока вкладка открыта (для "онлайн сейчас")
   setInterval(()=>{ trackEvent('visit',null,null); }, 5*60*1000);
+  // И при возвращении на вкладку
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible') trackEvent('visit',null,null);
+  });
 
   try{
     const pid=getPlayerId();
@@ -2116,6 +2117,7 @@ let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
 let invincible=0;   // мс неуязвимости (щит при старте уровня)
 let combo=0;        // счётчик подряд съеденной еды
+let awaitingStart=false; // змейка ждёт первого нажатия (не едет и не умирает)
 const COMBO_WINDOW=8000; // окно комбо: ешь следующую еду в течение 8 сек
 let comboTimer=0;        // мс до сброса комбо
 let sessionStartBest=0;  // рекорд на момент старта игры (для «Новый рекорд!»)
@@ -2291,6 +2293,7 @@ function startGame(){
   gameOverlay.style.display='none';
   pauseMenu.style.display='none';
   paused=false;btnPause.textContent='⏸';
+  awaitingStart=true; // ждём первого свайпа/стрелки — змейка стоит
   running=true;lastTs=0;
   playMusic();
   animId=requestAnimationFrame(loop);
@@ -2298,6 +2301,12 @@ function startGame(){
 function loop(ts){
   if(!running||paused) return;
   const dt=lastTs?Math.min(ts-lastTs,50):16;lastTs=ts;
+  // Игра ещё не началась — змейка стоит, таймеры не идут, рисуем подсказку
+  if(awaitingStart){
+    draw();
+    animId=requestAnimationFrame(loop);
+    return;
+  }
   if(invincible>0) invincible-=dt;
   if(speedBoost>0) speedBoost-=dt;
   if(freezeActive>0) freezeActive-=dt;
@@ -2563,6 +2572,17 @@ function draw(){
     }
     ctx.restore();
   });
+  // Подсказка «нажми, чтобы начать» — пульсирует пока змейка ждёт
+  if(awaitingStart){
+    ctx.save();
+    ctx.globalAlpha=0.65+0.35*Math.sin(Date.now()*0.005);
+    ctx.font='bold 22px Segoe UI';
+    ctx.fillStyle='#fff';
+    ctx.shadowColor='#000';ctx.shadowBlur=12;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(T().tapToStart,W/2,H/2-70);
+    ctx.restore();
+  }
 }
 function endGame(){
   running=false;cancelAnimationFrame(animId);
@@ -2693,6 +2713,7 @@ function togglePause(){
 }
 function applyDir(nd){
   if(!running||paused) return;
+  awaitingStart=false; // первое нажатие — поехали!
   // Зеркальный режим — инвертируем горизонталь
   if(gameMode==='mirror') nd={x:-nd.x, y:nd.y};
   // Защита от разворота на 180°: проверяем и nextDir, и реально применённый dir
