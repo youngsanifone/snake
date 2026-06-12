@@ -556,7 +556,6 @@
     <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
     <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
-    <button id="welcSkip">играть без имени</button>
   </div>
 </div>
 <!-- МЕНЮ -->
@@ -1798,9 +1797,15 @@ function buildShopPreview(){
   // Вешаем обработчики экрана приветствия здесь (нужны в обоих путях)
   const welcInp=document.getElementById('welcInput');
   const welcBtn=document.getElementById('welcBtn');
-  const welcSkip=document.getElementById('welcSkip');
   async function doWelc(raw){
-    const name=(raw||'').trim()||T().anon;
+    const name=(raw||'').trim();
+    // Анонимный вход отключён — ник обязателен
+    if(!name){
+      welcInp.style.borderColor='#ef4444';
+      setTimeout(()=>welcInp.style.borderColor='',600);
+      welcInp.focus();
+      return;
+    }
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
     // Если игрок с таким ником уже есть в облаке — предлагаем восстановить прогресс
@@ -1834,14 +1839,15 @@ function buildShopPreview(){
   }
   welcBtn.addEventListener('click',()=>doWelc(welcInp.value));
   welcBtn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(welcInp.value);},{passive:false});
-  welcSkip.addEventListener('click',()=>doWelc(''));
-  welcSkip.addEventListener('touchstart',e=>{e.preventDefault();doWelc('');},{passive:false});
   welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
+  // Аноним из старых версий — попросим назваться (прогресс сохраняется)
+  const ANON_NAMES=['Аноним','Anonym','Anonymous'];
+  const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
 
   // Визит — при КАЖДОМ открытии игры (иначе игрок не виден в «онлайн» панели до 5 минут)
   trackEvent('visit',null,null);
-  // Heartbeat — пинг каждые 5 минут пока вкладка открыта (для "онлайн сейчас")
-  setInterval(()=>{ trackEvent('visit',null,null); }, 5*60*1000);
+  // Heartbeat — пинг каждые 60 сек пока вкладка открыта (реалтайм-онлайн в панели)
+  setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); }, 60*1000);
   // И при возвращении на вкладку
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible') trackEvent('visit',null,null);
@@ -1864,7 +1870,13 @@ function buildShopPreview(){
       applyLang();
       refreshMenuUI();
       loading.style.display='none';
-      showScreen('menuScreen');
+      // Анонимам имя обязательно — прогресс сохранится, нужно лишь назваться
+      if(isAnonNick(lbNickname)){
+        showScreen('welcomeScreen');
+        setTimeout(()=>welcInp.focus(),300);
+      } else {
+        showScreen('menuScreen');
+      }
     } else {
       // Нет профиля — новый игрок или сброс
       clearLocalData();
@@ -1881,8 +1893,8 @@ function buildShopPreview(){
     applyLang();
     refreshMenuUI();
     loading.style.display='none';
-    showScreen(lbNickname?'menuScreen':'welcomeScreen');
-    if(!lbNickname) setTimeout(()=>welcInp.focus(),300);
+    showScreen(isAnonNick(lbNickname)?'welcomeScreen':'menuScreen');
+    if(isAnonNick(lbNickname)) setTimeout(()=>welcInp.focus(),300);
   }
 })();
 // ── АНИМИРОВАННЫЙ ФОН МЕНЮ ───────────────────────────────────────
