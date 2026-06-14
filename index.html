@@ -357,6 +357,9 @@
   .lb-empty{font-size:0.8rem;color:var(--text3);text-align:center;padding:24px 0;}
   .lb-loading{font-size:0.8rem;color:var(--text3);text-align:center;padding:16px 0;animation:pulse 1s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  /* ── TOAST ─────────────────────────────────────────────── */
+  .game-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);padding:10px 20px;border-radius:20px;font-size:0.82rem;font-weight:700;z-index:9999;pointer-events:none;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;max-width:calc(min(600px,100vw) - 32px);text-align:center;backdrop-filter:blur(8px);}
+  .game-toast.toast-in{transform:translateX(-50%) translateY(0);}
   /* Форма отправки результата */
   .lb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(260px,82vw);margin-top:6px;pointer-events:all;}
   .lb-input{width:100%;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:0.9rem;outline:none;text-align:center;pointer-events:all;-webkit-user-select:text;user-select:text;}
@@ -870,7 +873,7 @@ const TRANSLATIONS={
     btnReset:'🗑 Resetovať postup',btnBack:'← Späť',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
     recBest:'Najlepšie skóre',recLvl:'Max. úroveň',recGames:'Hier odohratých',
-    lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',
+    lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',lbSubmitError:'Nepodarilo sa odoslať skóre',lbSubmitOk:'✅ Skóre odoslané!',
     shopBack:'← Späť',achBack:'← Späť',achTabAll:'Všetky',achTabUnlocked:'✅ Otvorené',achTabLocked:'🔒 Zatvorené',
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopNotEnough:'Nedostatok mincí',
@@ -958,7 +961,7 @@ const TRANSLATIONS={
     btnReset:'🗑 Сбросить прогресс',btnBack:'← Назад',
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
     recBest:'Лучший счёт',recLvl:'Макс. уровень',recGames:'Игр сыграно',
-    lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',
+    lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',lbSubmitError:'Не удалось отправить счёт',lbSubmitOk:'✅ Счёт отправлен!',
     shopBack:'← Назад',achBack:'← Назад',achTabAll:'Все',achTabUnlocked:'✅ Открытые',achTabLocked:'🔒 Закрытые',
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopNotEnough:'Не хватает монет',
@@ -1046,7 +1049,7 @@ const TRANSLATIONS={
     btnReset:'🗑 Reset progress',btnBack:'← Back',
     recTitle:'🏆 Records',tabMy:'👤 My',tabOnline:'🌍 Online',
     recBest:'Best score',recLvl:'Max level',recGames:'Games played',
-    lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',
+    lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',lbSubmitError:'Failed to submit score',lbSubmitOk:'✅ Score submitted!',
     shopBack:'← Back',achBack:'← Back',achTabAll:'All',achTabUnlocked:'✅ Unlocked',achTabLocked:'🔒 Locked',
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopNotEnough:'Not enough coins',
@@ -1630,7 +1633,20 @@ async function fetchLeaderboard(){
   }catch(e){el.innerHTML='<div class="lb-empty">'+T().lbError+'</div>';}
 }
 
+function showToast(msg,color='#4ade80',duration=3000){
+  const t=document.createElement('div');
+  t.className='game-toast';
+  t.textContent=msg;
+  t.style.background=color+'22';
+  t.style.border='1.5px solid '+color;
+  t.style.color=color;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('toast-in')));
+  setTimeout(()=>{t.classList.remove('toast-in');setTimeout(()=>t.remove(),400);},duration);
+}
+
 async function submitToLeaderboard(name,score,level,mode){
+  console.log('🎮 lb submit:', name, score, level, mode);
   try{
     const r=await fetch(`${SB_URL}/rest/v1/game_results`,{
       method:'POST',
@@ -1640,11 +1656,19 @@ async function submitToLeaderboard(name,score,level,mode){
     if(!r.ok){
       const txt=await r.text();
       console.error('lb submit failed',r.status,txt);
+      showToast('⚠️ '+T().lbSubmitError,'#f87171');
       return false;
     }
+    console.log('✅ lb submitted!');
+    showToast(T().lbSubmitOk,'#4ade80');
+    // Если экран рекордов открыт на Online-вкладке — обновить
+    const rs=document.getElementById('recordsScreen');
+    const to=document.getElementById('tabOnline');
+    if(rs&&rs.classList.contains('active')&&to&&to.classList.contains('active')) fetchLeaderboard();
     return true;
   }catch(e){
     console.error('lb submit error',e);
+    showToast('⚠️ '+T().lbSubmitError,'#f87171');
     return false;
   }
 }
@@ -2031,8 +2055,8 @@ function openRecords(){
   document.getElementById('rBest').textContent=best;
   document.getElementById('rLvl').textContent=bestLevel;
   document.getElementById('rGames').textContent=gamesPlayed;
-  switchLbTab('my');
   showScreen('recordsScreen');
+  switchLbTab('online'); // авто-фетч online при каждом открытии
 }
 document.getElementById('btnBackMenu').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackMenu').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
