@@ -1614,8 +1614,8 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    // leaderboard_best = VIEW: DISTINCT ON (name), best score per player, no duplicates
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS}); // view on game_results
+    // game_results напрямую — топ-20 по счёту (все игры, без дедупликации)
+    const r=await fetch(`${SB_URL}/rest/v1/game_results?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
     const data=await r.json();
     if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
