@@ -245,33 +245,27 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
   .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
-  /* DEBUG PANEL — нижний drawer */
+  /* DEBUG PANEL — центральный модальный диалог */
+  #dbgBackdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:998;
+    display:none;backdrop-filter:blur(2px);
+  }
+  #dbgBackdrop.open{display:block;}
   #debugPanel{
-    position:fixed;bottom:-100%;left:0;right:0;
-    max-height:62dvh;
-    background:rgba(5,8,18,0.98);border-top:2px solid #facc15;
-    border-radius:16px 16px 0 0;
-    padding:10px 14px 20px;display:flex;flex-direction:column;
-    gap:7px;z-index:999;pointer-events:all;overflow-y:auto;
-    transition:bottom 0.25s cubic-bezier(.4,0,.2,1);
-    box-shadow:0 -6px 32px rgba(0,0,0,0.7);
+    position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(0.93);opacity:0;pointer-events:none;
+    width:min(330px,calc(100vw - 20px));
+    max-height:80dvh;
+    background:rgba(5,8,18,0.99);border:2px solid #facc15;
+    border-radius:16px;
+    padding:12px 12px 16px;display:flex;flex-direction:column;
+    gap:6px;z-index:999;overflow-y:auto;
+    transition:transform 0.18s cubic-bezier(.4,0,.2,1), opacity 0.18s;
+    box-shadow:0 8px 48px rgba(0,0,0,0.9);
   }
-  #debugPanel.open{bottom:0;}
-  /* Ручка-потяшка сверху дравера */
-  #dbgHandle{
-    width:40px;height:4px;border-radius:2px;
-    background:#facc15;opacity:0.5;margin:0 auto 4px;flex-shrink:0;
-  }
-  /* Кнопка-таб — левый нижний угол, компактная */
-  #dbgTab{
-    position:fixed;bottom:8px;left:8px;
-    background:#422006;border:1.5px solid #facc15;
-    border-radius:8px;padding:5px 9px;z-index:998;
-    cursor:pointer;font-size:0.6rem;
-    color:#facc15;font-weight:bold;letter-spacing:1px;
-    transition:background 0.15s;opacity:0.7;
-  }
-  #dbgTab:hover{background:#633209;opacity:1;}
+  #debugPanel.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all;}
+  /* Кнопка-таб — скрыта (открытие: 5 тапов по счёту или клавиша `) */
+  #dbgTab{display:none;}
   /* Двухколоночная сетка для рядов кнопок */
   .dbg-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}
   .dbg-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
@@ -715,23 +709,26 @@
       <div class="lu-sub" id="luSub">Уровень 2</div>
     </div>
     <button id="dbgTab" onclick="dbgOpen()" style="display:none;"></button>
+    <div id="dbgBackdrop" onclick="dbgClose()"></div>
     <div id="debugPanel">
-      <div id="dbgHandle"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
-        <div class="dbg-title">🛠 DEBUG PANEL</div>
-        <div class="dbg-stats" id="dbgStats" style="flex:1;text-align:right;">Ур.— · 🪙—</div>
-        <button class="dbg-btn red" style="padding:3px 10px;font-size:0.85rem;margin-left:8px;" onclick="dbgClose()">✕</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="dbg-title">🛠 DEBUG</div>
+        <div class="dbg-stats" id="dbgStats">Ур.— · 🪙—</div>
+        <button class="dbg-btn red" style="padding:3px 10px;font-size:0.9rem;margin-left:8px;flex-shrink:0;" onclick="dbgClose()">✕</button>
       </div>
-      <div class="dbg-section">— бонусы —</div>
+      <div id="dbgGameWarn" style="display:none;font-size:0.65rem;color:#fb923c;text-align:center;padding:4px 8px;background:#431407;border-radius:6px;">
+        ⚠ Игра не запущена — бонусы и уровни сработают после старта
+      </div>
+      <div class="dbg-section">— бонусы (в игре) —</div>
       <div class="dbg-grid3">
-        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Štít</button>
-        <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Turbo</button>
-        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Mraz</button>
-        <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Bomba</button>
-        <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Zlato</button>
-        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Inv.</button>
+        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
+        <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Турбо</button>
+        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Стоп</button>
+        <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Бомба</button>
+        <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Золото</button>
+        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Инв.</button>
       </div>
-      <div class="dbg-section">— уровень —</div>
+      <div class="dbg-section">— уровень (в игре) —</div>
       <div class="dbg-grid2">
         <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
         <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ След. уровень</button>
@@ -743,7 +740,7 @@
         <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
         <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
       </div>
-      <div class="dbg-section">— ресурсы —</div>
+      <div class="dbg-section">— ресурсы (всегда) —</div>
       <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
@@ -2743,44 +2740,63 @@ function endGame(){
 }
 // ── DEBUG PANEL ───────────────────────────────────────────────────
 const debugPanel=document.getElementById('debugPanel');
-let dbgTapCount=0,dbgTapTimer=null;
-// Открыть: тапнуть по счёту 5 раз или нажать ` на клавиатуре
+const dbgBackdrop=document.getElementById('dbgBackdrop');
+let dbgTapCount=0,dbgTapTimer=null,dbgPausedByPanel=false;
+// Открыть: тапнуть по счёту 5 раз или нажать ` на клавиатуре (из любого места)
 document.getElementById('score').addEventListener('click',()=>{
   dbgTapCount++;
   if(dbgTapTimer) clearTimeout(dbgTapTimer);
   dbgTapTimer=setTimeout(()=>dbgTapCount=0,1500);
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
-function dbgOpen(){debugPanel.classList.add('open');dbgUpdateStats();}
-// dbgTab остаётся скрытым — панель открывается только 5 тапами по счёту или клавишей `
-function dbgClose(){debugPanel.classList.remove('open');}
+function dbgOpen(){
+  // Авто-пауза если игра идёт
+  if(running&&!paused){
+    paused=true;dbgPausedByPanel=true;
+    cancelAnimationFrame(animId);pauseMusic();
+  }
+  debugPanel.classList.add('open');
+  dbgBackdrop.classList.add('open');
+  // Показываем предупреждение если игра не запущена
+  const warn=document.getElementById('dbgGameWarn');
+  if(warn) warn.style.display=(running||dbgPausedByPanel)?'none':'block';
+  dbgUpdateStats();
+}
+function dbgClose(){
+  debugPanel.classList.remove('open');
+  dbgBackdrop.classList.remove('open');
+  // Авто-возобновление если мы сами поставили паузу
+  if(dbgPausedByPanel){
+    dbgPausedByPanel=false;
+    if(running&&paused){paused=false;lastTs=0;playMusic();animId=requestAnimationFrame(loop);}
+  }
+}
 function dbgBonus(type){
-  if(!running) return;
-  // применяем эффект сразу на голове змейки
+  if(!running){document.getElementById('dbgGameWarn').style.display='block';return;}
   bonusItem={x:path[0].x,y:path[0].y,type};
-  applyBonus(type);
-  resetBonus();
+  applyBonus(type);resetBonus();
+  dbgClose();
 }
 function dbgFillBar(){
-  if(!running) return;
+  if(!running){document.getElementById('dbgGameWarn').style.display='block';return;}
   levelScore=levelData.foodNeeded-1;
   updateProg();
-  spawnFloatText(W/2,H/2-20,T().floatBarFull,'#facc15');
+  dbgClose();
 }
 function dbgNextLevel(){
-  if(!running) return;
+  if(!running){document.getElementById('dbgGameWarn').style.display='block';return;}
   levelScore=levelData.foodNeeded;
-  debugPanel.classList.remove('open');
-  levelComplete(); // единая логика (включая разблокировку скинов)
+  dbgClose();
+  requestAnimationFrame(()=>levelComplete());
 }
 function dbgUnlockAll(){
-  // через boughtSkins — не портим bestLevel (статистику игрока)
   SKINS.forEach((s,i)=>boughtSkins.add(i));
   saveAll();refreshMenuUI();
-  spawnFloatText(W/2,H/2-20,T().floatAllSkins,'#a78bfa');
+  dbgUpdateStats();
+  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#a78bfa">🔓 Скины!</span>';
 }
 function dbgSetLevel(n){
-  debugPanel.classList.remove('open');
+  dbgClose();
   running=false;cancelAnimationFrame(animId);
   currentLevel=n;savedLevel=n;
   if(bestLevel<n) bestLevel=n;
@@ -2788,38 +2804,38 @@ function dbgSetLevel(n){
   beginLevel(n);
 }
 function dbgGoldFood(){
-  if(!running) return;
-  goldFood={x:food.x+R*3,y:food.y};
-  goldFoodLife=GOLD_LIFETIME; // иначе исчезнет в первом же кадре
-  spawnFloatText(W/2,H/2-20,T().floatGoldFood,'#facc15');
+  if(!running){document.getElementById('dbgGameWarn').style.display='block';return;}
+  goldFood={x:food.x,y:food.y-R*3};
+  goldFoodLife=GOLD_LIFETIME;
+  dbgClose();
 }
 let dbgInvOn=false;
 function dbgToggleInv(){
   dbgInvOn=!dbgInvOn;
   document.getElementById('dbgInvBtn').classList.toggle('active-toggle',dbgInvOn);
-  spawnFloatText(W/2,H/2-20,dbgInvOn?T().floatInvOn:T().floatInvOff,'#c4b5fd');
+  document.getElementById('dbgInvBtn').textContent=dbgInvOn?'♾ ВКЛ':'♾ Инв.';
 }
 function dbgCoins(n){
-  coins+=n; saveAll(); refreshMenuUI();
-  document.getElementById('dbgStats').innerHTML=`Ур.<b>${currentLevel}</b> · Счёт <b>${score}</b> · 🪙<b>${coins}</b>`;
-  spawnFloatText(W/2,H/2-20,'🪙 +'+n,'#facc15');
+  coins+=n;saveAll();refreshMenuUI();
+  dbgUpdateStats();
 }
 function dbgUnlockAllAch(){
   ACHIEVEMENTS.forEach(a=>{if(!unlockedAch.has(a.id)){unlockedAch.add(a.id);}});
   saveAch();
-  spawnFloatText(W/2,H/2-20,T().floatAllAch,'#4ade80');
+  dbgUpdateStats();
+  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#4ade80">🏅 Ачивки!</span>';
 }
 function dbgResetAll(){
-  // чистим только ключи игры — не трогаем чужие данные origin
+  if(!confirm('Сбросить весь прогресс?')) return;
   Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));
   location.reload();
 }
 function dbgUpdateStats(){
   const el=document.getElementById('dbgStats');
-  if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · Счёт <b>${score}</b> · 🪙<b>${coins}</b>`;
+  if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · 🪙<b>${coins}</b>`;
 }
-// Клавиша ` на клавиатуре
-document.addEventListener('keydown',e=>{if(e.key==='`'&&running) dbgOpen();});
+// Клавиша ` — открыть из любого места
+document.addEventListener('keydown',e=>{if(e.key==='`') dbgOpen();});
 // ─────────────────────────────────────────────────────────────────
 function togglePause(){
   if(!running) return;
