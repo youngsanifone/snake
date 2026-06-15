@@ -1614,10 +1614,17 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    // leaderboard_best = VIEW: лучший результат на игрока из game_results
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{headers:SB_HEADERS});
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{
+      headers:SB_HEADERS,
+      signal:AbortSignal.timeout?.(8000) // 8s timeout
+    });
+    if(!r.ok){
+      const txt=await r.text().catch(()=>'');
+      console.error('lb fetch error',r.status,txt);
+      throw new Error('HTTP '+r.status);
+    }
     const data=await r.json();
-    if(!data||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
+    if(!Array.isArray(data)||!data.length){el.innerHTML='<div class="lb-empty">'+T().lbEmpty+'</div>';return;}
     const medals=['🥇','🥈','🥉'];
     const rankClass=['gold','silver','bronze'];
     const modeMap={classic:T().modeClassicTitle,time:T().modeTimeTitle,survival:T().modeSurvivalTitle,mirror:T().modeMirrorTitle};
@@ -1630,7 +1637,10 @@ async function fetchLeaderboard(){
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
-  }catch(e){el.innerHTML='<div class="lb-empty">'+T().lbError+'</div>';}
+  }catch(e){
+    console.error('lb fetch failed:',e.message);
+    el.innerHTML=`<div class="lb-empty">${T().lbError}<br><button onclick="fetchLeaderboard()" style="margin-top:10px;padding:6px 18px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text3);font-size:0.78rem;cursor:pointer;">🔄 ${currentLang==='ru'?'Повторить':currentLang==='sk'?'Skúsiť znova':'Retry'}</button></div>`;
+  }
 }
 
 function showToast(msg,color='#4ade80',duration=3000){
