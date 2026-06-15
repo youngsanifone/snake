@@ -752,9 +752,7 @@
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
       <div class="go-sub" id="goSub"></div>
-      <button class="go-btn" id="goRetryCur">↺ Продолжить с ур. <span id="goLvlNum">1</span></button>
       <button class="go-btn share" id="goShare">📤 Поделиться</button>
-      <button class="go-btn sec" id="goRetry">↺ Заново с ур. 1</button>
       <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
     </div>
   </div>
@@ -2210,7 +2208,7 @@ const pauseMenu=document.getElementById('pauseMenu');
 const pmInfo=document.getElementById('pmInfo');
 const gameOverlay=document.getElementById('gameOverlay');
 const goMsg=document.getElementById('goMsg'),goSub=document.getElementById('goSub');
-const goRetry=document.getElementById('goRetry'),goMenu=document.getElementById('goMenu');
+const goMenu=document.getElementById('goMenu');
 const scoreEl=document.getElementById('score'),bestHud=document.getElementById('bestHud');
 const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('progBar');
 const btnPause=document.getElementById('btnPause');
@@ -2723,13 +2721,6 @@ function endGame(){
     else                           goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgGameOver;
     const modeLbl = gameMode==='time' ? T().goModeLbl.time : gameMode==='survival' ? T().goModeLbl.survival : gameMode==='mirror' ? T().goModeLbl.mirror : T().goModeLblClassic(currentLevel);
     goSub.textContent=T().goSubFmt(score,modeLbl);
-    // В режимах Время/Выживание кнопка "Продолжить с уровня" → "Сыграть ещё";
-    // Классика и Зеркало (режимы с уровнями) — продолжить с текущего уровня
-    const retryCurBtn=document.getElementById('goRetryCur');
-    if(!isLevelMode()) retryCurBtn.textContent=T().goRetryMore;
-    else retryCurBtn.innerHTML=T().goRetryCurPrefix+'<span id="goLvlNum">'+currentLevel+'</span>';
-    const lvlEl=document.getElementById('goLvlNum');
-    if(lvlEl) lvlEl.textContent=currentLevel;
     gameOverlay.style.display='flex';
     // Авто-отправка в лидерборд если score > 0
     if(score>0) submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);
@@ -2846,16 +2837,6 @@ pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
 pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
-// Game over кнопки
-const goRetryCur=document.getElementById('goRetryCur');
-// Классика/Зеркало — продолжить с текущего уровня; Время/Выживание — заново (savedLevel не трогаем)
-const retryCurAct=()=>beginLevel(isLevelMode()?currentLevel:1);
-goRetryCur.addEventListener('click',retryCurAct);
-goRetryCur.addEventListener('touchstart',e=>{e.preventDefault();retryCurAct();},{passive:false});
-// «Заново с ур. 1» — сбрасывает сохранение только в Классике
-const retryAct=()=>{stopMusic();if(gameMode==='classic'){savedLevel=1;saveAll();}beginLevel(1);};
-goRetry.addEventListener('click',retryAct);
-goRetry.addEventListener('touchstart',e=>{e.preventDefault();retryAct();},{passive:false});
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 // Поделиться
