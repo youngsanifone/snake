@@ -836,7 +836,7 @@ const SB_URL='https://wopvlulqfzecujmfoezr.supabase.co';
 const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
 const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
 
-// ── JAZYK / ЯЗЫК ─────────────────────────────────────────────────
+// ── JAZYK / LANGUAGE ─────────────────────────────────────────────────
 let currentLang='ru';
 const TRANSLATIONS={
   sk:{
@@ -1213,8 +1213,8 @@ function toggleLang(){
 }
 
 
-// ── ГЛОБАЛЬНАЯ СТАТИСТИКА ─────────────────────────────────────────
-// Cookie-помощники: дубль-хранилище для pid (живёт даже если localStorage почистили)
+// ── GLOBAL STATISTICS ─────────────────────────────────────────────
+// Cookie helpers: duplicate storage for pid (persists even if localStorage is cleared)
 function getCookie(name){
   const m=document.cookie.match('(?:^|; )'+name+'=([^;]*)');
   return m?decodeURIComponent(m[1]):null;
@@ -1222,7 +1222,7 @@ function getCookie(name){
 function setCookie(name,val){
   document.cookie=name+'='+encodeURIComponent(val)+';max-age=34560000;path=/;SameSite=Lax';
 }
-// Получить/создать уникальный ID игрока (localStorage + cookie дубль)
+// Get/create unique player ID (localStorage + cookie duplicate)
 function getPlayerId(){
   let pid=localStorage.getItem(S+'pid')||getCookie(S+'pid');
   if(!pid){
@@ -1232,7 +1232,7 @@ function getPlayerId(){
   setCookie(S+'pid',pid);
   return pid;
 }
-// Отправить событие в Supabase (fire-and-forget)
+// Send event to Supabase (fire-and-forget)
 function trackEvent(event,score,mode){
   const pid=getPlayerId();
   fetch(SB_URL+'/rest/v1/player_events',{
@@ -1241,8 +1241,8 @@ function trackEvent(event,score,mode){
     body:JSON.stringify({player_id:pid,event,score:score??0,mode:mode||'classic'})
   }).catch(()=>{});
 }
-// Визит — вызывается из initGame() после объявления S
-// Загрузить и показать глобальную статистику
+// Visit — called from initGame() after S is declared
+// Load and display global statistics
 async function fetchGlobalStats(){
   try{
     const r=await fetch(SB_URL+'/rest/v1/rpc/get_global_stats',{method:'POST',headers:SB_HEADERS,body:'{}'});
@@ -1262,18 +1262,18 @@ const SKINS=[
   {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Красный'},
   {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
   {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолетовый'},
-  // Скины из магазина — покупаются за монеты
+  // Shop skins — purchased for coins
   {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:50,name:'Розовый'},
   {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:80,name:'Тёмный'},
   {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:100,name:'Океан'},
   {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
 ];
-// ── СОХРАНЕНИЯ ───────────────────────────────────────────────────
-// Сброс при смене версии — чистит localStorage у ВСЕХ при обновлении страницы
+// ── SAVES ───────────────────────────────────────────────────────
+// Reset on version change — clears localStorage for ALL players on page reload
 if(localStorage.getItem('snakeVer')!=='2'){const _keepPid=localStorage.getItem('snake2_pid');Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');if(_keepPid)localStorage.setItem('snake2_pid',_keepPid);}
 const S='snake2_';
 currentLang=localStorage.getItem(S+'Lang')||'ru';
-// ── ПЕРЕМЕННЫЕ (дефолты; заполняются из Supabase при старте) ──────
+// ── VARIABLES (defaults; populated from Supabase on startup) ──────────
 let theme      = 'dark';
 let musicOn    = true;
 let sfxOn      = true;
@@ -1289,9 +1289,9 @@ let skinIdx     = 0;
 const skin=()=>SKINS[skinIdx];
 function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
 const isUnlocked=(i)=>isUnlockedIdx(i);
-// ── СОХРАНЕНИЕ ПРОФИЛЯ ───────────────────────────────────────────
+// ── PROFILE SAVE ──────────────────────────────────────────────────
 function saveAll(){
-  // 1. Кэш в localStorage (мгновенно)
+  // 1. Cache in localStorage (instant)
   localStorage.setItem(S+'Best',best);
   localStorage.setItem(S+'BestLevel',bestLevel);
   localStorage.setItem(S+'Games',gamesPlayed);
@@ -1305,15 +1305,15 @@ function saveAll(){
   localStorage.setItem(S+'Bought', JSON.stringify([...boughtSkins]));
   localStorage.setItem(S+'Ach',   JSON.stringify([...unlockedAch]));
   if(questData) localStorage.setItem(S+'Quests', JSON.stringify(questData));
-  // 2. UPSERT в Supabase (async, fire-and-forget)
+  // 2. UPSERT to Supabase (async, fire-and-forget)
   upsertProfile();
 }
-// Собрать объект профиля и отправить в Supabase
+// Build profile object and send to Supabase
 function upsertProfile(){
-  // Защита: не перезаписываем облако нулями, пока профиль не загружен/не создан
+  // Guard: don't overwrite cloud with zeros until profile is loaded/created
   if(!profileLoaded) return;
   const pid=getPlayerId();
-  // keepalive:true снято — в Safari оно стрипает Authorization header на cross-origin запросах → 401
+  // keepalive:true removed — Safari strips Authorization header on cross-origin requests → 401
   return fetch(SB_URL+'/rest/v1/players',{
     method:'POST',
     headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
@@ -1333,7 +1333,7 @@ function upsertProfile(){
     })
   }).catch(()=>{});
 }
-// Применить профиль из Supabase к переменным + записать в localStorage
+// Apply Supabase profile to variables + write to localStorage
 function applyProfile(row){
   lbNickname   = row.nick||'';
   coins        = row.coins||0;
@@ -1354,7 +1354,7 @@ function applyProfile(row){
       if(q&&q.day===getDayKey()) questData=q;
     }catch(e){}
   }
-  // кэш localStorage
+  // localStorage cache
   localStorage.setItem(S+'Nick',   lbNickname);
   localStorage.setItem(S+'Best',   best);
   localStorage.setItem(S+'BestLevel',bestLevel);
@@ -1374,7 +1374,7 @@ function applyProfile(row){
   if(typeof refreshMenuUI==='function')refreshMenuUI();
   profileLoaded=true;
 }
-// Загрузить из localStorage кэша (офлайн fallback)
+// Load from localStorage cache (offline fallback)
 function applyLocalCache(){
   lbNickname   = localStorage.getItem(S+'Nick')||'';
   coins        = parseInt(localStorage.getItem(S+'Coins')||'0');
@@ -1391,10 +1391,10 @@ function applyLocalCache(){
   theme        = localStorage.getItem(S+'Theme')||'dark';
   currentLang  = localStorage.getItem(S+'Lang')||'ru';
   const _bestHudCached=document.getElementById('bestHud');if(_bestHudCached)_bestHudCached.textContent=best;
-  // Профиль считается загруженным только если в кэше реально был игрок (есть ник)
+  // Profile is considered loaded only if a player was actually in cache (has a nick)
   if(lbNickname) profileLoaded=true;
 }
-// Очистить всё (при сбросе)
+// Clear everything (on reset)
 function clearLocalData(){
   const pid=localStorage.getItem(S+'pid');
   Object.keys(localStorage).forEach(k=>{if(k.startsWith(S))localStorage.removeItem(k);});
@@ -1404,7 +1404,7 @@ function clearLocalData(){
   unlockedAch=new Set();questData=null;
   difficulty='normal';musicOn=true;sfxOn=true;theme='dark';
 }
-// ── ДОСТИЖЕНИЯ ───────────────────────────────────────────────────
+// ── ACHIEVEMENTS ──────────────────────────────────────────────────
 const ACHIEVEMENTS=[
   {id:'first_bite',   icon:'🍎', name:'Первый укус',      desc:'Съешь первую еду'},
   {id:'ten_food',     icon:'🔟', name:'Десятка',          desc:'Съешь 10 еды за одну игру'},
@@ -1420,8 +1420,8 @@ const ACHIEVEMENTS=[
   {id:'time_champ',   icon:'⏱', name:'Чемпион времени',  desc:'Набери 20+ очков за 60 сек'},
   {id:'mirror_5',     icon:'🪞', name:'Зеркальщик',      desc:'Съешь 5 еды в режиме Зеркало'},
 ];
-let unlockedAch=new Set(); // заполняется из Supabase при initGame()
-let survivalTime=0; // считаем время в режиме выживания
+let unlockedAch=new Set(); // populated from Supabase in initGame()
+let survivalTime=0; // tracks elapsed time in survival mode
 
 function saveAch(){localStorage.setItem(S+'Ach',JSON.stringify([...unlockedAch]));upsertProfile();}
 function unlockAch(id){
@@ -1429,7 +1429,7 @@ function unlockAch(id){
   unlockedAch.add(id);saveAch();
   const a=ACHIEVEMENTS.find(x=>x.id===id);
   if(!a) return;
-  // показываем уведомление
+  // show notification
   document.getElementById('anIcon').textContent=a.icon;
   document.getElementById('anTitle').textContent=a.name;
   document.getElementById('anSub').textContent=a.desc;
@@ -1470,7 +1470,7 @@ function buildAchScreen(){
     grid.appendChild(card);
   });
 }
-// ── ДНЕВНЫЕ КВЕСТЫ ───────────────────────────────────────────────
+// ── DAILY QUESTS ──────────────────────────────────────────────────
 const QUEST_POOL=[
   {type:'eat_food',   icon:'🍎',title:'Обжора',          make:(n)=>`Съешь ${n} еды за день`},
   {type:'score',      icon:'🏆',title:'Очкарик',         make:(n)=>`Набери ${n} очков за день`},
@@ -1524,7 +1524,7 @@ function questTrack(type,value){
     if(q.claimed||q.progress>=q.goal) return;
     if(q.type!==type) return;
     const wasComplete=q.progress>=q.goal;
-    // reach_level/combo — максимум достигнутого; остальные (еда/очки/игры/бонусы) — копятся за день
+    // reach_level/combo — max value reached; others (food/score/games/bonuses) — accumulate over the day
     if(type==='reach_level'||type==='combo'){
       if(value>q.progress){q.progress=Math.min(value,q.goal);changed=true;}
     } else {
@@ -1575,7 +1575,7 @@ function buildQuestScreen(){
   questData.quests.forEach((q,i)=>{
     const pct=Math.min(100,Math.round(q.progress/q.goal*100));
     const done=q.progress>=q.goal;
-    // Регенерируем title/desc из текущего языка QUEST_POOL (не из localStorage)
+    // Regenerate title/desc from current language QUEST_POOL (not from localStorage)
     const poolQ=QUEST_POOL.find(p=>p.type===q.type)||{title:q.title,make:()=>q.desc};
     const displayTitle=poolQ.title;
     const displayDesc=poolQ.make(q.goal);
@@ -1604,9 +1604,9 @@ function buildQuestScreen(){
   document.getElementById('questReset').textContent=T().questResetFmt(h,m);
 }
 loadQuests();
-// ── ЛИДЕРБОРД ────────────────────────────────────────────────────
-let lbNickname = ''; // заполняется из Supabase при initGame()
-let profileLoaded = false; // true после загрузки/создания профиля — до этого облако не трогаем
+// ── LEADERBOARD ────────────────────────────────────────────────────
+let lbNickname = ''; // populated from Supabase in initGame()
+let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
@@ -1669,7 +1669,7 @@ async function submitToLeaderboard(name,score,level,mode){
     }
     console.log('✅ lb submitted!');
     showToast(T().lbSubmitOk,'#4ade80');
-    // Если экран рекордов открыт на Online-вкладке — обновить
+    // If records screen is open on the Online tab — refresh
     const rs=document.getElementById('recordsScreen');
     const to=document.getElementById('tabOnline');
     if(rs&&rs.classList.contains('active')&&to&&to.classList.contains('active')) fetchLeaderboard();
@@ -1692,34 +1692,34 @@ function switchLbTab(tab){
 }
 
 
-// ── ЭКРАНЫ ───────────────────────────────────────────────────────
+// ── SCREENS ────────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='menuScreen') fetchGlobalStats();
 }
-// ── СКИНЫ (теперь в магазине) ─────────────────────────────────────
+// ── SKINS (now in shop) ──────────────────────────────────────────────
 function buildSkinRow(){
   const row=document.getElementById('shopSkinRow');
   if(!row) return;
-  // Определяем режим: в магазине (есть shopPreviewCard) или просто выбор скина
+  // Determine mode: in shop (shopPreviewCard exists) or plain skin selection
   const inShop = !!document.getElementById('shopPreviewCard');
   row.innerHTML='';
   SKINS.forEach((s,i)=>{
     const unlocked=isUnlocked(i);
     const b=document.createElement('button');
-    // В магазине подсвечиваем выбранный в превью; вне магазина — надетый
+    // In shop: highlight preview selection; outside shop: the equipped skin
     const isHighlighted = inShop ? (i===shopPreviewIdx) : (i===skinIdx);
     b.className='skin-btn'+(isHighlighted?' active':'')+(unlocked?'':' locked');
     b.innerHTML=`<span class="skin-emoji">${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
     const sel=()=>{
       if(inShop){
-        // В магазине — просто выбираем для превью, не меняем skinIdx
+        // In shop — select for preview only, don't change skinIdx
         shopPreviewIdx=i;
         buildSkinRow();
         buildShopPreview();
       } else {
-        // Вне магазина — сразу меняем скин
+        // Outside shop — switch skin immediately
         if(!unlocked) return;
         skinIdx=i;saveAll();buildSkinRow();
       }
@@ -1729,7 +1729,7 @@ function buildSkinRow(){
     row.appendChild(b);
   });
 }
-// ── МЕНЮ ─────────────────────────────────────────────────────────
+// ── MENU ──────────────────────────────────────────────────────────
 function refreshMenuUI(){
   document.getElementById('menuBest').textContent=best;
   document.getElementById('menuLevel').textContent=bestLevel;
@@ -1743,12 +1743,12 @@ function refreshMenuUI(){
     contBtn.style.display='none';
   }
 }
-// ── МАГАЗИН ──────────────────────────────────────────────────────
-// Индекс скина, выбранного в превью магазина (не обязательно надетый)
+// ── SHOP ───────────────────────────────────────────────────────────
+// Index of the skin selected in shop preview (not necessarily equipped)
 let shopPreviewIdx = 0;
 
 function buildShopScreen(){
-  shopPreviewIdx = skinIdx; // по умолчанию показываем надетый
+  shopPreviewIdx = skinIdx; // default: show the currently equipped skin
   document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
   buildSkinRow();
   buildShopPreview();
@@ -1826,15 +1826,15 @@ function buildShopPreview(){
   btn.addEventListener('click', action);
   btn.addEventListener('touchstart', e => { e.preventDefault(); action(); }, {passive:false});
 }
-// ── ИНИЦИАЛИЗАЦИЯ ИГРЫ (async — загружает профиль из Supabase) ────
+// ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
-  // Вешаем обработчики экрана приветствия здесь (нужны в обоих путях)
+  // Attach welcome screen event handlers here (needed in both code paths)
   const welcInp=document.getElementById('welcInput');
   const welcBtn=document.getElementById('welcBtn');
   async function doWelc(raw){
     const name=(raw||'').trim();
-    // Анонимный вход отключён — ник обязателен
+    // Anonymous login disabled — nickname is required
     if(!name){
       welcInp.style.borderColor='#ef4444';
       setTimeout(()=>welcInp.style.borderColor='',600);
@@ -1843,8 +1843,8 @@ function buildShopPreview(){
     }
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
-    // Если игрок с таким ником уже есть в облаке — предлагаем восстановить прогресс
-    // (спасает при смене браузера/устройства или очистке хранилища)
+    // If a player with this nick already exists in the cloud — offer to restore progress
+    // (helps when switching browser/device or clearing storage)
     const anonNames=['Аноним','Anonym','Anonymous'];
     if(!anonNames.includes(name)){
       try{
@@ -1853,7 +1853,7 @@ function buildShopPreview(){
           const rows=await r.json();
           const p=rows[0];
           if(p&&p.player_id!==getPlayerId()){
-            // Ник уже существует: либо восстанавливаем этот профиль, либо просим другой ник
+            // Nick already exists: either restore this profile or ask for a different nick
             if(confirm(T().restoreFound(p.nick,p.best||0,p.best_level||1,p.coins||0))){
               localStorage.setItem(S+'pid',p.player_id);
               setCookie(S+'pid',p.player_id);
@@ -1863,20 +1863,20 @@ function buildShopPreview(){
               refreshMenuUI();
               return;
             } else {
-              // Сбрасываем ник — иначе игрок останется с чужим ником без профиля
+              // Reset nick — otherwise player would be stuck with someone else's nick and no profile
               lbNickname='';
               localStorage.removeItem(S+'Nick');
               alert(T().nickTaken(name));
               welcInp.style.borderColor='#ef4444';
               setTimeout(()=>welcInp.style.borderColor='',600);
               welcInp.select();welcInp.focus();
-              return; // дубликат не создаём
+              return; // don't create a duplicate
             }
           }
         }
       }catch(e){}
     }
-    // Создаём профиль в Supabase (await — убеждаемся что запись прошла до перехода на меню)
+    // Create profile in Supabase (await — ensure write completes before navigating to menu)
     profileLoaded=true;
     await upsertProfile();
     showScreen('menuScreen');
@@ -1885,21 +1885,21 @@ function buildShopPreview(){
   welcBtn.addEventListener('click',()=>doWelc(welcInp.value));
   welcBtn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(welcInp.value);},{passive:false});
   welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
-  // Аноним из старых версий — попросим назваться (прогресс сохраняется)
+  // Anonymous user from older versions — ask them to set a name (progress is preserved)
   const ANON_NAMES=['Аноним','Anonym','Anonymous'];
   const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
 
-  // Визит — при КАЖДОМ открытии игры (иначе игрок не виден в «онлайн» панели до 5 минут)
+  // Visit — on EVERY game open (otherwise player won't appear in the "online" panel for up to 5 minutes)
   trackEvent('visit',null,null);
-  // Heartbeat — пинг каждые 60 сек пока вкладка открыта (реалтайм-онлайн в панели)
+  // Heartbeat — ping every 60 sec while tab is open (real-time online status in admin panel)
   setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); }, 60*1000);
-  // И при возвращении на вкладку
+  // Also when returning to the tab
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible') trackEvent('visit',null,null);
-    // Уход со вкладки — сохраняем всё (keepalive доносит запрос даже после закрытия)
+    // Tab hidden — save everything (keepalive delivers request even after tab closes)
     if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
   });
-  // Закрытие/перезагрузка вкладки — финальное сохранение
+  // Tab close/reload — final save
   window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
 
   try{
@@ -1908,14 +1908,14 @@ function buildShopPreview(){
     if(!r.ok) throw new Error('fetch error');
     const rows=await r.json();
     if(rows.length>0){
-      // Профиль найден — применяем данные из Supabase
+      // Profile found — apply data from Supabase
       applyProfile(rows[0]);
       currentLang = localStorage.getItem(S+'Lang')||'ru';
       applyTheme();
       applyLang();
       refreshMenuUI();
       loading.style.display='none';
-      // Анонимам имя обязательно — прогресс сохранится, нужно лишь назваться
+      // Anonymous users must provide a name — progress will be saved, just need a nick
       if(isAnonNick(lbNickname)){
         showScreen('welcomeScreen');
         setTimeout(()=>welcInp.focus(),300);
@@ -1923,25 +1923,25 @@ function buildShopPreview(){
         showScreen('menuScreen');
       }
     } else {
-      // Нет профиля в Supabase — проверяем localStorage
+      // No profile in Supabase — check localStorage
       applyLocalCache();
       applyTheme();
       applyLang();
       refreshMenuUI();
       loading.style.display='none';
       if(isAnonNick(lbNickname)){
-        // Совсем новый игрок
+        // Brand new player
         showScreen('welcomeScreen');
         setTimeout(()=>welcInp.focus(),300);
       } else {
-        // Профиль есть в localStorage — восстанавливаем и синхронизируем в Supabase
+        // Profile exists in localStorage — restore and sync to Supabase
         profileLoaded=true;
         showScreen('menuScreen');
         upsertProfile();
       }
     }
   } catch(e){
-    // Офлайн — используем localStorage кэш
+    // Offline — use localStorage cache
     applyLocalCache();
     applyTheme();
     applyLang();
@@ -1951,20 +1951,20 @@ function buildShopPreview(){
     if(isAnonNick(lbNickname)) setTimeout(()=>welcInp.focus(),300);
   }
 })();
-// ── АНИМИРОВАННЫЙ ФОН МЕНЮ ───────────────────────────────────────
+// ── ANIMATED MENU BACKGROUND ───────────────────────────────────────
 (function(){
   const bc=document.getElementById('menuBg');
   const bx=bc.getContext('2d');
   function resize(){ bc.width=Math.min(600,window.innerWidth); bc.height=window.innerHeight; }
   resize(); window.addEventListener('resize',resize);
   let t=0;
-  // Несколько змеек с разными параметрами
+  // Multiple snakes with different parameters
   const SNAKES=[
     {segs:180,width:13,color:'#4ade80',glow:'#4ade80',alpha:0.13,amp:0.22,freq:0.16,speed:0.022,yBase:0.5,amp2:0.09,freq2:0.09,speed2:0.015},
     {segs:140,width:8, color:'#22d3ee',glow:'#22d3ee',alpha:0.09,amp:0.18,freq:0.20,speed:0.018,yBase:0.32,amp2:0.07,freq2:0.12,speed2:0.020},
     {segs:120,width:6, color:'#a78bfa',glow:'#a78bfa',alpha:0.07,amp:0.14,freq:0.24,speed:0.014,yBase:0.68,amp2:0.05,freq2:0.08,speed2:0.012},
   ];
-  // Частицы-искры
+  // Spark particles
   const DOTS=[];
   for(let i=0;i<40;i++) DOTS.push({
     x:Math.random(), y:Math.random(),
@@ -1976,7 +1976,7 @@ function buildShopPreview(){
     t+=1;
     const W=bc.width,H=bc.height;
     bx.clearRect(0,0,W,H);
-    // Змейки
+    // Snakes
     SNAKES.forEach(s=>{
       bx.save();
       bx.globalAlpha=s.alpha;
@@ -1993,7 +1993,7 @@ function buildShopPreview(){
         i===0 ? bx.moveTo(px,py) : bx.lineTo(px,py);
       }
       bx.stroke();
-      // блик поверх
+      // shine overlay
       bx.globalAlpha=s.alpha*0.5;
       bx.lineWidth=s.width*0.35;
       bx.shadowBlur=0;
@@ -2009,7 +2009,7 @@ function buildShopPreview(){
       bx.stroke();
       bx.restore();
     });
-    // Искры
+    // Sparks
     DOTS.forEach(d=>{
       const alpha=d.alpha*(0.5+0.5*Math.sin(t*0.04+d.phase));
       bx.save();
@@ -2024,8 +2024,8 @@ function buildShopPreview(){
   bgLoop();
 })();
 let gameMode='classic'; // 'classic' | 'time' | 'survival'
-let timeLeft=0;         // мс оставшегося времени (режим Время)
-const TIME_MODE_DURATION=60000; // 60 секунд
+let timeLeft=0;         // ms of remaining time (Time mode)
+const TIME_MODE_DURATION=60000; // 60 seconds
 function openModeScreen(){getAudio();showScreen('modeScreen');}
 document.getElementById('btnPlay').addEventListener('click',openModeScreen);
 document.getElementById('btnPlay').addEventListener('touchstart',e=>{e.preventDefault();openModeScreen();},{passive:false});
@@ -2058,31 +2058,31 @@ document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI(
 document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeClassic').addEventListener('touchstart',e=>{e.preventDefault();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
-// Режимы Время/Выживание/Зеркало НЕ трогают savedLevel — это сохранение Классики
+// Time/Survival/Mirror modes do NOT touch savedLevel — that's saved for Classic only
 document.getElementById('modeTime').addEventListener('click',()=>{gameMode='time';beginLevel(1);});
 document.getElementById('modeTime').addEventListener('touchstart',e=>{e.preventDefault();gameMode='time';beginLevel(1);},{passive:false});
 document.getElementById('modeSurvival').addEventListener('click',()=>{gameMode='survival';beginLevel(1);});
 document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.preventDefault();gameMode='survival';beginLevel(1);},{passive:false});
 document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';beginLevel(1);});
 document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';beginLevel(1);},{passive:false});
-// «Продолжить» — всегда Классика с сохранённого уровня
+// "Continue" — always Classic from the saved level
 document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();gameMode='classic';beginLevel(savedLevel);});
 document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();gameMode='classic';beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
 document.getElementById('btnRecords').addEventListener('touchstart',e=>{e.preventDefault();openRecords();},{passive:false});
-// ── РЕКОРДЫ ──────────────────────────────────────────────────────
+// ── RECORDS ────────────────────────────────────────────────────────
 function openRecords(){
   document.getElementById('rBest').textContent=best;
   document.getElementById('rLvl').textContent=bestLevel;
   document.getElementById('rGames').textContent=gamesPlayed;
   showScreen('recordsScreen');
-  switchLbTab('online'); // авто-фетч online при каждом открытии
+  switchLbTab('online'); // auto-fetch online tab on every open
 }
 document.getElementById('btnBackMenu').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackMenu').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
-// ── НАСТРОЙКИ ────────────────────────────────────────────────────
+// ── SETTINGS ───────────────────────────────────────────────────────
 function updateDiffBtns(){
-  // Только кнопки сложности — не трогаем музыку/эффекты
+  // Difficulty buttons only — don't touch music/effects
   document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
     b.classList.toggle('active', b.dataset.diff===difficulty);
   });
@@ -2092,10 +2092,10 @@ document.getElementById('btnSettings').addEventListener('click',openSettings);
 document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preventDefault();openSettings();},{passive:false});
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
-// ── СБРОС ПРОГРЕССА ───────────────────────────────────────────────
+// ── PROGRESS RESET ────────────────────────────────────────────────
 async function doResetProgress(){
   if(!confirm(T().resetConfirm)) return;
-  // 1. Сбрасываем профиль в Supabase до нуля (сохраняем ник и pid)
+  // 1. Reset profile in Supabase to zero (preserve nick and pid)
   const pid=localStorage.getItem(S+'pid');
   const nick=localStorage.getItem(S+'Nick')||T().anon;
   if(pid){
@@ -2111,7 +2111,7 @@ async function doResetProgress(){
       })
     }).catch(()=>{});
   }
-  // 2. Чистим localStorage (оставляем ник, pid, lastVisit)
+  // 2. Clear localStorage (keep nick, pid, lastVisit)
   const keepKeys=[S+'Nick',S+'pid',S+'lastVisit'];
   Object.keys(localStorage).forEach(k=>{
     if(k.startsWith(S)&&!keepKeys.includes(k)) localStorage.removeItem(k);
@@ -2157,12 +2157,12 @@ function bindToggle(id, getFn, setFn){
 }
 bindToggle('btnMusicToggle', ()=>musicOn, v=>{ musicOn=v; if(!musicOn) stopMusic(); });
 bindToggle('btnSfxToggle',   ()=>sfxOn,   v=>{ sfxOn=v; });
-// ── УВЕДОМЛЕНИЕ ──────────────────────────────────────────────────
+// ── NOTIFICATION ───────────────────────────────────────────────────
 function showLevelUp(nextLvl, callback){
   const ov=document.getElementById('levelUpOverlay');
   document.getElementById('luSub').textContent=T().levelUpSub(nextLvl);
   ov.classList.remove('show');
-  void ov.offsetWidth; // сбрасываем анимацию чтобы она заново запустилась
+  void ov.offsetWidth; // force reflow to restart the animation
   ov.classList.add('show');
   setTimeout(()=>{ ov.classList.remove('show'); callback(); }, 1400);
 }
@@ -2172,30 +2172,30 @@ function showUnlock(s){
   n.style.display='block';
   setTimeout(()=>n.style.display='none',2800);
 }
-// ── УРОВНИ ───────────────────────────────────────────────────────
+// ── LEVELS ────────────────────────────────────────────────────────
 function getLevelData(lvl){
-  // foodNeeded: 5 → 15 (кап), плавный рост
-  // speed: 2.15 → 5.5 (кап), нет бесконечного ускорения
-  // obsCount: 0 → 20 (кап), появляются со 2-го уровня
+  // foodNeeded: 5 → 15 (cap), gradual growth
+  // speed: 2.15 → 5.5 (cap), no infinite acceleration
+  // obsCount: 0 → 20 (cap), appear from level 2 onwards
   return{
     foodNeeded: Math.min(4 + Math.round(lvl * 0.7), 15),
     speed:      Math.min(2.0 + lvl * 0.15, 5.5) * DIFF_MULT[difficulty],
     obsCount:   Math.min(Math.floor((lvl-1)/2)*2, 20),
   };
 }
-// Таблица баланса для справки:
-// Ур.1:  еда=5,  скорость≈2.15, препятствий=0
-// Ур.3:  еда=6,  скорость≈2.45, препятствий=2
-// Ур.5:  еда=8,  скорость≈2.75, препятствий=4
-// Ур.10: еда=11, скорость≈3.5,  препятствий=10
-// Ур.15: еда=15, скорость≈4.25, препятствий=14
-// Ур.20: еда=15, скорость≈5.0,  препятствий=20
-// Ур.24+: всё на максимуме (еда=15, скорость=5.5, преп.=20)
+// Balance table for reference:
+// Lvl.1:  food=5,  speed≈2.15, obstacles=0
+// Lvl.3:  food=6,  speed≈2.45, obstacles=2
+// Lvl.5:  food=8,  speed≈2.75, obstacles=4
+// Lvl.10: food=11, speed≈3.5,  obstacles=10
+// Lvl.15: food=15, speed≈4.25, obstacles=14
+// Lvl.20: food=15, speed≈5.0,  obstacles=20
+// Lvl.24+: everything maxed (food=15, speed=5.5, obs.=20)
 let currentLevel=1,levelData=null;
 function beginLevel(lvl){
   currentLevel=lvl;
   levelData=getLevelData(lvl);
-  // Заставка перед игрой: для Время/Выживание показываем режим, а не "Съешь N еды"
+  // Pre-game splash: for Time/Survival show mode name, not "Eat N food"
   const lvlLabelEl=document.querySelector('.lvl-label');
   const lvlNumEl=document.getElementById('lvlNum');
   const lvlGoalEl=document.getElementById('lvlGoal');
@@ -2206,7 +2206,7 @@ function beginLevel(lvl){
   } else {
     lvlLabelEl.textContent=T().lvlLabel;lvlNumEl.textContent=lvl;lvlGoalEl.textContent=T().lvlGoalFmt(levelData.foodNeeded);
   }
-  // Зеркальный режим — меняем иконки d-pad и добавляем рамку
+  // Mirror mode — swap d-pad icons and add border outline
   const mirror=gameMode==='mirror';
   document.getElementById('btnLeft').textContent  = mirror ? '▶' : '◀';
   document.getElementById('btnRight').textContent = mirror ? '◀' : '▶';
@@ -2214,7 +2214,7 @@ function beginLevel(lvl){
   showScreen('levelScreen');
   setTimeout(()=>startGame(),1700);
 }
-// ── ИГРА ─────────────────────────────────────────────────────────
+// ── GAME LOOP ──────────────────────────────────────────────────────
 const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
 const pauseMenu=document.getElementById('pauseMenu');
 const pmInfo=document.getElementById('pmInfo');
@@ -2228,35 +2228,35 @@ bestHud.textContent=best;
 let path,dir,nextDir,food,obstacles,particles=[],floatTexts=[];
 let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
-let _levelTransition=false; // true если переход между уровнями (сохраняем счёт)
-let _carryScore=0,_carryTotalFood=0; // счёт и еда переносятся между уровнями
-let invincible=0;   // мс неуязвимости (щит при старте уровня)
-let combo=0;        // счётчик подряд съеденной еды
-let awaitingStart=false; // змейка ждёт первого нажатия (не едет и не умирает)
-const COMBO_WINDOW=8000; // окно комбо: ешь следующую еду в течение 8 сек
-let comboTimer=0;        // мс до сброса комбо
-let sessionStartBest=0;  // рекорд на момент старта игры (для «Новый рекорд!»)
-let obsRespawnIn=0;      // мс до респавна препятствий (Выживание после бомбы)
-// Золотая еда
-let goldFood=null;       // {x,y} или null
-let goldFoodLife=0;      // сколько мс осталось жить
-let goldFoodSpawnIn=0;   // через сколько мс появится следующая
-const GOLD_LIFETIME=5000;   // живёт 5 сек
-const GOLD_SPAWN_INTERVAL=9000; // появляется каждые ~9 сек
-const GFR=11;            // радиус золотой еды (чуть больше обычной)
-// ── Бонусные предметы ────────────────────────────────────────────
-// Каждый бонус: {x,y} или null, таймер жизни, таймер до появления
-// Типы: 'shield' | 'speed' | 'freeze' | 'bomb'
+let _levelTransition=false; // true during level transition (carry over score)
+let _carryScore=0,_carryTotalFood=0; // score and food carried over between levels
+let invincible=0;   // ms of invincibility (shield on level start)
+let combo=0;        // consecutive food eaten counter
+let awaitingStart=false; // snake awaiting first input (stationary, cannot die)
+const COMBO_WINDOW=8000; // combo window: eat next food within 8 seconds
+let comboTimer=0;        // ms until combo resets
+let sessionStartBest=0;  // best score at game start (used for "New Record!" detection)
+let obsRespawnIn=0;      // ms until obstacles respawn (Survival after bomb)
+// Golden food
+let goldFood=null;       // {x,y} or null
+let goldFoodLife=0;      // ms remaining lifetime
+let goldFoodSpawnIn=0;   // ms until next spawn
+const GOLD_LIFETIME=5000;   // lives for 5 seconds
+const GOLD_SPAWN_INTERVAL=9000; // spawns every ~9 seconds
+const GFR=11;            // golden food radius (slightly larger than regular)
+// ── Bonus items ────────────────────────────────────────────────────
+// Each bonus: {x,y} or null, lifetime timer, spawn countdown
+// Types: 'shield' | 'speed' | 'freeze' | 'bomb'
 const BONUS_RADIUS=11;
-const BONUS_LIFETIME=6000;       // живёт 6 сек
-const BONUS_SPAWN_INTERVAL=12000; // новый бонус каждые 12 сек
-let bonusItem=null;       // текущий бонус на поле
-let bonusLife=0;          // сколько мс осталось
-let bonusSpawnIn=BONUS_SPAWN_INTERVAL; // таймер до следующего появления
-// Активные эффекты на змейке
-let shieldActive=false;   // щит — следующий удар не убивает
-let speedBoost=0;         // мс ускорения
-let freezeActive=0;       // мс заморозки (замедление)
+const BONUS_LIFETIME=6000;       // lives for 6 seconds
+const BONUS_SPAWN_INTERVAL=12000; // new bonus every 12 seconds
+let bonusItem=null;       // current bonus on the field
+let bonusLife=0;          // ms remaining
+let bonusSpawnIn=BONUS_SPAWN_INTERVAL; // countdown to next spawn
+// Active effects on the snake
+let shieldActive=false;   // shield — next hit won't kill
+let speedBoost=0;         // ms of speed boost
+let freezeActive=0;       // ms of freeze effect (slowdown)
 const BONUS_TYPES=['shield','speed','freeze','bomb'];
 const BONUS_COLORS={shield:'#38bdf8',speed:'#fb923c',freeze:'#67e8f9',bomb:'#f87171'};
 const BONUS_ICONS={shield:'🛡',speed:'⚡',freeze:'❄',bomb:'💣'};
@@ -2300,7 +2300,7 @@ function spawnGoldFood(){
   goldFoodLife=GOLD_LIFETIME;
 }
 function spawnBonus(){
-  // выбираем случайный тип; бомба не спавнится если препятствий нет (бесполезна)
+  // pick random type; bomb won't spawn if there are no obstacles (useless)
   const types=obstacles.length?BONUS_TYPES:BONUS_TYPES.filter(t=>t!=='bomb');
   const type=types[Math.floor(Math.random()*types.length)];
   let p,tries=0;
@@ -2316,7 +2316,7 @@ function spawnBonus(){
 }
 function resetBonus(){
   bonusItem=null;
-  bonusSpawnIn=BONUS_SPAWN_INTERVAL+(Math.random()*4000-2000); // +/- 2 сек случайность
+  bonusSpawnIn=BONUS_SPAWN_INTERVAL+(Math.random()*4000-2000); // +/- 2 sec randomness
 }
 function applyBonus(type){
   playBonusPickup();
@@ -2335,12 +2335,12 @@ function applyBonus(type){
     freezeActive=3000; // 3 sek. spomalenie
     spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatFreeze,'#67e8f9');
   } else if(type==='bomb'){
-    // уничтожаем все препятствия
+    // destroy all obstacles
     obstacles=[];
-    // в Выживании препятствия возвращаются через 6 сек (иначе режим теряет смысл)
+    // in Survival, obstacles respawn after 6 sec (otherwise the mode loses its point)
     if(gameMode==='survival') obsRespawnIn=6000;
     spawnFloatText(bonusItem.x,bonusItem.y-BONUS_RADIUS-4,T().floatBomb,'#f87171');
-    // взрывные частицы
+    // explosion particles
     for(let i=0;i<30;i++){
       const a=Math.random()*Math.PI*2,spd=2+Math.random()*5;
       particles.push({x:bonusItem.x,y:bonusItem.y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:4+Math.random()*4,alpha:1,color:'#f87171'});
@@ -2351,9 +2351,9 @@ function applyBonus(type){
 function updateProg(){
   progBar.style.width=Math.min(100,Math.round(levelScore/levelData.foodNeeded*100))+'%';
 }
-// Режимы с уровнями: Классика и Зеркало
+// Level-based modes: Classic and Mirror
 const isLevelMode=()=>gameMode==='classic'||gameMode==='mirror';
-// Завершение уровня (единая логика для обычной и золотой еды)
+// Level completion (unified logic for regular and golden food)
 function levelComplete(){
   _levelTransition=true;
   _carryScore=score;
@@ -2364,12 +2364,12 @@ function levelComplete(){
     bestLevel=newLvl;
     SKINS.forEach((s,i)=>{
       if(s.unlockLevel===bestLevel){
-        skinIdx=i;   // автоматически переключаем на новый скин
+        skinIdx=i;   // automatically switch to the newly unlocked skin
         showUnlock(s);
       }
     });
   }
-  if(gameMode==='classic') savedLevel=newLvl; // сохранение — только для Классики
+  if(gameMode==='classic') savedLevel=newLvl; // save progress — Classic only
   questTrack('reach_level',newLvl);
   saveAll();refreshMenuUI();
   showLevelUp(newLvl,()=>beginLevel(newLvl));
@@ -2377,7 +2377,7 @@ function levelComplete(){
 function startGame(){
   if(animId) cancelAnimationFrame(animId);
   showScreen('gameScreen');
-  // Настраиваем HUD под режим
+  // Configure HUD for the current mode
   if(gameMode==='time'){
     hudLvl.textContent=T().hudModeTime;
     timeLeft=TIME_MODE_DURATION;
@@ -2397,14 +2397,14 @@ function startGame(){
   path=[];
   for(let i=0;i<BASE_LEN;i++) path.push({x:W/2-i,y:H/2});
   dir={x:1,y:0};nextDir={x:1,y:0};
-  // Переход уровня: сохраняем накопленный счёт. Новая игра: сбрасываем всё.
+  // Level transition: carry accumulated score. New game: reset everything.
   if(_levelTransition){
     score=_carryScore;
     totalFood=_carryTotalFood;
-    // sessionStartBest не трогаем — он уже был установлен при старте игры
+    // don't update sessionStartBest — it was already set at game start
   } else {
     score=0;totalFood=0;
-    sessionStartBest=best; // запоминаем рекорд только при старте новой игры
+    sessionStartBest=best; // snapshot best only at the start of a new game
   }
   _levelTransition=false;_carryScore=0;_carryTotalFood=0;
   totalLen=BASE_LEN;levelScore=0;particles=[];floatTexts=[];
@@ -2414,13 +2414,13 @@ function startGame(){
   survivalTime=0;obsRespawnIn=0;
   invincible=2000; combo=0; comboTimer=0;
   scoreEl.textContent=score;updateProg();
-  // Выживание: сразу максимум препятствий
+  // Survival: maximum obstacles from the start
   if(gameMode==='survival') levelData={...levelData,obsCount:22,speed:3.5*DIFF_MULT[difficulty]};
   spawnObstacles();spawnFood();
   gameOverlay.style.display='none';
   pauseMenu.style.display='none';
   paused=false;btnPause.textContent='⏸';
-  awaitingStart=true; // ждём первого свайпа/стрелки — змейка стоит
+  awaitingStart=true; // waiting for first swipe/arrow key — snake is stationary
   running=true;lastTs=0;
   playMusic();
   animId=requestAnimationFrame(loop);
@@ -2428,7 +2428,7 @@ function startGame(){
 function loop(ts){
   if(!running||paused) return;
   const dt=lastTs?Math.min(ts-lastTs,50):16;lastTs=ts;
-  // Игра ещё не началась — змейка стоит, таймеры не идут, рисуем подсказку
+  // Game hasn't started — snake is still, timers paused, draw the hint
   if(awaitingStart){
     draw();
     animId=requestAnimationFrame(loop);
@@ -2437,27 +2437,27 @@ function loop(ts){
   if(invincible>0) invincible-=dt;
   if(speedBoost>0) speedBoost-=dt;
   if(freezeActive>0) freezeActive-=dt;
-  // Окно комбо: не съел еду вовремя — комбо сгорает
+  // Combo window: didn't eat in time — combo resets
   if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0)combo=0;}
-  // Выживание: респавн препятствий после бомбы
+  // Survival: respawn obstacles after bomb
   if(obsRespawnIn>0){obsRespawnIn-=dt;if(obsRespawnIn<=0)spawnObstacles();}
-  // Режим Выживание: считаем время
+  // Survival mode: track elapsed time
   if(gameMode==='survival') survivalTime+=dt;
-  // Режим Время: обратный отсчёт
+  // Time mode: countdown
   if(gameMode==='time'){
     timeLeft-=dt;
     const secs=Math.ceil(timeLeft/1000);
     const timerEl=document.getElementById('hudTimer');
     timerEl.textContent=secs;
     if(secs<=10) timerEl.classList.add('urgent'); else timerEl.classList.remove('urgent');
-    if(timeLeft<=0){endGame();return;} // время вышло — без звука удара
+    if(timeLeft<=0){endGame();return;} // time's up — no hit sound
   }
-  // скорость: ускорение +60%, заморозка -50%, иначе базовая
+  // speed: boost +60%, freeze -50%, otherwise base speed
   const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
   const spd=levelData.speed*dt/16*spdMult;
   dir=nextDir;
   const head={x:path[0].x+dir.x*spd,y:path[0].y+dir.y*spd};
-  // Стены всегда твёрдые — зажимаем позицию в любом случае
+  // Walls are always solid — clamp position in all cases
   head.x=Math.max(R+1,Math.min(W-R-1,head.x));
   head.y=Math.max(R+1,Math.min(H-R-1,head.y));
   if(invincible<=0&&!dbgInvOn){
@@ -2495,7 +2495,7 @@ function loop(ts){
     const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
-    coins+=pts; // монеты = очки
+    coins+=pts; // coins equal points earned
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
@@ -2504,11 +2504,11 @@ function loop(ts){
     else if(combo>=3)  spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x2`,'#fb923c');
     else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`            ,skin().foodColor);
     playEat();
-    // Достижения — еда
+    // Achievements — food
     if(totalFood===1) unlockAch('first_bite');
     if(totalFood>=10) unlockAch('ten_food');
     if(combo>=5) unlockAch('combo_master');
-    // Квесты — еда (очки копятся за день, а не максимум за игру)
+    // Quests — food (score accumulates daily, not max per game)
     questTrack('eat_food',1);
     questTrack('score',pts);
     questTrack('combo',combo);
@@ -2518,17 +2518,17 @@ function loop(ts){
     }
     spawnFood();
   }
-  // ── Золотая еда ──────────────────────────────────────────────
+  // ── Golden food ──────────────────────────────────────────────────
   if(goldFood){
     goldFoodLife-=dt;
     if(goldFoodLife<=0){
-      // время вышло — исчезает
+      // time ran out — disappears
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
     } else if(dist(head,goldFood)<R+GFR){
-      // съели!
+      // collected!
       const pts=3;
-      combo++;comboTimer=COMBO_WINDOW; // золото тоже поддерживает комбо
+      combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
       coins+=pts;
@@ -2541,12 +2541,12 @@ function loop(ts){
       playGoldEat();
       unlockAch('gold_eater');
       questTrack('eat_gold',1);
-      questTrack('eat_food',1);  // золото — тоже еда
+      questTrack('eat_food',1);  // gold counts as food too
       questTrack('score',pts);
       questTrack('combo',combo);
       goldFood=null;
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
-      // проверяем завершение уровня (Классика и Зеркало)
+      // check level completion (Classic and Mirror)
       if(isLevelMode()&&levelScore>=levelData.foodNeeded){
         levelComplete();
         return;
@@ -2556,7 +2556,7 @@ function loop(ts){
     goldFoodSpawnIn-=dt;
     if(goldFoodSpawnIn<=0) spawnGoldFood();
   }
-  // ── Бонусный предмет ─────────────────────────────────────────
+  // ── Bonus item ──────────────────────────────────────────────────
   if(bonusItem){
     bonusLife-=dt;
     if(bonusLife<=0){
@@ -2581,15 +2581,15 @@ function draw(){
     ctx.save();ctx.fillStyle=sk.obs;ctx.shadowColor=sk.obs;ctx.shadowBlur=8;
     ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,4);ctx.fill();ctx.restore();
   });
-  // Обычная еда
+  // Regular food
   ctx.save();ctx.shadowColor=sk.foodColor;ctx.shadowBlur=18;
   const fg=ctx.createRadialGradient(food.x,food.y,1,food.x,food.y,FR);
   fg.addColorStop(0,sk.foodInner);fg.addColorStop(1,sk.foodColor);
   ctx.fillStyle=fg;ctx.beginPath();ctx.arc(food.x,food.y,FR,0,Math.PI*2);ctx.fill();
   ctx.restore();
-  // Золотая еда (пульсирует + таймер-кольцо)
+  // Golden food (pulsates + timer ring)
   if(goldFood){
-    const pulse=1+0.12*Math.sin(Date.now()*0.008); // пульсация
+    const pulse=1+0.12*Math.sin(Date.now()*0.008); // pulse effect
     const lifeRatio=goldFoodLife/GOLD_LIFETIME;
     ctx.save();
     ctx.shadowColor='#facc15';ctx.shadowBlur=28*pulse;
@@ -2597,18 +2597,18 @@ function draw(){
     gfg.addColorStop(0,'#fef9c3');gfg.addColorStop(0.5,'#facc15');gfg.addColorStop(1,'#f59e0b');
     ctx.fillStyle=gfg;
     ctx.beginPath();ctx.arc(goldFood.x,goldFood.y,GFR*pulse,0,Math.PI*2);ctx.fill();
-    // звезда ✦ в центре
+    // star ✦ in the center
     ctx.fillStyle='#fff';ctx.globalAlpha=0.85;ctx.font=`bold ${12*pulse}px serif`;
     ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText('★',goldFood.x,goldFood.y);
-    // кольцо-таймер (показывает сколько осталось)
+    // timer ring (shows remaining time)
     ctx.globalAlpha=0.7;ctx.strokeStyle='#facc15';ctx.lineWidth=2.5;
     ctx.beginPath();
     ctx.arc(goldFood.x,goldFood.y,GFR+7,-Math.PI/2,-Math.PI/2+Math.PI*2*lifeRatio);
     ctx.stroke();
     ctx.restore();
   }
-  // Бонусный предмет
+  // Bonus item
   if(bonusItem){
     const bc=BONUS_COLORS[bonusItem.type];
     const pulse=1+0.1*Math.sin(Date.now()*0.007);
@@ -2617,12 +2617,12 @@ function draw(){
     ctx.shadowColor=bc;ctx.shadowBlur=22*pulse;
     ctx.fillStyle=bc;ctx.globalAlpha=0.92;
     ctx.beginPath();ctx.arc(bonusItem.x,bonusItem.y,BONUS_RADIUS*pulse,0,Math.PI*2);ctx.fill();
-    // иконка в центре
+    // icon in the center
     ctx.globalAlpha=1;ctx.shadowBlur=0;
     ctx.font=`bold ${13*pulse}px serif`;
     ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(BONUS_ICONS[bonusItem.type],bonusItem.x,bonusItem.y);
-    // таймер-кольцо
+    // timer ring
     ctx.globalAlpha=0.7;ctx.strokeStyle=bc;ctx.lineWidth=2.5;
     ctx.beginPath();
     ctx.arc(bonusItem.x,bonusItem.y,BONUS_RADIUS+7,-Math.PI/2,-Math.PI/2+Math.PI*2*lifeRatio);
@@ -2636,7 +2636,7 @@ function draw(){
     ctx.shadowColor=p.color;ctx.shadowBlur=8;
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.restore();
   });
-  // Floating text (+1 над едой)
+  // Floating text (+1 above food)
   floatTexts=floatTexts.filter(t=>t.alpha>0.02);
   floatTexts.forEach(t=>{
     t.y+=t.vy; t.alpha-=0.028;
@@ -2650,9 +2650,9 @@ function draw(){
     ctx.restore();
   });
   if(path.length<2) return;
-  // Щит-флэш: пока неуязвимы — мигаем (250мс период) и рисуем синее кольцо вокруг головы
+  // Shield flash: while invincible — blink (250ms period) and draw blue ring around head
   const shielded = invincible > 0;
-  // Мигание только когда инвул заканчивается (<900мс) — не мигать при спавне
+  // Blink only when invincibility is ending (<900ms) — don't blink on spawn
   const shieldAlpha = shielded ? (invincible<900 && Math.floor(Date.now()/120)%2===0 ? 0.4 : 1.0) : 1.0;
   ctx.save();ctx.globalAlpha=shieldAlpha;ctx.shadowColor=shielded?'#38bdf8':sk.glow;ctx.shadowBlur=shielded?28:16;
   ctx.beginPath();ctx.moveTo(path[0].x,path[0].y);
@@ -2663,7 +2663,7 @@ function draw(){
   for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x,path[i].y);
   ctx.strokeStyle=sk.shine;ctx.lineWidth=R*0.65;
   ctx.lineCap='round';ctx.lineJoin='round';ctx.globalAlpha=shielded?0.7:0.45;ctx.stroke();ctx.restore();
-  // Кольцо щита вокруг головы
+  // Shield ring around the head
   if(shielded){
     ctx.save();
     ctx.strokeStyle='#7dd3fc';ctx.lineWidth=2;
@@ -2678,7 +2678,7 @@ function draw(){
     ctx.fillStyle='#0a0a0a';ctx.beginPath();ctx.arc(ex,ey,2.8,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex+0.7,ey-0.7,1,0,Math.PI*2);ctx.fill();
   });
-  // HUD активных эффектов (правый верхний угол канваса)
+  // Active effects HUD (top right corner of canvas)
   const effects=[];
   if(shieldActive)    effects.push({icon:'🛡',color:'#38bdf8',label:T().shieldHud});
   if(speedBoost>0)    effects.push({icon:'⚡',color:'#fb923c',label:Math.ceil(speedBoost/1000)+'s'});
@@ -2699,7 +2699,7 @@ function draw(){
     }
     ctx.restore();
   });
-  // Подсказка «нажми, чтобы начать» — пульсирует пока змейка ждёт
+  // "Tap to start" hint — pulses while snake is waiting
   if(awaitingStart){
     ctx.save();
     ctx.globalAlpha=0.65+0.35*Math.sin(Date.now()*0.005);
@@ -2715,17 +2715,17 @@ function endGame(){
   running=false;cancelAnimationFrame(animId);
   combo=0;
   shieldActive=false;speedBoost=0;freezeActive=0;
-  // Достижения — конец игры
+  // Achievements — end of game
   if(currentLevel>=5)  unlockAch('level5');
   if(currentLevel>=10) unlockAch('level10');
   if(gameMode==='survival'&&survivalTime>=30000) unlockAch('survivor');
   if(gameMode==='time'&&score>=20) unlockAch('time_champ');
   if(gameMode==='mirror'&&totalFood>=5) unlockAch('mirror_5');
-  // Сравниваем с рекордом НА МОМЕНТ СТАРТА игры (best обновляется живьём во время игры)
+  // Compare against best AT GAME START (best updates live during the game)
   const isNewRecord = score > 0 && score > sessionStartBest;
   if(score>best){best=score;bestHud.textContent=best;}
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
-  trackEvent('game_over',score,gameMode); // глобальная статистика
+  trackEvent('game_over',score,gameMode); // global statistics
   ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgTimeUp;
@@ -2734,7 +2734,7 @@ function endGame(){
     const modeLbl = gameMode==='time' ? T().goModeLbl.time : gameMode==='survival' ? T().goModeLbl.survival : gameMode==='mirror' ? T().goModeLbl.mirror : T().goModeLblClassic(currentLevel);
     goSub.textContent=T().goSubFmt(score,modeLbl);
     gameOverlay.style.display='flex';
-    // Авто-отправка в лидерборд если score > 0
+    // Auto-submit to leaderboard if score > 0
     if(score>0) submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);
   },350);
 }
@@ -2742,7 +2742,7 @@ function endGame(){
 const debugPanel=document.getElementById('debugPanel');
 const dbgBackdrop=document.getElementById('dbgBackdrop');
 let dbgTapCount=0,dbgTapTimer=null,dbgPausedByPanel=false;
-// Открыть: тапнуть по счёту 5 раз или нажать ` на клавиатуре (из любого места)
+// Open: tap the score 5 times or press ` anywhere on the keyboard
 document.getElementById('score').addEventListener('click',()=>{
   dbgTapCount++;
   if(dbgTapTimer) clearTimeout(dbgTapTimer);
@@ -2750,14 +2750,14 @@ document.getElementById('score').addEventListener('click',()=>{
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
 function dbgOpen(){
-  // Авто-пауза если игра идёт
+  // Auto-pause if game is running
   if(running&&!paused){
     paused=true;dbgPausedByPanel=true;
     cancelAnimationFrame(animId);pauseMusic();
   }
   debugPanel.classList.add('open');
   dbgBackdrop.classList.add('open');
-  // Показываем предупреждение если игра не запущена
+  // Show warning if game is not running
   const warn=document.getElementById('dbgGameWarn');
   if(warn) warn.style.display=(running||dbgPausedByPanel)?'none':'block';
   dbgUpdateStats();
@@ -2765,7 +2765,7 @@ function dbgOpen(){
 function dbgClose(){
   debugPanel.classList.remove('open');
   dbgBackdrop.classList.remove('open');
-  // Авто-возобновление если мы сами поставили паузу
+  // Auto-resume if we paused it ourselves
   if(dbgPausedByPanel){
     dbgPausedByPanel=false;
     if(running&&paused){paused=false;lastTs=0;playMusic();animId=requestAnimationFrame(loop);}
@@ -2834,7 +2834,7 @@ function dbgUpdateStats(){
   const el=document.getElementById('dbgStats');
   if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · 🪙<b>${coins}</b>`;
 }
-// Клавиша ` / ё — открыть из любого места (e.code не зависит от раскладки)
+// Key ` / ё — open from anywhere (e.code is layout-independent)
 document.addEventListener('keydown',e=>{if(e.code==='Backquote') dbgOpen();});
 // ─────────────────────────────────────────────────────────────────
 function togglePause(){
@@ -2852,16 +2852,16 @@ function togglePause(){
 }
 function applyDir(nd){
   if(!running||paused) return;
-  awaitingStart=false; // первое нажатие — поехали!
-  // Зеркальный режим — инвертируем горизонталь
+  awaitingStart=false; // first input — go!
+  // Mirror mode — invert horizontal axis
   if(gameMode==='mirror') nd={x:-nd.x, y:nd.y};
-  // Защита от разворота на 180°: проверяем и nextDir, и реально применённый dir
-  // (два быстрых нажатия за один кадр иначе разворачивали змейку в саму себя)
+  // Guard against 180° reversal: check both nextDir and the actually applied dir
+  // (two quick inputs in one frame would otherwise reverse the snake into itself)
   if(nd.x===-nextDir.x&&nd.y===-nextDir.y) return;
   if(dir&&nd.x===-dir.x&&nd.y===-dir.y) return;
   nextDir=nd;
 }
-// Пауза кнопки
+// Pause buttons
 pmResume.addEventListener('click',togglePause);
 pmResume.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
@@ -2871,7 +2871,7 @@ pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{pa
 goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 
-// ── Сохранение счёта при закрытии вкладки / уходе (keepalive — переживает выгрузку) ──
+// ── Save score on tab close / leave (keepalive — survives page unload) ──
 function _submitOnExit(){
   if(!running||score<=0) return;
   fetch(`${SB_URL}/rest/v1/game_results`,{
@@ -2884,7 +2884,7 @@ function _submitOnExit(){
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')_submitOnExit();});
 window.addEventListener('pagehide',_submitOnExit);
 
-// Поделиться
+// Share
 const goShare=document.getElementById('goShare');
 function buildShareText(){
   const modeEmoji={classic:'🐍',time:'⏱',survival:'💀',mirror:'🪞'}[gameMode]||'🐍';
@@ -2896,7 +2896,7 @@ async function shareScore(){
   if(navigator.share){
     try{ await navigator.share({title:T().shareTitle,text}); return; }catch(_){}
   }
-  // Fallback — копируем в буфер
+  // Fallback — copy to clipboard
   try{
     await navigator.clipboard.writeText(text);
     goShare.textContent=T().shareCopied;
@@ -2908,10 +2908,10 @@ async function shareScore(){
 }
 goShare.addEventListener('click',shareScore);
 goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{passive:false});
-// Лидерборд — отправка
-// Клавиатура
+// Leaderboard — submit
+// Keyboard controls
 document.addEventListener('keydown',e=>{
-  // В текстовых полях (ник и т.п.) клавиши работают как обычно — пробел не = пауза
+  // In text fields (nick etc.) keys work normally — space does not pause the game
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
   if(e.code==='Space'){e.preventDefault();togglePause();return;}
   if(!running||paused) return;
@@ -2931,7 +2931,7 @@ bindDir('btnUp',{x:0,y:-1});bindDir('btnDown',{x:0,y:1});
 bindDir('btnLeft',{x:-1,y:0});bindDir('btnRight',{x:1,y:0});
 btnPause.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 btnPause.addEventListener('click',togglePause);
-// Свайп
+// Swipe controls
 let tx=0,ty=0;
 canvas.addEventListener('touchstart',e=>{e.preventDefault();tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:false});
 canvas.addEventListener('touchend',e=>{
@@ -2941,13 +2941,13 @@ canvas.addEventListener('touchend',e=>{
   applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
 },{passive:false});
 document.body.addEventListener('touchmove',e=>{
-  // Не блокируем скролл в инпутах и внутри debug-панели
+  // Don't block scroll in inputs or inside the debug panel
   if(e.target.tagName==='INPUT') return;
   if(e.target.closest&&e.target.closest('#debugPanel')) return;
-  // Блокируем жесты ТОЛЬКО на игровом экране (иначе ломается скролл меню/ачивок/магазина)
+  // Block gestures ONLY on the game screen (otherwise menu/achievements/shop scroll breaks)
   if(e.target.closest&&e.target.closest('#gameScreen')) e.preventDefault();
 },{passive:false});
-// ── ЗВУК ─────────────────────────────────────────────────────────
+// ── SOUND ──────────────────────────────────────────────────────────
 let audioCtx=null;
 function getAudio(){
   if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -2982,7 +2982,7 @@ function playBonusPickup(){
   if(!sfxOn) return;
   try{
     const a=getAudio();
-    // Магический звук — быстрые восходящие арпеджио
+    // Magic sound — fast ascending arpeggios
     [[0,400],[0.07,600],[0.14,900],[0.21,1200]].forEach(([t,freq])=>{
       const o=a.createOscillator(),g=a.createGain();
       o.connect(g);g.connect(a.destination);o.type='triangle';
@@ -2997,7 +2997,7 @@ function playGoldEat(){
   if(!sfxOn) return;
   try{
     const a=getAudio();
-    // Три восходящие ноты — ощущение победы
+    // Three ascending notes — a sense of victory
     [[0,660],[0.1,880],[0.2,1100]].forEach(([t,freq])=>{
       const o=a.createOscillator(),g=a.createGain();
       o.connect(g);g.connect(a.destination);o.type='sine';
@@ -3022,17 +3022,17 @@ function playDie(){
     });
   }catch(e){}
 }
-// ── МУЗЫКА ───────────────────────────────────────────────────────
-// Только процедурная музыка Web Audio API (Only Today.mp3 удалён)
+// ── MUSIC ───────────────────────────────────────────────────────────
+// Procedural music only via Web Audio API (Only Today.mp3 removed)
 const mp3Music=null, mp3Failed=true;
 function initMp3(){}
 
-// ── ПРОЦЕДУРНАЯ МУЗЫКА (запасной вариант) ────────────────────────
+// ── PROCEDURAL MUSIC (fallback) ────────────────────────────────────
 
 const BPM = 125;
-const T16 = (60 / BPM) / 4; // длительность одной 1/16 ноты в секундах
+const T16 = (60 / BPM) / 4; // duration of one 1/16 note in seconds
 
-// Частоты нот в Гц (физика звука: A4 = 440 Гц — международный стандарт)
+// Note frequencies in Hz (physics: A4 = 440 Hz — international standard)
 const N = {
   C2:65.41, E2:82.41, F2:87.31, G2:98.00,
   C3:130.81, D3:146.83, E3:164.81, G3:196.00,
@@ -3040,8 +3040,8 @@ const N = {
   C5:523.25, E5:659.25, G5:783.99
 };
 
-// Паттерны — это последовательности нот (как ноты в нотной тетради)
-// 0 = тишина, название ноты = играть эту ноту
+// Patterns — sequences of notes (like sheet music)
+// 0 = silence, note name = play that note
 const BASS_PAT    = ['C2',0,0,0, 'G2',0,0,0, 'E2',0,'E2',0, 'F2',0,0,0];
 const MELODY_PAT  = [
   'E4',0,'G4',0, 'A4',0,'G4',0, 'E4',0, 0,  0,  'D4', 0,'C4',0,
@@ -3055,7 +3055,7 @@ const CHORD_PAT   = [
 let musicPlaying=false, musicTimer=null, musicStep=0;
 let nextNoteTime=0, musicGain=null;
 
-// Играет одну ноту: частота, время старта, длительность, тип волны, громкость
+// Play one note: frequency, start time, duration, wave type, volume
 function scheduleNote(freq, t, dur, type='sine', vol=0.08){
   if(!audioCtx) return;
   const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -3066,11 +3066,11 @@ function scheduleNote(freq, t, dur, type='sine', vol=0.08){
   o.start(t); o.stop(t+dur);
 }
 
-// Планирует один такт (kick + hi-hat + бас + аккорд + мелодия)
+// Schedule one bar (kick + hi-hat + bass + chord + melody)
 function scheduleBeat(t, step){
   const s32 = step % 32;
 
-  // 🥁 Бочка (kick) — низкочастотный удар, звучит каждые 4 шага
+  // 🥁 Kick drum — low-frequency hit, fires every 4 steps
   if(s32 % 4 === 0){
     const k=audioCtx.createOscillator(), kg=audioCtx.createGain();
     k.connect(kg); kg.connect(musicGain); k.type='sine';
@@ -3081,11 +3081,11 @@ function scheduleBeat(t, step){
     k.start(t); k.stop(t+0.18);
   }
 
-  // 🎵 Hi-hat — шипящий высокий звук (белый шум через фильтр)
+  // 🎵 Hi-hat — hissing high sound (white noise through a filter)
   if(s32 % 2 === 0){
     const buf=audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate*0.04), audioCtx.sampleRate);
     const d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; // белый шум
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; // white noise
     const src=audioCtx.createBufferSource(), hg=audioCtx.createGain();
     const hf=audioCtx.createBiquadFilter();
     src.buffer=buf; src.connect(hf); hf.connect(hg); hg.connect(musicGain);
@@ -3096,21 +3096,21 @@ function scheduleBeat(t, step){
     src.start(t);
   }
 
-  // 🎸 Бас
+  // 🎸 Bass
   const bn=BASS_PAT[s32 % BASS_PAT.length];
   if(bn) scheduleNote(N[bn], t, T16*3, 'sine', 0.14);
 
-  // 🎹 Аккорды
+  // 🎹 Chords
   const ch=CHORD_PAT[s32 % CHORD_PAT.length];
   if(Array.isArray(ch)) ch.forEach(n=>scheduleNote(N[n], t, T16*3.5, 'triangle', 0.022));
 
-  // 🎶 Мелодия
+  // 🎶 Melody
   const mn=MELODY_PAT[s32];
   if(mn) scheduleNote(N[mn], t, T16*1.7, 'square', 0.038);
 }
 
-// Планировщик — запускается каждые 50мс и "смотрит вперёд" на 0.1 сек
-// Это стандартный паттерн для стабильной музыки в браузере
+// Scheduler — runs every 50ms and looks ahead by 0.1 sec
+// Standard pattern for stable audio scheduling in the browser
 function musicLoop(){
   if(!musicPlaying||!audioCtx) return;
   while(nextNoteTime < audioCtx.currentTime + 0.1){
