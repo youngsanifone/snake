@@ -1662,7 +1662,7 @@ async function submitToLeaderboard(name,score,level,mode){
     const r=await fetch(`${SB_URL}/rest/v1/game_results`,{
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({name,score,level,mode})
+      body:JSON.stringify({name,score,level,mode,player_id:getPlayerId()})
     });
     if(!r.ok){
       const txt=await r.text();
@@ -2861,7 +2861,7 @@ function _submitOnExit(){
   fetch(`${SB_URL}/rest/v1/game_results`,{
     method:'POST',
     headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-    body:JSON.stringify({name:lbNickname||T().anon,score,level:currentLevel,mode:gameMode}),
+    body:JSON.stringify({name:lbNickname||T().anon,score,level:currentLevel,mode:gameMode,player_id:getPlayerId()}),
     keepalive:true
   }).catch(()=>{});
 }
