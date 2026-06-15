@@ -2834,8 +2834,8 @@ function dbgUpdateStats(){
   const el=document.getElementById('dbgStats');
   if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · 🪙<b>${coins}</b>`;
 }
-// Клавиша ` — открыть из любого места
-document.addEventListener('keydown',e=>{if(e.key==='`') dbgOpen();});
+// Клавиша ` / ё — открыть из любого места (e.code не зависит от раскладки)
+document.addEventListener('keydown',e=>{if(e.code==='Backquote') dbgOpen();});
 // ─────────────────────────────────────────────────────────────────
 function togglePause(){
   if(!running) return;
