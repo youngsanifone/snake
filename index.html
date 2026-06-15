@@ -562,6 +562,46 @@
   @media (min-width:601px){
     .screen{box-shadow:0 0 60px rgba(0,0,0,0.6);}
   }
+  /* ── AURORA GLOBAL — indigo/purple replaces all green accents ──── */
+  /* Welcome screen */
+  #welcInput:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,0.18);}
+  #welcBtn{background:linear-gradient(135deg,#312e81,#6366f1);border-color:#818cf8;}
+  /* Skins */
+  .skin-btn.active{border-color:#818cf8;background:var(--panel);}
+  /* Game HUD */
+  .lvl-badge{background:linear-gradient(135deg,#312e81,#6366f1);}
+  .prog-bar{background:linear-gradient(90deg,#818cf8,#22d3ee);}
+  /* Pause */
+  .pm-btn.resume{background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;}
+  /* Game over — primary button */
+  .go-btn:not(.sec):not(.share){background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;}
+  /* Level up overlay */
+  .lu-text{background:linear-gradient(135deg,#c084fc,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(139,92,246,0.85));}
+  /* Mode select screen */
+  .mode-title{background:linear-gradient(135deg,#c084fc,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .mode-card:active,.mode-card:hover{border-color:#818cf8;}
+  @media(hover:none){.mode-card:hover{border-color:var(--border);}}
+  /* Leaderboard */
+  .lb-tab.active{border-color:#818cf8;color:#818cf8;background:color-mix(in srgb,#818cf8 10%,var(--panel));}
+  .lb-score{color:#818cf8;}
+  .lb-input:focus{border-color:#818cf8;}
+  .lb-submit-btn{background:linear-gradient(135deg,#4338ca,#7c3aed);}
+  /* Achievements */
+  .ach-tab.active{color:#818cf8;border-bottom-color:#818cf8;}
+  .ach-card.unlocked{border-color:#818cf8;background:color-mix(in srgb,#818cf8 10%,var(--panel));}
+  .ach-card.unlocked .ach-name{color:#818cf8;}
+  #achNotif{border-color:#818cf8;box-shadow:0 4px 20px rgba(99,102,241,0.3);}
+  .an-title{color:#818cf8;}
+  /* Skin unlock toast */
+  #unlockNotif{background:linear-gradient(135deg,#312e81,#4338ca);box-shadow:0 4px 20px rgba(99,102,241,0.4);}
+  /* Shop */
+  .shop-preview-card.owned{border-color:#818cf8;background:color-mix(in srgb,#818cf8 8%,var(--panel));}
+  .shop-preview-btn.equip{background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;}
+  .shop-card.owned{border-color:#818cf8;background:color-mix(in srgb,#818cf8 12%,var(--panel));}
+  .shop-btn.equip{background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;}
+  /* Generic menu-btn (back buttons on sub-screens) */
+  .menu-btn:active,.menu-btn:hover{border-color:#818cf8;color:#818cf8;}
+  .menu-btn.primary{background:linear-gradient(135deg,#312e81,#4338ca);border-color:#818cf8;}
 </style>
 </head>
 <body>
