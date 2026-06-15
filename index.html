@@ -1068,7 +1068,7 @@ const TRANSLATIONS={
     goShare:'📤 Zdieľať',goRetry:'↺ Znova od úr. 1',goMenu:'⌂ Hlavné menu',
     questTitle:'📋 Úlohy',questBack:'← Späť',questReset:'Reset o polnoci',
     questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
-    settingsTitle:'⚙️ Nastavenia',settingsDiff:'Obtiažnosť',
+    settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
     settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
@@ -1156,7 +1156,7 @@ const TRANSLATIONS={
     goShare:'📤 Поделиться',goRetry:'↺ Заново с ур. 1',goMenu:'⌂ Главное меню',
     questTitle:'📋 Квесты',questBack:'← Назад',questReset:'Сброс в полночь',
     questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
-    settingsTitle:'⚙️ Настройки',settingsDiff:'Сложность',
+    settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
     settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
@@ -1244,7 +1244,7 @@ const TRANSLATIONS={
     goShare:'📤 Share',goRetry:'↺ Restart from lvl 1',goMenu:'⌂ Main menu',
     questTitle:'📋 Quests',questBack:'← Back',questReset:'Resets at midnight',
     questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
-    settingsTitle:'⚙️ Settings',settingsDiff:'Difficulty',
+    settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',
     diffEasy:'😌 Easy',diffNormal:'😐 Normal',diffHard:'😤 Hardcore',
     settingsMusic:'🎵 Music',settingsSfx:'🔊 Sound effects',
     settingsTheme:'🎨 Theme',themeLight:'☀️ Light',themeDark:'🌙 Dark',
@@ -1368,12 +1368,12 @@ function applyLang(){
   const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
   const questBk=document.getElementById('questBack');if(questBk)questBk.textContent=L.questBack;
   const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
-  // Settings section labels (.sett-label) and sound .rl labels
-  const settLabels=document.querySelectorAll('#settingsScreen .sett-label');
-  if(settLabels[0])settLabels[0].textContent=L.settingsDiff;
-  if(settLabels[1])settLabels[1].textContent='🔊 '+L.settingsSfx.replace(/^🔊\s*/,'').split(' ')[0];
-  // theme card removed (dark-only design)
-  if(settLabels[3]){const langId=document.getElementById('settLangLbl');if(langId)langId.textContent=L.settingsLang;}
+  // Settings labels — use IDs to avoid index-shift bugs
+  const _sl=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
+  _sl('settNickLbl', '👤 '+(L.settingsNick||'Никнейм'));
+  _sl('settDiffLbl', L.settingsDiff||'🎯 Сложность');
+  _sl('settLangLbl', L.settingsLang||'🌐 Язык');
+  // Sound .rl sub-labels
   const setRls=document.querySelectorAll('#settingsScreen .rl');
   if(setRls[0])setRls[0].textContent=L.settingsMusic;
   if(setRls[1])setRls[1].textContent=L.settingsSfx;
