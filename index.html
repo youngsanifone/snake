@@ -21,7 +21,7 @@
 </script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  /* ── ТЕМЫ ───────────────────────────────────────────────────── */
+  /* ── THEMES ────────────────────────────────────────────────── */
   :root{
     --bg:#0a0a0f;
     --panel:#1a2535;
@@ -53,8 +53,8 @@
   body{
     width:100%;
     height:100vh;
-    height:100dvh; /* Safari 15.4+ — правильная высота без адресной строки */
-    min-height:-webkit-fill-available; /* старый Safari */
+    height:100dvh; /* Safari 15.4+ — correct height without address bar */
+    min-height:-webkit-fill-available; /* legacy Safari */
     overflow:hidden;
     background:#050508;color:var(--text);transition:var(--transition);
     font-family:'Segoe UI',sans-serif;
@@ -75,9 +75,9 @@
     background:var(--bg);
   }
   .screen.active{display:flex;}
-  /* Меню — центрировать если контент меньше экрана, иначе flex-start со скроллом */
+  /* Menu — center if content is smaller than screen, otherwise flex-start with scroll */
   #menuScreen{justify-content:safe center;}
-  /* МЕНЮ */
+  /* MENU */
   .menu-snake{font-size:clamp(1.4rem,3.5vh,2.2rem);animation:wiggle 1s ease-in-out infinite;margin-bottom:2px;}
   @keyframes wiggle{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
   .menu-title{
@@ -87,7 +87,7 @@
     animation:glow 2s ease-in-out infinite;margin-bottom:clamp(4px,1vh,10px);
   }
   @keyframes glow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
-  /* СКИНЫ */
+  /* SKINS */
   .skin-row{display:flex;gap:5px;margin-bottom:clamp(4px,1vh,8px);flex-wrap:wrap;justify-content:center;}
   .skin-btn{
     width:clamp(36px,9vw,44px);height:clamp(40px,10vw,50px);border-radius:11px;border:2px solid var(--border2);
@@ -104,7 +104,7 @@
   }
   .skin-lbl{font-size:0.38rem;color:var(--text2);line-height:1;display:block;
     width:100%;text-align:center;overflow:hidden;white-space:nowrap;padding:0 2px;}
-  /* СТАТС-БАР МЕНЮ */
+  /* MENU STATS BAR */
   .menu-stats-bar{
     display:flex;align-items:center;
     background:var(--panel);border:1px solid var(--border2);border-radius:14px;
@@ -115,7 +115,7 @@
   .msb-val{font-size:1rem;font-weight:800;color:var(--text);line-height:1;}
   .msb-lbl{font-size:0.56rem;color:var(--text3);letter-spacing:0.3px;text-transform:uppercase;}
   .msb-sep{width:1px;height:24px;background:var(--border2);flex-shrink:0;}
-  /* КНОПКИ МЕНЮ */
+  /* MENU BUTTONS */
   .menu-play-btn{
     width:min(240px,82vw);padding:clamp(10px,2vh,14px) 0;margin-bottom:6px;
     background:linear-gradient(135deg,#166534,#15803d);
@@ -136,7 +136,7 @@
     letter-spacing:1px;touch-action:manipulation;transition:all 0.15s;
   }
   .menu-cont-btn:hover,.menu-cont-btn:active{background:rgba(34,211,238,0.07);}
-  /* СЕТКА ФУНКЦИЙ */
+  /* FUNCTION GRID */
   .menu-grid{
     display:grid;grid-template-columns:repeat(2,1fr);
     gap:7px;width:min(240px,82vw);margin-bottom:6px;
@@ -159,14 +159,14 @@
   .mgrid-btn.clr-orange{border-color:rgba(251,146,60,0.5);}
   .mgrid-btn.clr-orange:active,.mgrid-btn.clr-orange:hover{border-color:#fb923c;background:rgba(251,146,60,0.07);}
   @media(hover:none){.mgrid-btn:hover{border-color:var(--border);background:var(--panel);}}
-  /* Бейдж квеста — абсолютный */
+  /* Quest badge — absolute positioned */
   .quest-badge{
     position:absolute;top:-7px;right:-7px;
     background:#ef4444;color:#fff;border-radius:99px;
     font-size:0.58rem;font-weight:bold;padding:2px 6px;
     pointer-events:none;line-height:1.4;border:2px solid var(--bg);
   }
-  /* ГОРИЗОНТАЛЬНАЯ НАВИГАЦИЯ */
+  /* HORIZONTAL NAVIGATION */
   .menu-nav-bar{
     display:flex;align-items:flex-start;justify-content:center;
     gap:8px;width:min(270px,88vw);margin-top:6px;
@@ -191,7 +191,7 @@
   .mnav-btn:not([class*="clr-"]):active,.mnav-btn:not([class*="clr-"]):hover{border-color:var(--border2);}
   .mnav-btn:not([class*="clr-"]) .mnav-label{color:var(--text3);}
   @media(hover:none){.mnav-btn:hover{border-color:var(--border);background:var(--panel);}}
-  /* Совместимость — .menu-btn для других экранов */
+  /* Compatibility — .menu-btn for other screens */
   .menu-btn{
     width:min(210px,80vw);padding:clamp(7px,1.8vh,13px) 0;margin:clamp(2px,0.6vh,5px) 0;
     background:var(--panel);border:1.5px solid var(--border);border-radius:13px;
@@ -203,7 +203,7 @@
   .best-lbl{color:var(--text2);font-size:0.82rem;margin:4px 0;}
   .best-lbl span{color:#facc15;font-weight:bold;}
   .menu-coins{font-size:0.8rem;color:#facc15;margin-bottom:4px;}
-  /* ЭКРАН УРОВНЯ */
+  /* LEVEL SCREEN */
   .lvl-label{font-size:0.9rem;color:var(--text3);letter-spacing:4px;text-transform:uppercase;margin-bottom:8px;}
   .lvl-num{
     font-size:clamp(3.5rem,16vw,6rem);font-weight:900;
@@ -213,7 +213,7 @@
   }
   @keyframes zoomIn{from{transform:scale(0.2);opacity:0;}to{transform:scale(1);opacity:1;}}
   .lvl-goal{font-size:0.88rem;color:var(--text2);margin-top:10px;}
-  /* ИГРА */
+  /* GAME */
   #gameScreen{gap:5px;padding:5px 0;overflow:hidden;touch-action:none;}
   .hud{display:flex;gap:clamp(8px,3vw,24px);font-size:clamp(0.68rem,2.4vw,0.85rem);color:var(--text2);align-items:center;}
   .hud span{color:var(--text);font-weight:bold;}
@@ -225,7 +225,7 @@
   canvas{border:2px solid var(--canvas-border);border-radius:8px;background:var(--canvas-bg);display:block;touch-action:none;
     --csz:min(560px,calc(min(600px,100vw) - 12px),calc(100dvh - 260px));
     width:var(--csz);height:var(--csz);}
-  /* ПАУЗА */
+  /* PAUSE */
   #pauseMenu{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:12px;background:rgba(0,0,0,0.78);border-radius:8px;pointer-events:all;}
@@ -235,7 +235,7 @@
     font-weight:bold;cursor:pointer;touch-action:manipulation;letter-spacing:1px;}
   .pm-btn.resume{background:#4ade80;color:#0f0f0f;}
   .pm-btn.secondary{background:var(--hud-bg);color:var(--text);border:1px solid var(--border2);}
-  /* ГЕЙМ ОВЕР */
+  /* GAME OVER */
   #gameOverlay{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:9px;pointer-events:none;background:rgba(0,0,0,0.65);border-radius:8px;}
@@ -245,7 +245,7 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
   .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
-  /* DEBUG PANEL — центральный модальный диалог */
+  /* DEBUG PANEL — centered modal dialog */
   #dbgBackdrop{
     position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:998;
     display:none;backdrop-filter:blur(2px);
@@ -264,9 +264,9 @@
     box-shadow:0 8px 48px rgba(0,0,0,0.9);
   }
   #debugPanel.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all;}
-  /* Кнопка-таб — скрыта (открытие: 5 тапов по счёту или клавиша `) */
+  /* Tab button — hidden (open: 5 taps on score or press `) */
   #dbgTab{display:none;}
-  /* Двухколоночная сетка для рядов кнопок */
+  /* Two-column grid for button rows */
   .dbg-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}
   .dbg-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
   .dbg-grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
@@ -283,7 +283,7 @@
   .dbg-btn.red{background:#3b0000;color:#f87171;}
   .dbg-btn.purple{background:#2e1065;color:#c4b5fd;}
   .dbg-btn.active-toggle{outline:2px solid #facc15;}
-  /* РЕЖИМЫ */
+  /* MODES */
   .mode-title{font-size:clamp(1.4rem,6vw,2rem);font-weight:900;letter-spacing:3px;margin-bottom:6px;
     background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
   .mode-sub{font-size:0.8rem;color:var(--text3);margin-bottom:24px;}
@@ -299,10 +299,10 @@
   .mode-card-title{font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:2px;}
   .mode-card-desc{font-size:0.75rem;color:var(--text3);line-height:1.3;}
   .mode-back{margin-top:8px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
-  /* МАГАЗИН */
+  /* SHOP */
   .shop-coins{font-size:0.9rem;color:#facc15;font-weight:700;margin-bottom:14px;}
   .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));}
-  /* Превью выбранного скина в магазине */
+  /* Selected skin preview in shop */
   .shop-preview-card{
     display:flex;flex-direction:column;align-items:center;gap:10px;
     width:min(280px,calc(100vw - 48px));
@@ -340,7 +340,7 @@
   .shop-btn.equip{background:#4ade80;color:#0f0f0f;}
   .shop-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
   .shop-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
-  /* ЛИДЕРБОРД */
+  /* LEADERBOARD */
   .lb-tabs{display:flex;gap:6px;margin-bottom:12px;width:min(320px,calc(100vw - 24px));}
   .lb-tab{flex:1;padding:7px 0;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;}
   .lb-tab.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 10%,var(--panel));}
@@ -357,13 +357,13 @@
   /* ── TOAST ─────────────────────────────────────────────── */
   .game-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);padding:10px 20px;border-radius:20px;font-size:0.82rem;font-weight:700;z-index:9999;pointer-events:none;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;max-width:calc(min(600px,100vw) - 32px);text-align:center;backdrop-filter:blur(8px);}
   .game-toast.toast-in{transform:translateX(-50%) translateY(0);}
-  /* Форма отправки результата */
+  /* Score submission form */
   .lb-submit-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(260px,82vw);margin-top:6px;pointer-events:all;}
   .lb-input{width:100%;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:0.9rem;outline:none;text-align:center;pointer-events:all;-webkit-user-select:text;user-select:text;}
   .lb-input:focus{border-color:#4ade80;}
   .lb-submit-btn{width:100%;padding:10px 0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border:none;border-radius:11px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;}
   .lb-skip{font-size:0.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;}
-  /* ДОСТИЖЕНИЯ */
+  /* ACHIEVEMENTS */
   #achScreen{padding:10px 0 20px;}
   .ach-cnt{font-size:0.72rem;color:var(--text3);margin-bottom:6px;}
   .ach-tabs{display:flex;width:min(340px,calc(100vw - 24px));border-bottom:1.5px solid var(--border);flex-shrink:0;margin-bottom:8px;}
@@ -379,7 +379,7 @@
   .ach-desc{font-size:0.72rem;color:var(--text3);margin-top:1px;}
   .ach-empty{text-align:center;color:var(--text3);font-size:0.82rem;margin-top:30px;width:min(340px,calc(100vw - 24px));}
   .ach-back{flex-shrink:0;margin-top:14px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:8px 24px;touch-action:manipulation;}
-  /* УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ */
+  /* ACHIEVEMENT NOTIFICATION */
   #achNotif{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);
     background:var(--panel);border:1.5px solid #4ade80;border-radius:14px;
@@ -392,7 +392,7 @@
   .an-text{font-size:0.78rem;}
   .an-title{color:#4ade80;font-weight:700;}
   .an-sub{color:var(--text2);}
-  /* ТАЙМЕР В HUD */
+  /* HUD TIMER */
   .hud-timer{font-size:clamp(0.75rem,2.6vw,0.95rem);font-weight:bold;color:#f87171;min-width:44px;text-align:center;}
   .hud-timer.urgent{animation:blink 0.5s ease-in-out infinite;}
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
@@ -408,7 +408,7 @@
     touch-action:manipulation;}
   .dpad-center:active{background:var(--border2);}
   .kb-hint{font-size:0.6rem;color:var(--text3);letter-spacing:1px;}
-  /* РЕКОРДЫ / НАСТРОЙКИ — общий контейнер */
+  /* RECORDS / SETTINGS — shared container */
   .rec-title{font-size:1.3rem;font-weight:bold;color:#facc15;letter-spacing:2px;margin-bottom:10px;}
   .rec-list{
     display:flex;flex-direction:column;gap:8px;
@@ -442,7 +442,7 @@
     animation:luSlide 0.4s 0.2s ease-out both;
   }
   @keyframes luSlide{from{transform:translateY(18px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-  /* РАЗБЛОКИРОВКА */
+  /* SKIN UNLOCK */
   #unlockNotif{
     position:fixed;top:20px;left:50%;transform:translateX(-50%);
     background:linear-gradient(135deg,#166534,#15803d);color:#fff;
@@ -450,11 +450,11 @@
     text-align:center;box-shadow:0 4px 20px rgba(74,222,128,0.4);
     display:none;z-index:100;pointer-events:none;
   }
-  /* АНИМИРОВАННЫЙ ФОН МЕНЮ */
+  /* ANIMATED MENU BACKGROUND */
   #menuBg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
   #menuScreen{position:relative;}
   #menuScreen > *:not(#menuBg){position:relative;z-index:1;}
-  /* НАСТРОЙКИ */
+  /* SETTINGS */
   .diff-row{display:flex;gap:8px;margin:6px 0 4px;flex-wrap:wrap;}
   .diff-btn{
     flex:1;min-width:80px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);
@@ -462,7 +462,7 @@
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;text-align:center;
   }
   .diff-btn.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
-  /* КВЕСТЫ */
+  /* QUESTS */
   #questScreen{justify-content:safe center;}
   .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));}
   .quest-card{background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;transition:var(--transition);}
@@ -481,7 +481,7 @@
   .quest-reset{font-size:0.7rem;color:var(--text3);text-align:center;margin-top:8px;}
   .quest-reward-toast{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);background:#facc15;color:#0f0f0f;font-size:1.3rem;font-weight:bold;padding:11px 24px;border-radius:12px;pointer-events:none;z-index:1000;animation:toastFade 1.4s ease-out forwards;}
   @keyframes toastFade{0%{opacity:0;transform:translate(-50%,-60%);}15%{opacity:1;transform:translate(-50%,-50%);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-40%);}}
-  /* ГЛОБАЛЬНАЯ СТАТИСТИКА */
+  /* GLOBAL STATISTICS */
   .global-stats-bar{
     display:flex;align-items:center;gap:8px;
     font-size:0.72rem;color:var(--text3);
@@ -490,14 +490,14 @@
     border-radius:20px;padding:5px 14px;
   }
   .gst-sep{color:var(--border);}
-  /* КНОПКА СБРОСА */
+  /* RESET BUTTON */
   .reset-btn{
     width:100%;padding:11px 0;margin-top:8px;
     background:transparent;border:1.5px solid #ef4444;
     border-radius:12px;color:#ef4444;font-size:0.82rem;font-weight:700;
     cursor:pointer;touch-action:manipulation;
   }
-  /* ЭКРАН ПРИВЕТСТВИЯ */
+  /* WELCOME SCREEN */
   #welcomeScreen{
     justify-content:safe center;
     background:radial-gradient(ellipse at 50% 30%,rgba(74,222,128,0.07) 0%,transparent 70%),var(--bg);
@@ -529,26 +529,26 @@
     background:none;border:none;color:var(--text3);font-size:0.7rem;
     text-decoration:underline;cursor:pointer;touch-action:manipulation;pointer-events:all;
   }
-  /* ПК: скрываем dpad если мышь */
+  /* Desktop: hide dpad if mouse */
   @media (hover:hover) and (pointer:fine){
     .dpad,.kb-hint{display:none;}
     #c{--csz:min(560px,calc(100vmin - 80px),calc(600px - 20px))!important;width:var(--csz)!important;height:var(--csz)!important;}
     .prog-wrap{width:min(560px,calc(600px - 20px));}
   }
-  /* Десктоп: тонкая тень по краям колонки */
+  /* Desktop: thin shadow on column edges */
   @media (min-width:601px){
     .screen{box-shadow:0 0 60px rgba(0,0,0,0.6);}
   }
 </style>
 </head>
 <body>
-<!-- ЭКРАН ЗАГРУЗКИ -->
+<!-- LOADING SCREEN -->
 <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
   <div style="font-size:0.8rem;color:var(--text3);">Загрузка...</div>
 </div>
 <div id="unlockNotif"></div>
-<!-- ЭКРАН ПРИВЕТСТВИЯ (первый запуск) -->
+<!-- WELCOME SCREEN (first launch) -->
 <div class="screen" id="welcomeScreen">
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
@@ -558,7 +558,7 @@
     <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
   </div>
 </div>
-<!-- МЕНЮ -->
+<!-- MENU -->
 <div class="screen" id="menuScreen">
   <canvas id="menuBg"></canvas>
   <div class="menu-snake">🐍</div>
@@ -580,17 +580,17 @@
       <div class="msb-lbl">🪙 Монет</div>
     </div>
   </div>
-  <!-- Глобальная статистика -->
+  <!-- Global statistics -->
   <div id="globalStats" class="global-stats-bar">
     <span id="gStatPlayers">🌍 ...</span>
     <span class="gst-sep">·</span>
     <span id="gStatGames">🎮 ...</span>
   </div>
-  <!-- Главная кнопка -->
+  <!-- Main button -->
   <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
-  <!-- Продолжить -->
+  <!-- Continue button -->
   <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
-  <!-- Горизонтальная панель навигации -->
+  <!-- Horizontal navigation bar -->
   <div class="menu-nav-bar">
     <button class="mnav-btn clr-yellow" id="btnRecords">
       <div class="mnav-icon">🏆</div>
@@ -614,17 +614,17 @@
     </button>
   </div>
 </div>
-<!-- МАГАЗИН -->
+<!-- SHOP -->
 <div class="screen" id="shopScreen">
   <div class="rec-title">🪙 Магазин</div>
   <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
   <div id="shopSkinLabel" style="font-size:0.65rem;color:var(--text3);margin-bottom:8px;letter-spacing:1px;">ВЫБОР СКИНА</div>
   <div class="skin-row" id="shopSkinRow"></div>
-  <!-- Карточка выбранного скина -->
+  <!-- Selected skin card -->
   <div class="shop-preview-card" id="shopPreviewCard"></div>
   <button class="shop-back" id="shopBack">← Назад</button>
 </div>
-<!-- УВЕДОМЛЕНИЕ О ДОСТИЖЕНИИ -->
+<!-- ACHIEVEMENT NOTIFICATION -->
 <div id="achNotif">
   <div class="an-icon" id="anIcon">🏅</div>
   <div class="an-text">
@@ -632,7 +632,7 @@
     <div class="an-sub" id="anSub">Popis</div>
   </div>
 </div>
-<!-- ЭКРАН ДОСТИЖЕНИЙ -->
+<!-- ACHIEVEMENTS SCREEN -->
 <div class="screen" id="achScreen">
   <div class="rec-title" id="achHeaderTitle">🏅 Достижения</div>
   <div class="ach-cnt" id="achCounter">0/0 открыто</div>
@@ -644,7 +644,7 @@
   <div class="ach-scroll" id="achGrid"></div>
   <button class="ach-back" id="achBack">← Назад</button>
 </div>
-<!-- ВЫБОР РЕЖИМА -->
+<!-- MODE SELECTION -->
 <div class="screen" id="modeScreen">
   <div class="mode-title">Выбор режима</div>
   <div class="mode-sub">Как хочешь играть?</div>
@@ -680,13 +680,13 @@
   </div>
   <button class="mode-back" id="modeBack">← Назад</button>
 </div>
-<!-- ЭКРАН УРОВНЯ -->
+<!-- LEVEL SCREEN -->
 <div class="screen" id="levelScreen">
   <div class="lvl-label">Уровень</div>
   <div class="lvl-num" id="lvlNum">1</div>
   <div class="lvl-goal" id="lvlGoal">Съешь 5 еды</div>
 </div>
-<!-- ИГРА -->
+<!-- GAME -->
 <div class="screen" id="gameScreen">
   <div class="hud">
     <div>Счёт: <span id="score">0</span></div>
@@ -769,14 +769,14 @@
   </div>
   <div class="kb-hint">↑↓←→ / WASD · SPACE — пауза</div>
 </div>
-<!-- КВЕСТЫ -->
+<!-- QUESTS -->
 <div class="screen" id="questScreen">
   <div class="rec-title">📋 Квесты</div>
   <div class="quest-grid" id="questGrid"></div>
   <div class="quest-reset" id="questReset">Сброс в полночь</div>
   <button class="shop-back" id="questBack">← Назад</button>
 </div>
-<!-- НАСТРОЙКИ -->
+<!-- SETTINGS -->
 <div class="screen" id="settingsScreen">
   <div class="rec-title">⚙️ Настройки</div>
   <div class="rec-list">
@@ -808,7 +808,7 @@
   </div>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
-<!-- РЕКОРДЫ + ЛИДЕРБОРД -->
+<!-- RECORDS + LEADERBOARD -->
 <div class="screen" id="recordsScreen">
   <div class="rec-title">🏆 Рекорды</div>
   <div class="lb-tabs">
