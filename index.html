@@ -3521,16 +3521,13 @@ function stopMusic(){
 
     if(statusEl) statusEl.textContent='💾 Сохраняем...';
 
-    // 1. Update players table (via upsertProfile)
-    await upsertProfile();
-
-    // 2. Update all game_results for this player
+    // Update players.nick + all game_results.name via SECURITY DEFINER RPC (bypasses RLS)
     const pid=getPlayerId();
     try{
-      await fetch(`${SB_URL}/rest/v1/game_results?player_id=eq.${encodeURIComponent(pid)}`,{
-        method:'PATCH',
-        headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-        body:JSON.stringify({name:newNick})
+      await fetch(`${SB_URL}/rest/v1/rpc/rename_player`,{
+        method:'POST',
+        headers:SB_HEADERS,
+        body:JSON.stringify({p_player_id:pid, p_new_nick:newNick})
       });
     }catch(e){}
 
