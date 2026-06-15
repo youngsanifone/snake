@@ -2218,6 +2218,8 @@ bestHud.textContent=best;
 let path,dir,nextDir,food,obstacles,particles=[],floatTexts=[];
 let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
+let _levelTransition=false; // true если переход между уровнями (сохраняем счёт)
+let _carryScore=0,_carryTotalFood=0; // счёт и еда переносятся между уровнями
 let invincible=0;   // мс неуязвимости (щит при старте уровня)
 let combo=0;        // счётчик подряд съеденной еды
 let awaitingStart=false; // змейка ждёт первого нажатия (не едет и не умирает)
@@ -2343,6 +2345,9 @@ function updateProg(){
 const isLevelMode=()=>gameMode==='classic'||gameMode==='mirror';
 // Завершение уровня (единая логика для обычной и золотой еды)
 function levelComplete(){
+  _levelTransition=true;
+  _carryScore=score;
+  _carryTotalFood=totalFood;
   running=false;cancelAnimationFrame(animId);
   const newLvl=currentLevel+1;
   if(currentLevel>=bestLevel){
@@ -2382,14 +2387,23 @@ function startGame(){
   path=[];
   for(let i=0;i<BASE_LEN;i++) path.push({x:W/2-i,y:H/2});
   dir={x:1,y:0};nextDir={x:1,y:0};
-  score=0;totalLen=BASE_LEN;levelScore=0;totalFood=0;particles=[];floatTexts=[];
+  // Переход уровня: сохраняем накопленный счёт. Новая игра: сбрасываем всё.
+  if(_levelTransition){
+    score=_carryScore;
+    totalFood=_carryTotalFood;
+    // sessionStartBest не трогаем — он уже был установлен при старте игры
+  } else {
+    score=0;totalFood=0;
+    sessionStartBest=best; // запоминаем рекорд только при старте новой игры
+  }
+  _levelTransition=false;_carryScore=0;_carryTotalFood=0;
+  totalLen=BASE_LEN;levelScore=0;particles=[];floatTexts=[];
   goldFood=null;goldFoodLife=0;goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
   bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
   shieldActive=false;speedBoost=0;freezeActive=0;
   survivalTime=0;obsRespawnIn=0;
   invincible=2000; combo=0; comboTimer=0;
-  sessionStartBest=best; // запоминаем рекорд до игры — для «Новый рекорд!»
-  scoreEl.textContent=0;updateProg();
+  scoreEl.textContent=score;updateProg();
   // Выживание: сразу максимум препятствий
   if(gameMode==='survival') levelData={...levelData,obsCount:22,speed:3.5*DIFF_MULT[difficulty]};
   spawnObstacles();spawnFood();
