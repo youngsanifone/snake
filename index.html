@@ -442,7 +442,9 @@
   .dpad-center:active{background:var(--border2);}
   .kb-hint{font-size:0.6rem;color:var(--text3);letter-spacing:1px;}
   /* RECORDS / SETTINGS — shared container */
-  .rec-title{font-size:1.3rem;font-weight:bold;color:#facc15;letter-spacing:2px;margin-bottom:10px;}
+  .rec-title{font-size:1.3rem;font-weight:900;letter-spacing:2px;margin-bottom:10px;
+    background:linear-gradient(135deg,#c084fc,#818cf8,#22d3ee);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
   .rec-list{
     display:flex;flex-direction:column;gap:8px;
     width:min(320px, calc(100vw - 32px));
@@ -512,12 +514,28 @@
   #menuScreen .global-stats-bar{color:rgba(180,170,255,0.55);}
   /* SETTINGS */
   .diff-row{display:flex;gap:8px;margin:6px 0 4px;flex-wrap:wrap;}
+  /* SETTINGS — new card layout */
+  .sett-card{
+    background:var(--panel);border:1px solid var(--border2);border-radius:14px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:10px;
+  }
+  .sett-label{font-size:0.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;}
+  .sett-row{display:flex;justify-content:space-between;align-items:center;}
+  .sett-toggle{
+    padding:7px 22px;border-radius:20px;border:1.5px solid var(--border);
+    background:var(--panel2);color:var(--text2);font-size:0.82rem;font-weight:700;
+    cursor:pointer;touch-action:manipulation;transition:all 0.15s;min-width:80px;text-align:center;
+  }
+  .sett-toggle.active{
+    border-color:#818cf8;color:#818cf8;
+    background:color-mix(in srgb,#818cf8 12%,var(--panel));
+  }
   .diff-btn{
-    flex:1;min-width:80px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);
-    background:var(--panel);color:var(--text2);font-size:0.8rem;font-weight:600;
+    flex:1;min-width:0;padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);
+    background:var(--panel2);color:var(--text2);font-size:0.8rem;font-weight:600;
     cursor:pointer;touch-action:manipulation;transition:all 0.15s;text-align:center;
   }
-  .diff-btn.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
+  .diff-btn.active{border-color:#818cf8;color:#818cf8;background:color-mix(in srgb,#818cf8 12%,var(--panel));}
   /* QUESTS */
   #questScreen{justify-content:safe center;}
   .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));}
@@ -903,30 +921,45 @@
 <div class="screen" id="settingsScreen">
   <div class="rec-title">⚙️ Настройки</div>
   <div class="rec-list">
-    <div class="rec-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-      <span class="rl">Сложность</span>
+    <!-- Difficulty -->
+    <div class="sett-card">
+      <div class="sett-label" id="settDiffLbl">🎯 Сложность</div>
       <div class="diff-row">
         <button class="diff-btn" data-diff="easy">😌 Лёгкая</button>
         <button class="diff-btn" data-diff="normal">😐 Нормал</button>
-        <button class="diff-btn" data-diff="hard">😤 Хардкор</button>
+        <button class="diff-btn" data-diff="hard">😤 Хард</button>
       </div>
     </div>
-    <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎵 Музыка</span>
-      <button class="diff-btn" id="btnMusicToggle">вкл</button>
+    <!-- Sound -->
+    <div class="sett-card">
+      <div class="sett-label">🔊 Звук</div>
+      <div class="sett-row">
+        <span class="rl">🎵 Музыка</span>
+        <button class="sett-toggle" id="btnMusicToggle">вкл</button>
+      </div>
+      <div class="sett-row">
+        <span class="rl">🔈 Эффекты</span>
+        <button class="sett-toggle" id="btnSfxToggle">вкл</button>
+      </div>
     </div>
-    <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🔊 Звуковые эффекты</span>
-      <button class="diff-btn" id="btnSfxToggle">вкл</button>
+    <!-- Theme -->
+    <div class="sett-card">
+      <div class="sett-label">🎨 Тема</div>
+      <div class="diff-row">
+        <button class="diff-btn sett-theme-btn" data-theme="dark">🌙 Тёмная</button>
+        <button class="diff-btn sett-theme-btn" data-theme="light">☀️ Светлая</button>
+      </div>
     </div>
-    <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl">🎨 Тема</span>
-      <button class="diff-btn" id="btnThemeToggle">🌙 Тёмная</button>
+    <!-- Language -->
+    <div class="sett-card">
+      <div class="sett-label" id="settLangLbl">🌐 Язык</div>
+      <div class="diff-row">
+        <button class="diff-btn lang-btn" data-lang="ru">🇷🇺 RU</button>
+        <button class="diff-btn lang-btn" data-lang="sk">🇸🇰 SK</button>
+        <button class="diff-btn lang-btn" data-lang="en">🇬🇧 EN</button>
+      </div>
     </div>
-    <div class="rec-row" style="justify-content:space-between;">
-      <span class="rl" id="settLangLbl">🌐 Язык</span>
-      <button class="diff-btn" id="btnLangToggle">RU</button>
-    </div>
+    <!-- Reset -->
     <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
   </div>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
@@ -1285,12 +1318,15 @@ function applyLang(){
   const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
   const questBk=document.getElementById('questBack');if(questBk)questBk.textContent=L.questBack;
   const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
+  // Settings section labels (.sett-label) and sound .rl labels
+  const settLabels=document.querySelectorAll('#settingsScreen .sett-label');
+  if(settLabels[0])settLabels[0].textContent=L.settingsDiff;
+  if(settLabels[1])settLabels[1].textContent='🔊 '+L.settingsSfx.replace(/^🔊\s*/,'').split(' ')[0];
+  if(settLabels[2])settLabels[2].textContent=L.settingsTheme.replace(/^🎨\s*/,'🎨 ');
+  if(settLabels[3]){const langId=document.getElementById('settLangLbl');if(langId)langId.textContent=L.settingsLang;}
   const setRls=document.querySelectorAll('#settingsScreen .rl');
-  if(setRls[0])setRls[0].textContent=L.settingsDiff;
-  if(setRls[1])setRls[1].textContent=L.settingsMusic;
-  if(setRls[2])setRls[2].textContent=L.settingsSfx;
-  if(setRls[3])setRls[3].textContent=L.settingsTheme;
-  if(setRls[4])setRls[4].textContent=L.settingsLang;
+  if(setRls[0])setRls[0].textContent=L.settingsMusic;
+  if(setRls[1])setRls[1].textContent=L.settingsSfx;
   document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
     if(b.dataset.diff==='easy')b.textContent=L.diffEasy;
     else if(b.dataset.diff==='normal')b.textContent=L.diffNormal;
@@ -1298,7 +1334,7 @@ function applyLang(){
   });
   const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
   const btnRstEl=document.getElementById('btnResetProgress');if(btnRstEl)btnRstEl.textContent=L.btnReset;
-  const btnLangEl=document.getElementById('btnLangToggle');if(btnLangEl)btnLangEl.textContent=L.langBtn;
+  // lang-btn flags are static (🇷🇺/🇸🇰/🇬🇧), no text update needed
   const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
   const tabMyEl=document.getElementById('tabMy');if(tabMyEl)tabMyEl.textContent=L.tabMy;
   const tabOnlEl=document.getElementById('tabOnline');if(tabOnlEl)tabOnlEl.textContent=L.tabOnline;
@@ -2250,7 +2286,7 @@ function updateDiffBtns(){
     b.classList.toggle('active', b.dataset.diff===difficulty);
   });
 }
-function openSettings(){ updateDiffBtns(); updateSoundToggles(); applyTheme(); showScreen('settingsScreen'); }
+function openSettings(){ updateDiffBtns(); updateSoundToggles(); updateThemeBtns(); updateLangBtns(); showScreen('settingsScreen'); }
 document.getElementById('btnSettings').addEventListener('click',openSettings);
 document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preventDefault();openSettings();},{passive:false});
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
@@ -2281,8 +2317,17 @@ async function doResetProgress(){
   });
   location.reload();
 }
-document.getElementById('btnLangToggle').addEventListener('click',toggleLang);
-document.getElementById('btnLangToggle').addEventListener('touchstart',e=>{e.preventDefault();toggleLang();},{passive:false});
+// Language buttons (3 separate: RU / SK / EN)
+function updateLangBtns(){
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang===currentLang);
+  });
+}
+document.querySelectorAll('.lang-btn').forEach(b=>{
+  const set=()=>{ currentLang=b.dataset.lang; localStorage.setItem(S+'Lang',currentLang); applyLang(); buildAchScreen(); buildQuestScreen(); buildShopScreen(); updateLangBtns(); };
+  b.addEventListener('click',set);
+  b.addEventListener('touchstart',e=>{e.preventDefault();set();},{passive:false});
+});
 document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
 document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
@@ -2290,23 +2335,22 @@ document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   b.addEventListener('click',set);
   b.addEventListener('touchstart',e=>{e.preventDefault();set();},{passive:false});
 });
+function updateThemeBtns(){
+  document.querySelectorAll('.sett-theme-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.theme===theme);
+  });
+}
 function applyTheme(){
   document.documentElement.dataset.theme = theme;
-  const btn = document.getElementById('btnThemeToggle');
-  if(btn) btn.textContent = theme==='light' ? T().themeLight : T().themeDark;
   document.querySelector('meta[name="theme-color"]').content = theme==='light' ? '#eef2f7' : '#0a0a0f';
-}
-function toggleTheme(){
-  theme = theme==='dark' ? 'light' : 'dark';
-  applyTheme(); saveAll();
+  updateThemeBtns();
 }
 applyTheme();
-(function(){
-  const btn=document.getElementById('btnThemeToggle');
-  const act=()=>{ toggleTheme(); btn.classList.toggle('active', theme==='light'); };
-  btn.addEventListener('click',act);
-  btn.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
-})();
+document.querySelectorAll('.sett-theme-btn').forEach(b=>{
+  const act=()=>{ theme=b.dataset.theme; applyTheme(); saveAll(); };
+  b.addEventListener('click',act);
+  b.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
+});
 function updateSoundToggles(){
   document.getElementById('btnMusicToggle').textContent = musicOn ? T().soundOn : T().soundOff;
   document.getElementById('btnMusicToggle').classList.toggle('active', musicOn);
