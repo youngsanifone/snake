@@ -2852,7 +2852,7 @@ pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
 pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
-goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);refreshMenuUI();showScreen('menuScreen');});
+goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
 
 // ── Сохранение счёта при закрытии вкладки / уходе (keepalive — переживает выгрузку) ──
