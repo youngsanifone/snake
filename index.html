@@ -279,6 +279,41 @@
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
   .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
+  /* ── NICK CHANGE MODAL ────────────────────────────────────────── */
+  #nickModal{
+    position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.72);
+    display:none;align-items:center;justify-content:center;padding:16px;
+    backdrop-filter:blur(6px);
+  }
+  #nickModal.open{display:flex;}
+  #nickModalBox{
+    background:var(--panel);border:1.5px solid rgba(99,102,241,0.4);
+    border-radius:18px;padding:24px 20px;width:min(320px,calc(100vw - 32px));
+    box-shadow:0 8px 40px rgba(99,102,241,0.25);
+    display:flex;flex-direction:column;gap:12px;
+    animation:goSlideIn 0.3s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .nm-title{font-size:1.1rem;font-weight:800;text-align:center;
+    background:linear-gradient(135deg,#c084fc,#818cf8);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  #nickInput{
+    width:100%;box-sizing:border-box;padding:11px 14px;
+    background:var(--panel2);border:1.5px solid var(--border);
+    border-radius:10px;color:var(--text);font-size:1rem;font-weight:600;
+    outline:none;transition:border-color 0.2s;
+  }
+  #nickInput:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,0.18);}
+  #nickInput.err{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,0.15);}
+  .nm-error{font-size:0.75rem;color:#f87171;min-height:1em;text-align:center;}
+  .nm-status{font-size:0.75rem;color:#818cf8;min-height:1em;text-align:center;}
+  .nm-btns{display:flex;gap:8px;}
+  .nm-btn{flex:1;padding:10px 0;border:none;border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;touch-action:manipulation;}
+  .nm-btn.cancel{background:var(--panel2);color:var(--text2);border:1px solid var(--border);}
+  .nm-btn.save{background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;}
+  .nm-btn:disabled{opacity:0.5;cursor:default;}
+  /* Settings nick row */
+  .sett-nick-val{font-size:0.9rem;font-weight:700;color:var(--text);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
   /* DEBUG PANEL — centered modal dialog */
   #dbgBackdrop{
     position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:998;
@@ -667,6 +702,19 @@
 </style>
 </head>
 <body>
+<!-- NICK CHANGE MODAL -->
+<div id="nickModal">
+  <div id="nickModalBox">
+    <div class="nm-title" id="nmTitle">✏️ Сменить ник</div>
+    <input id="nickInput" type="text" maxlength="16" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Новый ник...">
+    <div class="nm-error" id="nickError"></div>
+    <div class="nm-status" id="nickStatus"></div>
+    <div class="nm-btns">
+      <button class="nm-btn cancel" id="nickCancelBtn">Отмена</button>
+      <button class="nm-btn save" id="nickSaveBtn">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
 <!-- LOADING SCREEN -->
 <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
@@ -922,6 +970,14 @@
 <div class="screen" id="settingsScreen">
   <div class="rec-title">⚙️ Настройки</div>
   <div class="rec-list">
+    <!-- Nickname -->
+    <div class="sett-card">
+      <div class="sett-label" id="settNickLbl">👤 Никнейм</div>
+      <div class="sett-row">
+        <span class="sett-nick-val" id="settNickDisplay">—</span>
+        <button class="sett-toggle" id="btnChangeNick">✏️ Изменить</button>
+      </div>
+    </div>
     <!-- Difficulty -->
     <div class="sett-card">
       <div class="sett-label" id="settDiffLbl">🎯 Сложность</div>
@@ -3403,6 +3459,109 @@ function stopMusic(){
   if(musicTimer) clearTimeout(musicTimer);
   musicStep=0;
 }
+
+
+// ── NICKNAME CHANGE ───────────────────────────────────────────────
+(function(){
+  const modal=document.getElementById('nickModal');
+  const inp=document.getElementById('nickInput');
+  const errEl=document.getElementById('nickError');
+  const statusEl=document.getElementById('nickStatus');
+  const saveBtn=document.getElementById('nickSaveBtn');
+  const cancelBtn=document.getElementById('nickCancelBtn');
+  const changeBtn=document.getElementById('btnChangeNick');
+
+  function openModal(){
+    inp.value=lbNickname||'';
+    errEl.textContent='';
+    if(statusEl) statusEl.textContent='';
+    inp.classList.remove('err');
+    modal.classList.add('open');
+    setTimeout(()=>{inp.select();inp.focus();},100);
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+  }
+
+  async function doSave(){
+    const newNick=(inp.value||'').trim();
+    errEl.textContent='';
+    inp.classList.remove('err');
+
+    if(!newNick){
+      inp.classList.add('err');
+      errEl.textContent=T().welcPlaceholder||'Введи ник';
+      return;
+    }
+    if(newNick===lbNickname){ closeModal(); return; }
+
+    saveBtn.disabled=true;
+    cancelBtn.disabled=true;
+    if(statusEl) statusEl.textContent='⏳ Проверяем...';
+
+    try{
+      // Check if nick taken by another player
+      const r=await fetch(`${SB_URL}/rest/v1/players?nick=eq.${encodeURIComponent(newNick)}&select=player_id&limit=1`,{headers:SB_HEADERS});
+      if(r.ok){
+        const rows=await r.json();
+        if(rows.length&&rows[0].player_id!==getPlayerId()){
+          inp.classList.add('err');
+          errEl.textContent=T().nickTaken?T().nickTaken(newNick):`Ник "${newNick}" уже занят`;
+          if(statusEl) statusEl.textContent='';
+          saveBtn.disabled=false; cancelBtn.disabled=false;
+          return;
+        }
+      }
+    }catch(e){}
+
+    // Apply locally
+    const oldNick=lbNickname;
+    lbNickname=newNick;
+    localStorage.setItem(S+'Nick',newNick);
+
+    if(statusEl) statusEl.textContent='💾 Сохраняем...';
+
+    // 1. Update players table (via upsertProfile)
+    await upsertProfile();
+
+    // 2. Update all game_results for this player
+    const pid=getPlayerId();
+    try{
+      await fetch(`${SB_URL}/rest/v1/game_results?player_id=eq.${encodeURIComponent(pid)}`,{
+        method:'PATCH',
+        headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+        body:JSON.stringify({name:newNick})
+      });
+    }catch(e){}
+
+    // Update display
+    const dispEl=document.getElementById('settNickDisplay');
+    if(dispEl) dispEl.textContent=newNick;
+    refreshMenuUI();
+
+    if(statusEl) statusEl.textContent='';
+    showToast('✅ Ник обновлён: '+newNick,'#818cf8',2500);
+    closeModal();
+    saveBtn.disabled=false; cancelBtn.disabled=false;
+  }
+
+  changeBtn.addEventListener('click',openModal);
+  changeBtn.addEventListener('touchstart',e=>{e.preventDefault();openModal();},{passive:false});
+  saveBtn.addEventListener('click',doSave);
+  saveBtn.addEventListener('touchstart',e=>{e.preventDefault();doSave();},{passive:false});
+  cancelBtn.addEventListener('click',closeModal);
+  cancelBtn.addEventListener('touchstart',e=>{e.preventDefault();closeModal();},{passive:false});
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSave();}});
+  modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+
+  // Update nick display when settings opens
+  const origOpenSettings=openSettings;
+  openSettings=function(){
+    const d=document.getElementById('settNickDisplay');
+    if(d) d.textContent=lbNickname||T().anon||'—';
+    origOpenSettings();
+  };
+})();
 </script>
 </body>
 </html>
