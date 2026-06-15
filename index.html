@@ -1316,9 +1316,9 @@ function upsertProfile(){
   // Защита: не перезаписываем облако нулями, пока профиль не загружен/не создан
   if(!profileLoaded) return;
   const pid=getPlayerId();
-  fetch(SB_URL+'/rest/v1/players',{
+  // keepalive:true снято — в Safari оно стрипает Authorization header на cross-origin запросах → 401
+  return fetch(SB_URL+'/rest/v1/players',{
     method:'POST',
-    keepalive:true, // завершается даже при закрытии вкладки
     headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({
       player_id:pid,
@@ -1866,6 +1866,9 @@ function buildShopPreview(){
               refreshMenuUI();
               return;
             } else {
+              // Сбрасываем ник — иначе игрок останется с чужим ником без профиля
+              lbNickname='';
+              localStorage.removeItem(S+'Nick');
               alert(T().nickTaken(name));
               welcInp.style.borderColor='#ef4444';
               setTimeout(()=>welcInp.style.borderColor='',600);
@@ -1876,9 +1879,9 @@ function buildShopPreview(){
         }
       }catch(e){}
     }
-    // Создаём профиль в Supabase
+    // Создаём профиль в Supabase (await — убеждаемся что запись прошла до перехода на меню)
     profileLoaded=true;
-    upsertProfile();
+    await upsertProfile();
     showScreen('menuScreen');
     refreshMenuUI();
   }
