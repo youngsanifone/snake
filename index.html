@@ -168,18 +168,19 @@
   }
   /* HORIZONTAL NAVIGATION */
   .menu-nav-bar{
-    display:flex;align-items:flex-start;justify-content:center;
-    gap:8px;width:min(270px,88vw);margin-top:6px;
+    display:flex;align-items:stretch;justify-content:center;
+    gap:6px;width:min(320px,92vw);margin-top:6px;
   }
   .mnav-btn{
-    flex:1;display:flex;flex-direction:column;align-items:center;
-    gap:4px;padding:9px 4px 7px;
+    flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;
+    gap:4px;padding:9px 2px 7px;
     background:var(--panel);border:1.5px solid var(--border);
     border-radius:12px;cursor:pointer;touch-action:manipulation;
-    transition:all 0.15s;position:relative;overflow:visible;
+    transition:all 0.15s;position:relative;overflow:hidden;
   }
-  .mnav-icon{font-size:1.2rem;line-height:1;}
-  .mnav-label{font-size:0.52rem;font-weight:700;color:var(--text3);letter-spacing:0.3px;}
+  .mnav-icon{font-size:1.2rem;line-height:1;flex-shrink:0;}
+  .mnav-label{font-size:0.46rem;font-weight:700;color:var(--text3);letter-spacing:0.2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .mnav-btn.clr-yellow{border-color:rgba(250,204,21,0.35);}
   .mnav-btn.clr-yellow:active,.mnav-btn.clr-yellow:hover{border-color:#facc15;background:rgba(250,204,21,0.07);}.mnav-btn.clr-yellow .mnav-label{color:#facc15;}
   .mnav-btn.clr-purple{border-color:rgba(167,139,250,0.35);}
