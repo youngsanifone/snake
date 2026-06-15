@@ -942,14 +942,7 @@
         <button class="sett-toggle" id="btnSfxToggle">вкл</button>
       </div>
     </div>
-    <!-- Theme -->
-    <div class="sett-card">
-      <div class="sett-label">🎨 Тема</div>
-      <div class="diff-row">
-        <button class="diff-btn sett-theme-btn" data-theme="dark">🌙 Тёмная</button>
-        <button class="diff-btn sett-theme-btn" data-theme="light">☀️ Светлая</button>
-      </div>
-    </div>
+    <!-- Theme: dark-only (light theme incompatible with aurora canvas design) -->
     <!-- Language -->
     <div class="sett-card">
       <div class="sett-label" id="settLangLbl">🌐 Язык</div>
@@ -1322,7 +1315,7 @@ function applyLang(){
   const settLabels=document.querySelectorAll('#settingsScreen .sett-label');
   if(settLabels[0])settLabels[0].textContent=L.settingsDiff;
   if(settLabels[1])settLabels[1].textContent='🔊 '+L.settingsSfx.replace(/^🔊\s*/,'').split(' ')[0];
-  if(settLabels[2])settLabels[2].textContent=L.settingsTheme.replace(/^🎨\s*/,'🎨 ');
+  // theme card removed (dark-only design)
   if(settLabels[3]){const langId=document.getElementById('settLangLbl');if(langId)langId.textContent=L.settingsLang;}
   const setRls=document.querySelectorAll('#settingsScreen .rl');
   if(setRls[0])setRls[0].textContent=L.settingsMusic;
@@ -2286,7 +2279,7 @@ function updateDiffBtns(){
     b.classList.toggle('active', b.dataset.diff===difficulty);
   });
 }
-function openSettings(){ updateDiffBtns(); updateSoundToggles(); updateThemeBtns(); updateLangBtns(); showScreen('settingsScreen'); }
+function openSettings(){ updateDiffBtns(); updateSoundToggles(); updateLangBtns(); showScreen('settingsScreen'); }
 document.getElementById('btnSettings').addEventListener('click',openSettings);
 document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preventDefault();openSettings();},{passive:false});
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
@@ -2335,22 +2328,13 @@ document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   b.addEventListener('click',set);
   b.addEventListener('touchstart',e=>{e.preventDefault();set();},{passive:false});
 });
-function updateThemeBtns(){
-  document.querySelectorAll('.sett-theme-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.theme===theme);
-  });
-}
 function applyTheme(){
-  document.documentElement.dataset.theme = theme;
-  document.querySelector('meta[name="theme-color"]').content = theme==='light' ? '#eef2f7' : '#0a0a0f';
-  updateThemeBtns();
+  // Aurora design is dark-only — always force dark theme
+  theme='dark';
+  document.documentElement.dataset.theme='dark';
+  document.querySelector('meta[name="theme-color"]').content='#0a0a0f';
 }
 applyTheme();
-document.querySelectorAll('.sett-theme-btn').forEach(b=>{
-  const act=()=>{ theme=b.dataset.theme; applyTheme(); saveAll(); };
-  b.addEventListener('click',act);
-  b.addEventListener('touchstart',e=>{e.preventDefault();act();},{passive:false});
-});
 function updateSoundToggles(){
   document.getElementById('btnMusicToggle').textContent = musicOn ? T().soundOn : T().soundOff;
   document.getElementById('btnMusicToggle').classList.toggle('active', musicOn);
