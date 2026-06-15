@@ -1926,13 +1926,22 @@ function buildShopPreview(){
         showScreen('menuScreen');
       }
     } else {
-      // Нет профиля — новый игрок или сброс
-      clearLocalData();
+      // Нет профиля в Supabase — проверяем localStorage
+      applyLocalCache();
       applyTheme();
       applyLang();
+      refreshMenuUI();
       loading.style.display='none';
-      showScreen('welcomeScreen');
-      setTimeout(()=>welcInp.focus(),300);
+      if(isAnonNick(lbNickname)){
+        // Совсем новый игрок
+        showScreen('welcomeScreen');
+        setTimeout(()=>welcInp.focus(),300);
+      } else {
+        // Профиль есть в localStorage — восстанавливаем и синхронизируем в Supabase
+        profileLoaded=true;
+        showScreen('menuScreen');
+        upsertProfile();
+      }
     }
   } catch(e){
     // Офлайн — используем localStorage кэш
