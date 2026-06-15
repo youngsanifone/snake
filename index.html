@@ -236,11 +236,44 @@
   .pm-btn.resume{background:#4ade80;color:#0f0f0f;}
   .pm-btn.secondary{background:var(--hud-bg);color:var(--text);border:1px solid var(--border2);}
   /* GAME OVER */
+  /* ── SCORE COUNTER — big & prominent ─── */
+  .hud #score{font-size:clamp(1.15rem,4.5vw,1.55rem);font-weight:800;
+    background:linear-gradient(135deg,#c084fc,#818cf8);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    line-height:1;letter-spacing:-0.5px;}
+  /* ── COMBO HUD BADGE ──────────────────── */
+  #comboHud{display:none;font-size:clamp(0.72rem,2.5vw,0.9rem);font-weight:800;
+    background:linear-gradient(135deg,#f97316,#ef4444);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    animation:comboPop 0.2s ease-out;}
+  @keyframes comboPop{0%{transform:scale(1.5);}100%{transform:scale(1);}}
+  /* ── GAME OVER OVERLAY ────────────────── */
+  @keyframes goSlideIn{
+    0%{opacity:0;transform:translateY(40px) scale(0.95);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
   #gameOverlay{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
-    gap:9px;pointer-events:none;background:rgba(0,0,0,0.65);border-radius:8px;}
+    gap:9px;pointer-events:none;background:rgba(5,5,16,0.82);border-radius:8px;
+    backdrop-filter:blur(4px);}
+  #gameOverlay.visible{animation:goSlideIn 0.35s cubic-bezier(0.22,1,0.36,1) both;}
   .go-msg{font-size:clamp(1rem,4vw,1.4rem);font-weight:bold;color:#f9fafb;text-align:center;}
   .go-sub{font-size:0.76rem;color:var(--text3);text-align:center;padding:0 12px;}
+  /* record row */
+  .go-record-row{display:flex;gap:18px;margin:2px 0;}
+  .go-stat{display:flex;flex-direction:column;align-items:center;gap:2px;
+    background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);
+    border-radius:10px;padding:6px 16px;min-width:70px;}
+  .go-stat-val{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:800;
+    background:linear-gradient(135deg,#c084fc,#818cf8);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .go-stat-val.gold{background:linear-gradient(135deg,#fde68a,#facc15);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .go-stat-lbl{font-size:0.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;}
+  .go-new-record{font-size:0.78rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;
+    background:linear-gradient(135deg,#fde68a,#facc15);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    display:none;}
   .go-btn{padding:9px 22px;background:#4ade80;color:#0f0f0f;border:none;border-radius:8px;
     font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
   .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
@@ -753,6 +786,7 @@
 <div class="screen" id="gameScreen">
   <div class="hud">
     <div>Счёт: <span id="score">0</span></div>
+    <div id="comboHud">🔥 x<span id="comboVal">2</span></div>
     <div class="lvl-badge" id="hudLvl">Ур. 1</div>
     <div id="hudTimerWrap" style="display:none;"><span class="hud-timer" id="hudTimer">60</span></div>
     <div>Рекорд: <span id="bestHud">0</span></div>
@@ -814,6 +848,21 @@
     </div>
     <div id="gameOverlay">
       <div class="go-msg" id="goMsg"></div>
+      <div class="go-new-record" id="goNewRecord">★ НОВЫЙ РЕКОРД ★</div>
+      <div class="go-record-row">
+        <div class="go-stat">
+          <span class="go-stat-val" id="goScore">0</span>
+          <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-stat-val gold" id="goCoins">+0</span>
+          <span class="go-stat-lbl">Монеты</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-stat-val" id="goBest">0</span>
+          <span class="go-stat-lbl" id="goBestLbl">Рекорд</span>
+        </div>
+      </div>
       <div class="go-sub" id="goSub"></div>
       <button class="go-btn share" id="goShare">📤 Поделиться</button>
       <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
@@ -2324,6 +2373,10 @@ const pmInfo=document.getElementById('pmInfo');
 const gameOverlay=document.getElementById('gameOverlay');
 const goMsg=document.getElementById('goMsg'),goSub=document.getElementById('goSub');
 const goMenu=document.getElementById('goMenu');
+const goNewRecord=document.getElementById('goNewRecord');
+const goScore=document.getElementById('goScore'),goCoins=document.getElementById('goCoins');
+const goBest=document.getElementById('goBest');
+const comboHudEl=document.getElementById('comboHud'),comboValEl=document.getElementById('comboVal');
 const scoreEl=document.getElementById('score'),bestHud=document.getElementById('bestHud');
 const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('progBar');
 const btnPause=document.getElementById('btnPause');
@@ -2337,6 +2390,8 @@ let invincible=0;   // ms of invincibility (shield on level start)
 let combo=0;        // consecutive food eaten counter
 let awaitingStart=false; // snake awaiting first input (stationary, cannot die)
 const COMBO_WINDOW=8000; // combo window: eat next food within 8 seconds
+let eatFlash=0;     // canvas flash alpha on food eat (0..1, fades fast)
+let coinsAtGameStart=0; // snapshot of coins at game start (for "coins earned" in GO screen)
 let comboTimer=0;        // ms until combo resets
 let sessionStartBest=0;  // best score at game start (used for "New Record!" detection)
 let obsRespawnIn=0;      // ms until obstacles respawn (Survival after bomb)
@@ -2508,6 +2563,7 @@ function startGame(){
   } else {
     score=0;totalFood=0;
     sessionStartBest=best; // snapshot best only at the start of a new game
+    coinsAtGameStart=coins; // snapshot for "coins earned this game" display
   }
   _levelTransition=false;_carryScore=0;_carryTotalFood=0;
   totalLen=BASE_LEN;levelScore=0;particles=[];floatTexts=[];
@@ -2515,7 +2571,8 @@ function startGame(){
   bonusItem=null;bonusLife=0;bonusSpawnIn=BONUS_SPAWN_INTERVAL;
   shieldActive=false;speedBoost=0;freezeActive=0;
   survivalTime=0;obsRespawnIn=0;
-  invincible=2000; combo=0; comboTimer=0;
+  invincible=2000; combo=0; comboTimer=0; eatFlash=0;
+  comboHudEl.style.display='none';
   scoreEl.textContent=score;updateProg();
   // Survival: maximum obstacles from the start
   if(gameMode==='survival') levelData={...levelData,obsCount:22,speed:3.5*DIFF_MULT[difficulty]};
@@ -2541,7 +2598,7 @@ function loop(ts){
   if(speedBoost>0) speedBoost-=dt;
   if(freezeActive>0) freezeActive-=dt;
   // Combo window: didn't eat in time — combo resets
-  if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0)combo=0;}
+  if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0){combo=0;comboHudEl.style.display='none';}}
   // Survival: respawn obstacles after bomb
   if(obsRespawnIn>0){obsRespawnIn-=dt;if(obsRespawnIn<=0)spawnObstacles();}
   // Survival mode: track elapsed time
@@ -2602,7 +2659,23 @@ function loop(ts){
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
+    // Particle burst (aurora colors)
     spawnParticles(food.x,food.y,skin().foodColor);
+    spawnParticles(food.x,food.y,'#818cf8');
+    if(combo>=3) spawnParticles(food.x,food.y,'#c084fc');
+    // Canvas flash
+    eatFlash=combo>=3 ? 0.28 : 0.14;
+    // Combo HUD badge
+    if(combo>=2){
+      comboValEl.textContent=combo;
+      comboHudEl.style.display='';
+      // re-trigger animation
+      comboHudEl.style.animation='none';
+      void comboHudEl.offsetWidth;
+      comboHudEl.style.animation='';
+    } else {
+      comboHudEl.style.display='none';
+    }
     if(combo>=5)       spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x3`,'#f87171');
     else if(combo>=3)  spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x2`,'#fb923c');
     else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`            ,skin().foodColor);
@@ -2680,15 +2753,23 @@ function draw(){
   const sk=skin();
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle=sk.bg;ctx.fillRect(0,0,W,H);
+  // Eat flash (indigo pulse on food collection)
+  if(eatFlash>0){
+    ctx.save();ctx.globalAlpha=eatFlash;
+    ctx.fillStyle='#6366f1';ctx.fillRect(0,0,W,H);
+    ctx.restore();
+    eatFlash=Math.max(0,eatFlash-0.04);
+  }
   obstacles.forEach(o=>{
     ctx.save();ctx.fillStyle=sk.obs;ctx.shadowColor=sk.obs;ctx.shadowBlur=8;
     ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,4);ctx.fill();ctx.restore();
   });
-  // Regular food
-  ctx.save();ctx.shadowColor=sk.foodColor;ctx.shadowBlur=18;
-  const fg=ctx.createRadialGradient(food.x,food.y,1,food.x,food.y,FR);
+  // Regular food — pulsing glow
+  const foodPulse=1+0.18*Math.sin(Date.now()*0.0055);
+  ctx.save();ctx.shadowColor=sk.foodColor;ctx.shadowBlur=22*foodPulse;
+  const fg=ctx.createRadialGradient(food.x,food.y,1,food.x,food.y,FR*foodPulse);
   fg.addColorStop(0,sk.foodInner);fg.addColorStop(1,sk.foodColor);
-  ctx.fillStyle=fg;ctx.beginPath();ctx.arc(food.x,food.y,FR,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=fg;ctx.beginPath();ctx.arc(food.x,food.y,FR*foodPulse,0,Math.PI*2);ctx.fill();
   ctx.restore();
   // Golden food (pulsates + timer ring)
   if(goldFood){
@@ -2753,6 +2834,27 @@ function draw(){
     ctx.restore();
   });
   if(path.length<2) return;
+  // ── Fading snake trail (ghost segments, aurora tint) ──────────────
+  const TRAIL_STEPS=6;
+  const trailLen=path.length;
+  if(trailLen>2){
+    const step=Math.floor(trailLen/TRAIL_STEPS)||1;
+    for(let t=1;t<=TRAIL_STEPS;t++){
+      const idx=Math.min(t*step, trailLen-1);
+      if(idx>=trailLen-1) break;
+      const alpha=(1-(t/TRAIL_STEPS))*0.22;
+      ctx.save();
+      ctx.globalAlpha=alpha;
+      ctx.strokeStyle='#818cf8';
+      ctx.lineWidth=R*2;ctx.lineCap='round';ctx.lineJoin='round';
+      ctx.shadowColor='#818cf8';ctx.shadowBlur=10;
+      ctx.beginPath();
+      const end=Math.min(idx+step,trailLen-1);
+      ctx.moveTo(path[idx].x,path[idx].y);
+      for(let i=idx+1;i<=end;i++) ctx.lineTo(path[i].x,path[i].y);
+      ctx.stroke();ctx.restore();
+    }
+  }
   // Shield flash: while invincible — blink (250ms period) and draw blue ring around head
   const shielded = invincible > 0;
   // Blink only when invincibility is ending (<900ms) — don't blink on spawn
@@ -2827,16 +2929,28 @@ function endGame(){
   // Compare against best AT GAME START (best updates live during the game)
   const isNewRecord = score > 0 && score > sessionStartBest;
   if(score>best){best=score;bestHud.textContent=best;}
+  comboHudEl.style.display='none';
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
+  if(navigator.vibrate) navigator.vibrate([180]); // haptic on death (mobile)
   trackEvent('game_over',score,gameMode); // global statistics
-  ctx.fillStyle='rgba(239,68,68,0.18)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(239,68,68,0.22)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgTimeUp;
     else if(gameMode==='survival') goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgSurvived;
     else                           goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgGameOver;
     const modeLbl = gameMode==='time' ? T().goModeLbl.time : gameMode==='survival' ? T().goModeLbl.survival : gameMode==='mirror' ? T().goModeLbl.mirror : T().goModeLblClassic(currentLevel);
     goSub.textContent=T().goSubFmt(score,modeLbl);
+    // Stats panel
+    goScore.textContent=score;
+    const coinsEarned=coins-coinsAtGameStart;
+    goCoins.textContent='+'+(coinsEarned>0?coinsEarned:0);
+    goBest.textContent=best;
+    goNewRecord.style.display=isNewRecord?'':'none';
+    // Slide-in animation
     gameOverlay.style.display='flex';
+    gameOverlay.classList.remove('visible');
+    void gameOverlay.offsetWidth;
+    gameOverlay.classList.add('visible');
     // Auto-submit to leaderboard if score > 0
     if(score>0) submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);
   },350);
