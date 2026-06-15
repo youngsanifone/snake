@@ -1943,6 +1943,8 @@ function refreshMenuUI(){
   document.getElementById('menuBest').textContent=best;
   document.getElementById('menuLevel').textContent=bestLevel;
   document.getElementById('menuCoins').textContent=coins;
+  const _nd=document.getElementById('settNickDisplay');
+  if(_nd) _nd.textContent=lbNickname||T().anon||'—';
   updateQuestBadge();
   const contBtn=document.getElementById('btnContinue');
   if(savedLevel>1){
