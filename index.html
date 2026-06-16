@@ -1969,7 +1969,7 @@ async function fetchLeaderboard(){
         <span class="lb-rank ${rankClass[i]||''}">${medals[i]||`<span style="font-size:.72rem;color:#64748b">${i+1}</span>`}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
+          <div class="lb-meta">${(row.mode==='classic'||row.mode==='mirror')?T().skinLvlFmt(row.level)+' · ':''}${modeMap[row.mode]||T().modeClassicTitle}</div>
         </div>
         <div class="lb-score">${row.score}</div>
       </div>`).join('');
