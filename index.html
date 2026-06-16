@@ -1748,7 +1748,7 @@ const QUEST_POOL=[
 ];
 const QUEST_PARAMS={
   eat_food:   [{n:10,coins:8},{n:25,coins:15},{n:50,coins:30}],
-  score:      [{n:50,coins:10},{n:150,coins:20},{n:300,coins:35}],
+  score:      [{n:250,coins:10},{n:750,coins:20},{n:1500,coins:35}],
   play_games: [{n:1,coins:5},{n:3,coins:12},{n:5,coins:20}],
   reach_level:[{n:3,coins:8},{n:5,coins:15},{n:10,coins:30}],
   eat_gold:   [{n:1,coins:10},{n:3,coins:20},{n:5,coins:35}],
@@ -2785,7 +2785,7 @@ function loop(ts){
   }
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
-    const pts = currentLevel>=10 ? 2 : 1; // score based on level difficulty, not combo
+    const pts = currentLevel>=10 ? 10 : 5; // score based on level difficulty
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
@@ -2836,7 +2836,7 @@ function loop(ts){
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
-      const pts=(currentLevel>=10?2:1)+1; // gold = level bonus +1 extra
+      const pts=(currentLevel>=10?10:5)+5; // gold = level pts + 5 bonus
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
