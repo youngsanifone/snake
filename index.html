@@ -3185,6 +3185,7 @@ function drawSkinTrailFx(){
   skinTrailFx=skinTrailFx.filter(p=>p.life>0);
   skinTrailFx.forEach(p=>{
     p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;
+    if(p.life<=0) return;
     if(p.rot!==undefined) p.rot+=p.rotV||0;
     ctx.save();
     switch(p.type){
