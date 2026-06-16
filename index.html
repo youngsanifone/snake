@@ -3297,9 +3297,20 @@ async function shareScore(){
   if(navigator.share){
     try{ await navigator.share({title:T().shareTitle,text}); return; }catch(_){}
   }
-  // Fallback — copy to clipboard
+  // Fallback 1 — modern clipboard API
   try{
     await navigator.clipboard.writeText(text);
+    goShare.textContent=T().shareCopied;
+    setTimeout(()=>goShare.textContent=T().goShare,2000);
+    return;
+  }catch(_){}
+  // Fallback 2 — textarea execCommand
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
     goShare.textContent=T().shareCopied;
     setTimeout(()=>goShare.textContent=T().goShare,2000);
   }catch(_){
