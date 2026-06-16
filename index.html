@@ -1036,6 +1036,7 @@
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
     <div class="lb-mode-tabs">
+      <button class="lb-mode-tab"        id="lbm-all"      onclick="setLbMode('all')">🌐</button>
       <button class="lb-mode-tab active" id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
       <button class="lb-mode-tab"        id="lbm-time"     onclick="setLbMode('time')">⏱</button>
       <button class="lb-mode-tab"        id="lbm-survival" onclick="setLbMode('survival')">💀</button>
@@ -1826,11 +1827,11 @@ loadQuests();
 // ── LEADERBOARD ────────────────────────────────────────────────────
 let lbNickname = ''; // populated from Supabase in initGame()
 let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
-let lbMode = 'classic'; // current mode filter: 'classic', 'time', 'survival', 'mirror'
+let lbMode = 'classic'; // 'all' | 'classic' | 'time' | 'survival' | 'mirror'
 
 function setLbMode(mode){
   lbMode=mode;
-  ['classic','time','survival','mirror'].forEach(m=>{
+  ['all','classic','time','survival','mirror'].forEach(m=>{
     const btn=document.getElementById('lbm-'+m);
     if(btn) btn.classList.toggle('active', m===mode);
   });
@@ -1841,7 +1842,11 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20&mode=eq.${lbMode}`,{
+    const isAll=lbMode==='all';
+    const url=isAll
+      ? `${SB_URL}/rest/v1/leaderboard_top?select=name,score,level,mode,rating&order=rating.desc&limit=20`
+      : `${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20&mode=eq.${lbMode}`;
+    const r=await fetch(url,{
       headers:SB_HEADERS,
       signal:AbortSignal.timeout?.(8000) // 8s timeout
     });
@@ -1862,7 +1867,7 @@ async function fetchLeaderboard(){
           <div class="lb-name">${escHtml(row.name)}</div>
           <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
         </div>
-        <div class="lb-score">${row.score}</div>
+        <div class="lb-score">${lbMode==='all'?(row.rating??row.score):row.score}</div>
       </div>`).join('');
   }catch(e){
     console.error('lb fetch failed:',e.message);
