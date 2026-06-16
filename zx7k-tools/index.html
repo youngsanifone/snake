@@ -470,8 +470,8 @@ tr:hover td{background:#fafafa}
     <div class="tb-desc"><b>Table Editor</b> — просмотр данных, пагинация 50 строк, поиск. Даты в твоём часовом поясе (Братислава). <b>Таблицы</b> хранят данные; <b>view</b> — виртуальная сводка поверх них (не дубликат, места не занимает).</div>
     <div class="tbl-tabs" style="align-items:center">
       <span style="font-size:.64rem;color:var(--mut);font-weight:700;letter-spacing:.5px">ТАБЛИЦЫ:</span>
-      <button class="ttb active" onclick="loadTbl('game_results',this)" title="Каждая сыгранная партия">🏆 game_results — игры</button>
-      <button class="ttb" onclick="loadTbl('players',this)" title="Профили игроков (прогресс, монеты, скины)">👤 players — профили</button>
+      <button class="ttb" onclick="loadTbl('game_results',this)" title="Каждая сыгранная партия">🏆 game_results — игры</button>
+      <button class="ttb active" onclick="loadTbl('players',this)" title="Профили игроков (прогресс, монеты, скины)">👤 players — профили</button>
       <button class="ttb" onclick="loadTbl('player_events',this)" title="Визиты и события (для онлайна)">📡 player_events — события</button>
       <span style="font-size:.64rem;color:var(--mut);font-weight:700;letter-spacing:.5px;margin-left:6px">VIEW:</span>
       <button class="ttb" onclick="loadTbl('leaderboard_best',this)" title="Виртуальная таблица: лучший результат каждого игрока. Её читает игра для онлайн-рекордов">🥇 leaderboard_best — лидерборд</button>
@@ -570,7 +570,7 @@ const TZ   = 'Europe/Bratislava'
 
 // ── State ──────────────────────────────────────────────────────────────────
 let authHash='', allRows=[], onlineEvts=[]
-let curTbl='game_results', tblPageN=0, tblRows=[]
+let curTbl='players', tblPageN=0, tblRows=[]
 const actLog=[]
 
 // ── Timezone display ───────────────────────────────────────────────────────
@@ -767,8 +767,9 @@ const TBL_SQL={
   player_events:(off,s)=>{
     const w=s?`WHERE (pe.player_id::text ILIKE '%${_esc(s)}%' OR COALESCE(pe.nick,'') ILIKE '%${_esc(s)}%' OR pe.event ILIKE '%${_esc(s)}%')`:'';
     return `SELECT
+    pe.created_at,
     COALESCE(pe.nick,'—') AS nick,
-    pe.event, pe.score, pe.mode, pe.created_at,
+    pe.event, pe.score, pe.mode,
     COALESCE(p.best,0) AS player_best,
     COALESCE(p.games_played,0) AS total_games,
     COALESCE(p.coins,0) AS coins,
@@ -784,7 +785,7 @@ const TBL_SQL={
   },
   game_results:(off,s)=>{
     const w=s?`WHERE (name ILIKE '%${_esc(s)}%' OR mode ILIKE '%${_esc(s)}%' OR score::text ILIKE '%${_esc(s)}%')`:'';
-    return `SELECT name,score,level,mode,created_at
+    return `SELECT created_at,name,score,level,mode
     FROM game_results ${w} ORDER BY created_at DESC LIMIT ${TBL_SZ} OFFSET ${off}`;
   },
 }
