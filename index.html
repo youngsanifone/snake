@@ -437,46 +437,43 @@
   .mode-card-desc{font-size:0.75rem;color:var(--text3);line-height:1.3;}
   .mode-back{margin-top:8px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
   /* SHOP */
-  .shop-coins{font-size:0.9rem;color:#facc15;font-weight:700;margin-bottom:14px;}
-  .shop-grid{display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 24px));}
-  /* Selected skin preview in shop */
-  .shop-preview-card{
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    width:min(280px,calc(100vw - 48px));
-    background:var(--panel);border:2px solid var(--border);border-radius:16px;
-    padding:20px 24px;margin:14px 0 4px;
-    transition:border-color 0.2s, background 0.2s;
+  .shop-coins{font-size:0.88rem;color:#facc15;font-weight:700;margin-bottom:10px;}
+  /* Snake preview canvas */
+  #skinPreviewCanvas{
+    border-radius:18px;display:block;
+    width:min(300px,calc(100vw - 32px));height:auto;
+    border:2px solid rgba(255,255,255,0.08);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    margin-bottom:10px;
   }
-  .shop-preview-card.owned{border-color:#4ade80;background:color-mix(in srgb,#4ade80 8%,var(--panel));}
-  .shop-preview-card.active-skin{border-color:#facc15;background:color-mix(in srgb,#facc15 8%,var(--panel));}
-  .shop-preview-card.locked{border-color:var(--border2);opacity:0.75;}
-  .shop-preview-emoji{font-size:3.5rem;line-height:1;margin-bottom:2px;}
-  .shop-preview-name{font-size:1.1rem;font-weight:800;color:var(--text);}
-  .shop-preview-sub{font-size:0.78rem;color:var(--text3);margin-top:2px;}
-  .shop-preview-btn{
-    width:100%;padding:12px 0;border:none;border-radius:11px;
+  /* Skin info below canvas */
+  .shop-skin-name{font-size:1.05rem;font-weight:900;color:var(--text);letter-spacing:0.02em;}
+  .shop-skin-status{font-size:0.75rem;color:var(--text3);margin-top:2px;margin-bottom:10px;}
+  /* Skin dot selector row */
+  .skin-dot-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:min(300px,calc(100vw - 32px));margin-bottom:12px;}
+  .skin-dot{
+    width:32px;height:32px;border-radius:50%;border:2.5px solid transparent;
+    cursor:pointer;touch-action:manipulation;transition:all 0.15s;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  }
+  .skin-dot:active{transform:scale(0.9);}
+  .skin-dot.active{border-color:#fff;transform:scale(1.18);box-shadow:0 0 12px currentColor;}
+  .skin-dot.locked-dot{opacity:0.35;filter:grayscale(0.7);cursor:default;}
+  /* Action button */
+  .shop-action-btn{
+    width:min(220px,calc(100vw - 80px));padding:13px 0;border:none;border-radius:14px;
     font-size:0.95rem;font-weight:800;cursor:pointer;touch-action:manipulation;
-    transition:opacity 0.15s, transform 0.1s;
+    transition:transform 0.1s,box-shadow 0.15s;letter-spacing:0.02em;
   }
-  .shop-preview-btn:active{transform:scale(0.97);}
-  .shop-preview-btn.buy{background:linear-gradient(135deg,#facc15,#f59e0b);color:#0f0f0f;}
-  .shop-preview-btn.equip{background:linear-gradient(135deg,#4ade80,#22c55e);color:#0f0f0f;}
-  .shop-preview-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
-  .shop-preview-btn:disabled{opacity:0.45;cursor:default;}
-  .shop-card{display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;transition:var(--transition);}
-  .shop-card.owned{border-color:#4ade80;background:color-mix(in srgb,#4ade80 12%,var(--panel));}
-  .shop-card.active-skin{border-color:#facc15;background:color-mix(in srgb,#facc15 10%,var(--panel));}
-  .shop-icon{font-size:1.8rem;width:40px;text-align:center;flex-shrink:0;}
-  .shop-info{flex:1;}
-  .shop-name{font-size:0.88rem;font-weight:700;color:var(--text);}
-  .shop-price{font-size:0.75rem;color:#facc15;margin-top:2px;}
-  .shop-price.owned{color:#4ade80;}
-  .shop-btn{padding:6px 12px;border:none;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
-  .shop-btn.buy{background:#facc15;color:#0f0f0f;}
-  .shop-btn.buy:disabled{background:var(--hud-bg);color:var(--text3);cursor:default;}
-  .shop-btn.equip{background:#4ade80;color:#0f0f0f;}
-  .shop-btn.equipped{background:var(--hud-bg);color:var(--text3);cursor:default;}
-  .shop-back{margin-top:10px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
+  .shop-action-btn:active{transform:scale(0.96);}
+  .shop-action-btn.buy{background:linear-gradient(135deg,#facc15,#f59e0b);color:#0f0f0f;box-shadow:0 4px 16px rgba(250,204,21,0.35);}
+  .shop-action-btn.equip{background:linear-gradient(135deg,#4ade80,#22c55e);color:#0f0f0f;box-shadow:0 4px 16px rgba(74,222,128,0.35);}
+  .shop-action-btn.equipped{background:rgba(255,255,255,0.08);color:var(--text3);cursor:default;box-shadow:none;}
+  .shop-action-btn:disabled{opacity:0.4;cursor:default;box-shadow:none;}
+  .shop-back{margin-top:12px;background:transparent;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;padding:6px;}
+  /* keep old classes for compat */
+  .shop-preview-card{display:none;}
+  .shop-preview-btn{display:none;}
   /* LEADERBOARD */
   .lb-tabs{display:flex;gap:6px;margin-bottom:12px;width:min(320px,calc(100vw - 24px));}
   .lb-tab{flex:1;padding:7px 0;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;}
@@ -861,9 +858,13 @@
 <div class="screen" id="shopScreen">
   <div class="rec-title">🛒 Магазин</div>
   <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
-  <div class="skin-grid" id="shopSkinRow"></div>
-  <div class="shop-preview-card" id="shopPreviewCard"></div>
+  <canvas id="skinPreviewCanvas" width="300" height="180"></canvas>
+  <div class="shop-skin-name" id="shopSkinName">—</div>
+  <div class="shop-skin-status" id="shopSkinStatus"></div>
+  <div class="skin-dot-row" id="shopSkinRow"></div>
+  <button class="shop-action-btn equipped" id="shopActionBtn" disabled>✓ Надет</button>
   <button class="shop-back" id="shopBack">← Назад</button>
+  <div class="shop-preview-card" id="shopPreviewCard" style="display:none;"></div>
 </div>
 <!-- ACHIEVEMENT NOTIFICATION -->
 <div id="achNotif">
@@ -2000,6 +2001,7 @@ function switchLbTab(tab){
 
 // ── SCREENS ────────────────────────────────────────────────────────
 function showScreen(id){
+  if(id!=='shopScreen'&&typeof stopSkinPreviewAnim==='function') stopSkinPreviewAnim();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='menuScreen') fetchGlobalStats();
@@ -2012,32 +2014,15 @@ function buildSkinRow(){
   SKINS.forEach((s,i)=>{
     const unlocked=isUnlocked(i);
     const isActive=i===shopPreviewIdx;
-    const isEquipped=i===skinIdx;
-    const hasPriceTag=s.price&&!unlocked;
-    const card=document.createElement('button');
-    let cls='skin-card';
-    if(isActive) cls+=' active';
-    else if(unlocked) cls+=' owned-card';
-    else cls+=' locked-card';
-    // Badge text
-    let badge='';
-    if(isEquipped) badge=`<span class="skin-card-badge equipped">✓</span>`;
-    else if(hasPriceTag) badge=`<span class="skin-card-badge price">${s.price}🪙</span>`;
-    else if(!unlocked) badge=`<span class="skin-card-badge lvl">Ур.${s.unlockLevel}</span>`;
-    else badge=`<span class="skin-card-badge free">✓</span>`;
-    card.className=cls;
-    card.innerHTML=`
-      ${badge}
-      <div class="skin-card-ball" style="background:radial-gradient(circle at 35% 35%,${s.shine},${s.body});box-shadow:0 0 10px ${s.glow}55;"></div>
-      <div class="skin-card-name">${s.name}</div>`;
-    const sel=()=>{
-      shopPreviewIdx=i;
-      buildSkinRow();
-      buildShopPreview();
-    };
-    card.addEventListener('click',sel);
-    card.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
-    row.appendChild(card);
+    const dot=document.createElement('button');
+    dot.className='skin-dot'+(isActive?' active':'')+(unlocked?'':' locked-dot');
+    dot.style.background=`radial-gradient(circle at 35% 35%,${s.shine},${s.body})`;
+    dot.style.boxShadow=isActive?`0 0 14px ${s.glow}`:'0 2px 8px rgba(0,0,0,0.35)';
+    dot.title=s.name+(unlocked?'':s.price?' 🪙'+s.price:' Ур.'+s.unlockLevel);
+    const sel=()=>{shopPreviewIdx=i;buildSkinRow();buildShopPreview();};
+    dot.addEventListener('click',sel);
+    dot.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
+    row.appendChild(dot);
   });
 }
 // ── MENU ──────────────────────────────────────────────────────────
@@ -2050,88 +2035,156 @@ function refreshMenuUI(){
   updateQuestBadge();
 }
 // ── SHOP ───────────────────────────────────────────────────────────
-// Index of the skin selected in shop preview (not necessarily equipped)
 let shopPreviewIdx = 0;
+let _skinAnimId = null;
+let _skinAnimT = 0;
 
 function buildShopScreen(){
-  shopPreviewIdx = skinIdx; // default: show the currently equipped skin
+  shopPreviewIdx = skinIdx;
   document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
   buildSkinRow();
   buildShopPreview();
 }
 
-function buildShopPreview(){
-  const card = document.getElementById('shopPreviewCard');
-  if(!card) return;
-  const i = shopPreviewIdx;
-  const s = SKINS[i];
-  const owned = isUnlocked(i);
-  const isEquipped = skinIdx === i;
-  const canBuy = !owned && s.price && coins >= s.price;
-  const tooExpensive = !owned && s.price && coins < s.price;
-  const lockedByLevel = !owned && !s.price;
+// Snake preview animation
+function startSkinPreviewAnim(s){
+  if(_skinAnimId){ cancelAnimationFrame(_skinAnimId); _skinAnimId=null; }
+  const canvas=document.getElementById('skinPreviewCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const R=9, FR=7;
+  // Food position (fixed, near head)
+  const foodX=W*0.78, foodY=H*0.28;
 
-  card.className = 'shop-preview-card' + (isEquipped ? ' active-skin' : owned ? ' owned' : lockedByLevel ? ' locked' : '');
-
-  let sub = '';
-  let btnText = '';
-  let btnClass = '';
-  let btnDisabled = false;
-
-  if(isEquipped){
-    sub = T().shopEquipped;
-    btnText = '✓ ' + T().shopEquipped;
-    btnClass = 'equipped';
-    btnDisabled = true;
-  } else if(owned){
-    sub = T().shopBought;
-    btnText = T().shopEquip;
-    btnClass = 'equip';
-  } else if(lockedByLevel){
-    sub = T().shopLevelFmt(s.unlockLevel);
-    btnText = T().skinLvlFmt(s.unlockLevel);
-    btnClass = 'equipped';
-    btnDisabled = true;
-  } else if(tooExpensive){
-    sub = T().shopCoinPriceFmt(s.price);
-    btnText = '🪙 ' + s.price + ' — ' + T().shopNotEnough;
-    btnClass = 'buy';
-    btnDisabled = true;
-  } else {
-    sub = T().shopCoinPriceFmt(s.price);
-    btnText = T().shopCoinPriceFmt(s.price);
-    btnClass = 'buy';
+  function genSnakePath(t){
+    const pts=[];
+    const count=22;
+    for(let i=0;i<count;i++){
+      const prog=i/(count-1);
+      // S-curve path that moves slowly
+      const x=W*0.12+prog*(W*0.72);
+      const y=H*0.5+Math.sin(prog*Math.PI*2.2+t)*H*0.28;
+      pts.push({x,y});
+    }
+    return pts;
   }
 
-  card.innerHTML = `
-    <div class="shop-preview-emoji">${s.emoji}</div>
-    <div class="shop-preview-name">${s.name}</div>
-    <div class="shop-preview-sub">${sub}</div>
-    <button class="shop-preview-btn ${btnClass}" id="shopPreviewBtn" ${btnDisabled?'disabled':''}>${btnText}</button>
-  `;
-
-  const btn = document.getElementById('shopPreviewBtn');
-  if(!btn || btnDisabled) return;
-
-  const action = () => {
-    if(btnClass === 'buy'){
-      if(coins < s.price) return;
-      coins -= s.price;
-      boughtSkins.add(i);
-      skinIdx = i;
-      shopPreviewIdx = i;
-      saveAll();
-    } else if(btnClass === 'equip'){
-      skinIdx = i;
-      saveAll();
+  function draw(){
+    _skinAnimT+=0.018;
+    ctx.clearRect(0,0,W,H);
+    // Background
+    ctx.fillStyle=s.bg;
+    ctx.fillRect(0,0,W,H);
+    // Subtle dot grid
+    ctx.fillStyle='rgba(255,255,255,0.04)';
+    for(let x=15;x<W;x+=22) for(let y=15;y<H;y+=22){
+      ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
     }
-    buildSkinRow();
-    buildShopPreview();
-    document.getElementById('shopCoins').textContent = T().shopCoinsFmt(coins);
-  };
-  btn.addEventListener('click', action);
-  btn.addEventListener('touchstart', e => { e.preventDefault(); action(); }, {passive:false});
+
+    const pts=genSnakePath(_skinAnimT);
+
+    // Glow trail
+    for(let i=pts.length-1;i>=0;i--){
+      const alpha=Math.max(0,(1-i/pts.length)*0.35);
+      ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,R*2.2,0,Math.PI*2);
+      ctx.fillStyle=s.glow+(Math.floor(alpha*255).toString(16).padStart(2,'0'));
+      ctx.fill();
+    }
+    // Body segments
+    for(let i=pts.length-1;i>=0;i--){
+      const p=pts[i];
+      const isHead=(i===0);
+      const grad=ctx.createRadialGradient(p.x-R*0.35,p.y-R*0.35,0,p.x,p.y,R);
+      grad.addColorStop(0,s.shine);
+      grad.addColorStop(1,s.body);
+      ctx.beginPath();ctx.arc(p.x,p.y,R+(isHead?1:0),0,Math.PI*2);
+      ctx.fillStyle=grad;
+      ctx.fill();
+      // Head eyes
+      if(isHead){
+        const next=pts[1]||{x:p.x+1,y:p.y};
+        const ang=Math.atan2(p.y-next.y,p.x-next.x);
+        const ex1={x:p.x+Math.cos(ang+1.1)*R*0.55,y:p.y+Math.sin(ang+1.1)*R*0.55};
+        const ex2={x:p.x+Math.cos(ang-1.1)*R*0.55,y:p.y+Math.sin(ang-1.1)*R*0.55};
+        [ex1,ex2].forEach(e=>{
+          ctx.beginPath();ctx.arc(e.x,e.y,2.5,0,Math.PI*2);
+          ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fill();
+          ctx.beginPath();ctx.arc(e.x+0.6,e.y-0.6,1,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fill();
+        });
+      }
+    }
+    // Food glow
+    ctx.beginPath();ctx.arc(foodX,foodY,FR*2,0,Math.PI*2);
+    ctx.fillStyle=s.foodColor+'33';ctx.fill();
+    // Food
+    const fg=ctx.createRadialGradient(foodX-FR*0.3,foodY-FR*0.3,0,foodX,foodY,FR);
+    fg.addColorStop(0,s.foodInner);fg.addColorStop(1,s.foodColor);
+    ctx.beginPath();ctx.arc(foodX,foodY,FR,0,Math.PI*2);
+    ctx.fillStyle=fg;ctx.fill();
+
+    _skinAnimId=requestAnimationFrame(draw);
+  }
+  draw();
 }
+
+function buildShopPreview(){
+  const i=shopPreviewIdx;
+  const s=SKINS[i];
+  const owned=isUnlocked(i);
+  const isEquipped=skinIdx===i;
+  const lockedByLevel=!owned&&!s.price;
+  const tooExpensive=!owned&&s.price&&coins<s.price;
+
+  // Start canvas animation
+  startSkinPreviewAnim(s);
+
+  // Name + status
+  document.getElementById('shopSkinName').textContent=s.name;
+  let statusTxt='';
+  if(isEquipped) statusTxt='✓ Надет';
+  else if(owned) statusTxt='Открыт';
+  else if(lockedByLevel) statusTxt=T().shopLevelFmt(s.unlockLevel);
+  else statusTxt=T().shopCoinPriceFmt(s.price)+(tooExpensive?' — не хватает монет':'');
+  document.getElementById('shopSkinStatus').textContent=statusTxt;
+
+  // Action button
+  const btn=document.getElementById('shopActionBtn');
+  btn.className='shop-action-btn';
+  btn.disabled=false;
+  if(isEquipped){
+    btn.classList.add('equipped');btn.disabled=true;btn.textContent='✓ Надет';
+  } else if(owned){
+    btn.classList.add('equip');btn.textContent=T().shopEquip;
+  } else if(lockedByLevel){
+    btn.classList.add('equipped');btn.disabled=true;btn.textContent=T().skinLvlFmt(s.unlockLevel);
+  } else if(tooExpensive){
+    btn.classList.add('buy');btn.disabled=true;btn.textContent='🪙 '+s.price+' — мало монет';
+  } else {
+    btn.classList.add('buy');btn.textContent=T().shopCoinPriceFmt(s.price);
+  }
+
+  // Bind action
+  const newBtn=btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn,btn);
+  if(!newBtn.disabled){
+    const action=()=>{
+      if(!owned&&s.price){
+        if(coins<s.price) return;
+        coins-=s.price; boughtSkins.add(i); skinIdx=i; shopPreviewIdx=i; saveAll();
+      } else if(owned){
+        skinIdx=i; saveAll();
+      }
+      document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
+      buildSkinRow(); buildShopPreview();
+    };
+    newBtn.addEventListener('click',action);
+    newBtn.addEventListener('touchstart',e=>{e.preventDefault();action();},{passive:false});
+  }
+}
+
+function buildShopPreview_compat(){ buildShopPreview(); }
 // ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
@@ -2400,8 +2453,9 @@ document.getElementById('achTabs').addEventListener('touchstart',e=>{
 },{passive:false});
 document.getElementById('btnShop').addEventListener('click',()=>{buildShopScreen();showScreen('shopScreen');});
 document.getElementById('btnShop').addEventListener('touchstart',e=>{e.preventDefault();buildShopScreen();showScreen('shopScreen');},{passive:false});
-document.getElementById('shopBack').addEventListener('click',()=>{refreshMenuUI();showScreen('menuScreen');});
-document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();refreshMenuUI();showScreen('menuScreen');},{passive:false});
+function stopSkinPreviewAnim(){if(_skinAnimId){cancelAnimationFrame(_skinAnimId);_skinAnimId=null;}}
+document.getElementById('shopBack').addEventListener('click',()=>{stopSkinPreviewAnim();refreshMenuUI();showScreen('menuScreen');});
+document.getElementById('shopBack').addEventListener('touchstart',e=>{e.preventDefault();stopSkinPreviewAnim();refreshMenuUI();showScreen('menuScreen');},{passive:false});
 document.getElementById('modeClassic').addEventListener('click',()=>{gameMode='classic';savedLevel=1;saveAll();beginLevel(1);});
 document.getElementById('modeClassic').addEventListener('touchstart',e=>{e.preventDefault();gameMode='classic';savedLevel=1;saveAll();beginLevel(1);},{passive:false});
 // Time/Survival/Mirror modes do NOT touch savedLevel — that's saved for Classic only
