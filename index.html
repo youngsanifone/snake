@@ -985,7 +985,7 @@
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goLevel">1</span>
-            <span class="go-stat-lbl">Уровень</span>
+            <span class="go-stat-lbl" id="goLevelLbl">Уровень</span>
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goBest">0</span>
@@ -3117,7 +3117,16 @@ function endGame(){
     goSub.textContent=T().goSubFmt(score,modeLbl);
     // Stats panel
     goScore.textContent=score;
-    document.getElementById('goLevel').textContent=currentLevel;
+    const isLevelMode = gameMode==='classic'||gameMode==='mirror';
+    const goLevelEl=document.getElementById('goLevel');
+    const goLevelLbl=document.getElementById('goLevelLbl');
+    if(isLevelMode){
+      goLevelEl.textContent=currentLevel;
+      if(goLevelLbl) goLevelLbl.textContent='Уровень';
+    } else {
+      goLevelEl.textContent=totalFood||0;
+      if(goLevelLbl) goLevelLbl.textContent='Еда';
+    }
     const coinsEarned=coins-coinsAtGameStart;
     goCoins.textContent=(coinsEarned>0?coinsEarned:0);
     document.getElementById('goCoinsBadge').style.display=coinsEarned>0?'':'none';
