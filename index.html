@@ -1036,8 +1036,7 @@
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
     <div class="lb-mode-tabs">
-      <button class="lb-mode-tab active" id="lbm-all"      onclick="setLbMode('')">🌐</button>
-      <button class="lb-mode-tab"        id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
+      <button class="lb-mode-tab active" id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
       <button class="lb-mode-tab"        id="lbm-time"     onclick="setLbMode('time')">⏱</button>
       <button class="lb-mode-tab"        id="lbm-survival" onclick="setLbMode('survival')">💀</button>
       <button class="lb-mode-tab"        id="lbm-mirror"   onclick="setLbMode('mirror')">🪞</button>
@@ -1827,13 +1826,13 @@ loadQuests();
 // ── LEADERBOARD ────────────────────────────────────────────────────
 let lbNickname = ''; // populated from Supabase in initGame()
 let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
-let lbMode = ''; // current mode filter: '' = all, 'classic', 'time', 'survival', 'mirror'
+let lbMode = 'classic'; // current mode filter: 'classic', 'time', 'survival', 'mirror'
 
 function setLbMode(mode){
   lbMode=mode;
-  ['all','classic','time','survival','mirror'].forEach(m=>{
+  ['classic','time','survival','mirror'].forEach(m=>{
     const btn=document.getElementById('lbm-'+m);
-    if(btn) btn.classList.toggle('active', (m==='all'&&mode==='')||(m===mode));
+    if(btn) btn.classList.toggle('active', m===mode);
   });
   fetchLeaderboard();
 }
@@ -1842,8 +1841,7 @@ async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    const modeFilter=lbMode?`&mode=eq.${lbMode}`:'';
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode,rating&order=rating.desc&limit=20${modeFilter}`,{
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20&mode=eq.${lbMode}`,{
       headers:SB_HEADERS,
       signal:AbortSignal.timeout?.(8000) // 8s timeout
     });
