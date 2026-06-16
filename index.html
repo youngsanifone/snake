@@ -1483,10 +1483,10 @@ const SKINS=[
   {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
   {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолетовый'},
   // Shop skins — purchased for coins
-  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:50,name:'Розовый'},
-  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:80,name:'Тёмный'},
-  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:100,name:'Океан'},
-  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:150,name:'Огонь'},
+  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:100,name:'Розовый'},
+  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:150,name:'Тёмный'},
+  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:200,name:'Океан'},
+  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:300,name:'Огонь'},
 ];
 // ── SAVES ───────────────────────────────────────────────────────
 // Reset on version change — clears localStorage for ALL players on page reload
@@ -1701,13 +1701,13 @@ const QUEST_POOL=[
   {type:'combo',      icon:'🔥',title:'Комбо',           make:(n)=>`Набери комбо ×${n}`},
 ];
 const QUEST_PARAMS={
-  eat_food:   [{n:10,coins:15},{n:25,coins:30},{n:50,coins:60}],
-  score:      [{n:50,coins:20},{n:150,coins:40},{n:300,coins:70}],
-  play_games: [{n:1,coins:10},{n:3,coins:25},{n:5,coins:40}],
-  reach_level:[{n:3,coins:15},{n:5,coins:30},{n:10,coins:60}],
-  eat_gold:   [{n:1,coins:20},{n:3,coins:40},{n:5,coins:70}],
-  use_bonus:  [{n:1,coins:15},{n:3,coins:35},{n:5,coins:60}],
-  combo:      [{n:2,coins:20},{n:3,coins:40},{n:5,coins:70}],
+  eat_food:   [{n:10,coins:8},{n:25,coins:15},{n:50,coins:30}],
+  score:      [{n:50,coins:10},{n:150,coins:20},{n:300,coins:35}],
+  play_games: [{n:1,coins:5},{n:3,coins:12},{n:5,coins:20}],
+  reach_level:[{n:3,coins:8},{n:5,coins:15},{n:10,coins:30}],
+  eat_gold:   [{n:1,coins:10},{n:3,coins:20},{n:5,coins:35}],
+  use_bonus:  [{n:1,coins:8},{n:3,coins:18},{n:5,coins:30}],
+  combo:      [{n:2,coins:10},{n:3,coins:20},{n:5,coins:35}],
 };
 function getDayKey(){
   const d=new Date();
@@ -2778,7 +2778,7 @@ function loop(ts){
     const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
-    coins+=pts; // coins equal points earned
+    coins+=1; // 1 coin per food (combo only affects score, not coins)
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
@@ -2830,7 +2830,7 @@ function loop(ts){
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
-      coins+=pts;
+      coins+=2; // gold food = 2 coins (score stays 3)
       totalLen+=LEN_PER_FOOD*pts;
       scoreEl.textContent=score;
       updateProg();
