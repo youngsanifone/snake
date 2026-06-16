@@ -1036,8 +1036,8 @@
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
     <div class="lb-mode-tabs">
-      <button class="lb-mode-tab"        id="lbm-all"      onclick="setLbMode('all')">🌐</button>
-      <button class="lb-mode-tab active" id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
+      <button class="lb-mode-tab active" id="lbm-all"      onclick="setLbMode('all')">🌐</button>
+      <button class="lb-mode-tab"        id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
       <button class="lb-mode-tab"        id="lbm-time"     onclick="setLbMode('time')">⏱</button>
       <button class="lb-mode-tab"        id="lbm-survival" onclick="setLbMode('survival')">💀</button>
       <button class="lb-mode-tab"        id="lbm-mirror"   onclick="setLbMode('mirror')">🪞</button>
@@ -1827,7 +1827,7 @@ loadQuests();
 // ── LEADERBOARD ────────────────────────────────────────────────────
 let lbNickname = ''; // populated from Supabase in initGame()
 let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
-let lbMode = 'classic'; // 'all' | 'classic' | 'time' | 'survival' | 'mirror'
+let lbMode = 'all'; // 'all' | 'classic' | 'time' | 'survival' | 'mirror'
 
 function setLbMode(mode){
   lbMode=mode;
