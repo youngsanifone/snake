@@ -353,8 +353,8 @@ tr:hover td{background:#fafafa}
 
   <!-- TABS -->
   <div class="tb-nav">
-    <button class="tb-btn active" id="tbn-sql"      onclick="openTab('sql')">💻 SQL</button>
-    <button class="tb-btn"        id="tbn-tables"   onclick="openTab('tables')">📋 Таблицы</button>
+    <button class="tb-btn"        id="tbn-sql"      onclick="openTab('sql')">💻 SQL</button>
+    <button class="tb-btn active" id="tbn-tables"   onclick="openTab('tables')">📋 Таблицы</button>
     <button class="tb-btn"        id="tbn-advisors" onclick="openTab('advisors')">🔍 Советники</button>
     <button class="tb-btn"        id="tbn-storage"  onclick="openTab('storage')">🗂️ Storage</button>
     <button class="tb-btn"        id="tbn-auth"     onclick="openTab('auth')">🔐 Auth</button>
@@ -362,7 +362,7 @@ tr:hover td{background:#fafafa}
   </div>
 
   <!-- TAB: SQL -->
-  <div id="tab-sql" class="tb-body active">
+  <div id="tab-sql" class="tb-body">
     <div class="tb-desc">Нажми <b>▶ Run</b> — результат появится внизу этой секции. Без copy-paste.</div>
     <!-- PRESETS -->
     <div class="preset-list" id="presetList">
@@ -466,7 +466,7 @@ tr:hover td{background:#fafafa}
   </div>
 
   <!-- TAB: TABLES -->
-  <div id="tab-tables" class="tb-body">
+  <div id="tab-tables" class="tb-body active">
     <div class="tb-desc"><b>Table Editor</b> — просмотр данных, пагинация 50 строк, поиск. Даты в твоём часовом поясе (Братислава). <b>Таблицы</b> хранят данные; <b>view</b> — виртуальная сводка поверх них (не дубликат, места не занимает).</div>
     <div class="tbl-tabs" style="align-items:center">
       <span style="font-size:.64rem;color:var(--mut);font-weight:700;letter-spacing:.5px">ТАБЛИЦЫ:</span>
@@ -1261,7 +1261,7 @@ async function loadPlayers(){
 }
 
 function startApp(){
-  initCharts(); loadData(); loadCommits(); pingGame(); pingEF(); loadOnline(); loadPlayers()
+  initCharts(); loadData(); loadCommits(); pingGame(); pingEF(); loadOnline(); loadPlayers(); loadTbl(curTbl)
   setInterval(loadData,5000)
   setInterval(loadOnline,10000)
   // Вкладка «Таблицы» обновляется сама, пока открыта (тихо, без мерцания)
