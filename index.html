@@ -3309,14 +3309,16 @@ async function shareScore(){
     const ta=document.createElement('textarea');
     ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
     document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');
+    const ok=document.execCommand('copy');
     document.body.removeChild(ta);
-    goShare.textContent=T().shareCopied;
-    setTimeout(()=>goShare.textContent=T().goShare,2000);
-  }catch(_){
-    goShare.textContent=T().shareError;
-    setTimeout(()=>goShare.textContent=T().goShare,2000);
-  }
+    if(ok){
+      goShare.textContent=T().shareCopied;
+      setTimeout(()=>goShare.textContent=T().goShare,2000);
+      return;
+    }
+  }catch(_){}
+  // Fallback 3 — prompt (Safari)
+  prompt(T().shareCopied+' (Cmd+A → Cmd+C)', text);
 }
 goShare.addEventListener('click',shareScore);
 goShare.addEventListener('touchstart',e=>{e.preventDefault();shareScore();},{passive:false});
