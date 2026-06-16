@@ -317,6 +317,7 @@
   .go-btn.share{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
     box-shadow:0 4px 20px rgba(99,102,241,0.35);}
   .go-btn.sec{background:rgba(255,255,255,0.07);color:var(--text2);border:1px solid rgba(255,255,255,0.12);box-shadow:none;}
+  .go-coins-row{font-size:0.82rem;font-weight:700;color:#facc15;letter-spacing:0.02em;opacity:0.9;}
   #gameOverlay.visible .go-btns{animation:goCardIn 0.4s cubic-bezier(0.22,1,0.36,1) 0.42s both;}
   /* ── NICK CHANGE MODAL ────────────────────────────────────────── */
   #nickModal{
@@ -977,14 +978,15 @@
             <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
           </div>
           <div class="go-stat">
-            <span class="go-stat-val gold" id="goCoins">+0</span>
-            <span class="go-stat-lbl">Монеты</span>
+            <span class="go-stat-val" id="goLevel">1</span>
+            <span class="go-stat-lbl">Уровень</span>
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goBest">0</span>
             <span class="go-stat-lbl" id="goBestLbl">Рекорд</span>
           </div>
         </div>
+        <div class="go-coins-row" id="goCoinsBadge">🪙 +<span id="goCoins">0</span> монет</div>
         <div class="go-sub" id="goSub"></div>
         <div class="go-btns">
           <button class="go-btn primary" id="goReplay">▶ Начать заново</button>
@@ -3109,8 +3111,10 @@ function endGame(){
     goSub.textContent=T().goSubFmt(score,modeLbl);
     // Stats panel
     goScore.textContent=score;
+    document.getElementById('goLevel').textContent=currentLevel;
     const coinsEarned=coins-coinsAtGameStart;
-    goCoins.textContent='+'+(coinsEarned>0?coinsEarned:0);
+    goCoins.textContent=(coinsEarned>0?coinsEarned:0);
+    document.getElementById('goCoinsBadge').style.display=coinsEarned>0?'':'none';
     goBest.textContent=best;
     goNewRecord.style.display=isNewRecord?'':'none';
     // Slide-in animation
