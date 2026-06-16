@@ -2249,8 +2249,8 @@ function startSkinPreviewAnim(s){
 
   const BG_FX=new Set(['star','snow','leaf','sakura']);
 
-  function draw(){
-    _skinAnimT+=0.028;
+  function draw(dt){
+    _skinAnimT+=0.028*(dt/16.67);  // normalize to 60fps so speed is same on 144Hz Windows
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle=s.bg;ctx.fillRect(0,0,W,H);
     ctx.fillStyle='rgba(255,255,255,0.04)';
@@ -2301,11 +2301,14 @@ function startSkinPreviewAnim(s){
     particles.filter(p=>!BG_FX.has(p.type)).forEach(p=>drawFx(p));
   }
 
-  function loop(){
-    try{draw();}catch(e){particles=[];}
+  let _prevTs=0;
+  function loop(ts){
+    const dt=_prevTs?Math.min(ts-_prevTs,50):16.67;
+    _prevTs=ts;
+    try{draw(dt);}catch(e){particles=[];}
     _skinAnimId=requestAnimationFrame(loop);
   }
-  loop();
+  requestAnimationFrame(loop);
 }
 
 function buildShopPreview(){
@@ -2987,7 +2990,7 @@ function loop(ts){
   const dt=lastTs?Math.min(ts-lastTs,50):16;lastTs=ts;
   // Game hasn't started — snake is still, timers paused, draw the hint
   if(awaitingStart){
-    draw();
+    draw(dt);
     animId=requestAnimationFrame(loop);
     return;
   }
@@ -3147,7 +3150,7 @@ function loop(ts){
     bonusSpawnIn-=dt;
     if(bonusSpawnIn<=0) spawnBonus();
   }
-  draw();
+  draw(dt);
   animId=requestAnimationFrame(loop);
 }
 // ── Skin trail particle effects ───────────────────────────────────
@@ -3179,13 +3182,13 @@ function spawnSkinTrailFx(){
   }
   if(skinTrailFx.length>80) skinTrailFx.splice(0,skinTrailFx.length-80);
 }
-function drawSkinTrailFx(){
+function drawSkinTrailFx(_t=1){
   const sk=skin();
   skinTrailFx=skinTrailFx.filter(p=>p.life>0);
   skinTrailFx.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;
+    p.x+=p.vx*_t;p.y+=p.vy*_t;p.life-=p.decay*_t;
     if(p.life<=0) return;
-    if(p.rot!==undefined) p.rot+=p.rotV||0;
+    if(p.rot!==undefined) p.rot+=(p.rotV||0)*_t;
     ctx.save();
     switch(p.type){
       case 'fire':{const t=1-p.life,fc=['#fff9c4','#ffeb3b','#ff9800','#ff5722','#9e9e9e'];ctx.globalAlpha=p.life*0.85;ctx.fillStyle=fc[Math.min(Math.floor(t*5),4)];ctx.shadowBlur=10;ctx.shadowColor='#ff6a00';ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.01,p.r*p.life),0,Math.PI*2);ctx.fill();break;}
@@ -3204,7 +3207,8 @@ function drawSkinTrailFx(){
     ctx.restore();
   });
 }
-function draw(){
+function draw(dt=16.67){
+  const _t=dt/16.67; // normalize factor: 1.0 at 60fps, 0.5 at 120fps
   const sk=skin();
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle=sk.bg;ctx.fillRect(0,0,W,H);
@@ -3270,7 +3274,7 @@ function draw(){
   }
   particles=particles.filter(p=>p.alpha>0.03);
   particles.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.alpha-=0.035;
+    p.x+=p.vx*_t;p.y+=p.vy*_t;p.vy+=0.12*_t;p.alpha-=0.035*_t;
     ctx.save();ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;
     ctx.shadowColor=p.color;ctx.shadowBlur=8;
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.restore();
@@ -3278,7 +3282,7 @@ function draw(){
   // Floating text (+1 above food)
   floatTexts=floatTexts.filter(t=>t.alpha>0.02);
   floatTexts.forEach(t=>{
-    t.y+=t.vy; t.alpha-=0.028;
+    t.y+=t.vy*_t; t.alpha-=0.028*_t;
     ctx.save();
     ctx.globalAlpha=t.alpha;
     ctx.font='bold 18px Segoe UI';
@@ -3292,7 +3296,7 @@ function draw(){
 
   // ── Skin trail particles ──────────────────────────────────────────
   try{spawnSkinTrailFx();}catch(e){skinTrailFx=[];ctx.globalAlpha=1;}
-  try{drawSkinTrailFx();}catch(e){skinTrailFx=[];ctx.globalAlpha=1;}
+  try{drawSkinTrailFx(_t);}catch(e){skinTrailFx=[];ctx.globalAlpha=1;}
 
   // ── Sample path into ball segments ───────────────────────────────
   const BALL_SPACING=R*1.75;
@@ -3445,13 +3449,15 @@ function launchGoConfetti(){
     size:5+Math.random()*6, color:colors[Math.random()*colors.length|0],
     shape:shapes[Math.random()*shapes.length|0], alpha:1
   }));
-  let rafId;
-  function draw(){
+  let rafId,_confPrevTs=0;
+  function draw(ts=0){
+    const _t=(ts&&_confPrevTs)?Math.min((ts-_confPrevTs)/16.67,3):1;
+    _confPrevTs=ts;
     ctx.clearRect(0,0,W,H);
     let alive=false;
     for(const p of pieces){
-      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotV; p.vy+=0.04;
-      if(p.y>H-40) p.alpha-=0.04;
+      p.x+=p.vx*_t; p.y+=p.vy*_t; p.rot+=p.rotV*_t; p.vy+=0.04*_t;
+      if(p.y>H-40) p.alpha-=0.04*_t;
       if(p.alpha<=0) continue;
       alive=true;
       ctx.save(); ctx.globalAlpha=p.alpha;
