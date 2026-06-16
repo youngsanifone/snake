@@ -2775,7 +2775,7 @@ function loop(ts){
   }
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
-    const pts = level>=10 ? 2 : 1; // score based on level difficulty, not combo
+    const pts = currentLevel>=10 ? 2 : 1; // score based on level difficulty, not combo
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
@@ -2826,7 +2826,7 @@ function loop(ts){
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
-      const pts=(level>=10?2:1)+1; // gold = level bonus +1 extra
+      const pts=(currentLevel>=10?2:1)+1; // gold = level bonus +1 extra
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
