@@ -811,8 +811,6 @@
   </div>
   <!-- Main button -->
   <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
-  <!-- Continue button -->
-  <button class="menu-cont-btn" id="btnContinue" style="display:none;">⏩ Продолжить (Ур. <span id="btnContinueLvl">1</span>)</button>
   <!-- Horizontal navigation bar -->
   <div class="menu-nav-bar">
     <button class="mnav-btn clr-yellow" id="btnRecords">
@@ -1065,8 +1063,6 @@
         <button class="diff-btn lang-btn" data-lang="en">🇬🇧 EN</button>
       </div>
     </div>
-    <!-- Reset -->
-    <button class="reset-btn" id="btnResetProgress">🗑 Сбросить прогресс</button>
   </div>
   <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
 </div>
@@ -1393,8 +1389,7 @@ function applyLang(){
   if(msblbls[1])msblbls[1].textContent=L.menuStatLvl;
   if(msblbls[2])msblbls[2].textContent=L.menuStatCoins;
   const btnPlayEl=document.getElementById('btnPlay');if(btnPlayEl)btnPlayEl.innerHTML=L.btnPlay;
-  const btnContEl=document.getElementById('btnContinue');
-  if(btnContEl){const lvlSpan=document.getElementById('btnContinueLvl');const lvlTxt=lvlSpan?lvlSpan.textContent:'1';btnContEl.innerHTML=L.contBtnPrefix+'<span id="btnContinueLvl">'+lvlTxt+'</span>)';}
+
   [{id:'btnRecords',k:'navRecords'},{id:'btnAch',k:'navAch'},{id:'btnQuests',k:'navQuests'},{id:'btnShop',k:'navShop'},{id:'btnSettings',k:'navSettings'}].forEach(({id,k})=>{
     const el=document.getElementById(id);if(el){const lb=el.querySelector('.mnav-label');if(lb)lb.textContent=L[k];}
   });
@@ -1446,7 +1441,6 @@ function applyLang(){
     else if(b.dataset.diff==='hard')b.textContent=L.diffHard;
   });
   const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
-  const btnRstEl=document.getElementById('btnResetProgress');if(btnRstEl)btnRstEl.textContent=L.btnReset;
   // lang-btn flags are static (🇷🇺/🇸🇰/🇬🇧), no text update needed
   const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
   const tabMyEl=document.getElementById('tabMy');if(tabMyEl)tabMyEl.textContent=L.tabMy;
@@ -2023,13 +2017,6 @@ function refreshMenuUI(){
   const _nd=document.getElementById('settNickDisplay');
   if(_nd) _nd.textContent=lbNickname||T().anon||'—';
   updateQuestBadge();
-  const contBtn=document.getElementById('btnContinue');
-  if(savedLevel>1){
-    contBtn.style.display='block';
-    contBtn.innerHTML=T().contBtnPrefix+'<span id="btnContinueLvl">'+savedLevel+'</span>)';
-  } else {
-    contBtn.style.display='none';
-  }
 }
 // ── SHOP ───────────────────────────────────────────────────────────
 // Index of the skin selected in shop preview (not necessarily equipped)
@@ -2394,8 +2381,6 @@ document.getElementById('modeSurvival').addEventListener('touchstart',e=>{e.prev
 document.getElementById('modeMirror').addEventListener('click',()=>{gameMode='mirror';beginLevel(1);});
 document.getElementById('modeMirror').addEventListener('touchstart',e=>{e.preventDefault();gameMode='mirror';beginLevel(1);},{passive:false});
 // "Continue" — always Classic from the saved level
-document.getElementById('btnContinue').addEventListener('click',()=>{getAudio();gameMode='classic';beginLevel(savedLevel);});
-document.getElementById('btnContinue').addEventListener('touchstart',e=>{e.preventDefault();getAudio();gameMode='classic';beginLevel(savedLevel);},{passive:false});
 document.getElementById('btnRecords').addEventListener('click',openRecords);
 document.getElementById('btnRecords').addEventListener('touchstart',e=>{e.preventDefault();openRecords();},{passive:false});
 // ── RECORDS ────────────────────────────────────────────────────────
@@ -2421,31 +2406,6 @@ document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preve
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
 // ── PROGRESS RESET ────────────────────────────────────────────────
-async function doResetProgress(){
-  if(!confirm(T().resetConfirm)) return;
-  // 1. Reset profile in Supabase to zero (preserve nick and pid)
-  const pid=localStorage.getItem(S+'pid');
-  const nick=localStorage.getItem(S+'Nick')||T().anon;
-  if(pid){
-    await fetch(SB_URL+'/rest/v1/players',{
-      method:'POST',
-      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
-      body:JSON.stringify({
-        player_id:pid,nick,
-        coins:0,best:0,best_level:1,games_played:0,saved_level:1,
-        skin_idx:0,bought_skins:'[]',achievements:'[]',quests:null,
-        difficulty:'normal',music_on:true,sfx_on:true,theme:'dark',
-        updated_at:new Date().toISOString()
-      })
-    }).catch(()=>{});
-  }
-  // 2. Clear localStorage (keep nick, pid, lastVisit)
-  const keepKeys=[S+'Nick',S+'pid',S+'lastVisit'];
-  Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith(S)&&!keepKeys.includes(k)) localStorage.removeItem(k);
-  });
-  location.reload();
-}
 // Language buttons (3 separate: RU / SK / EN)
 function updateLangBtns(){
   document.querySelectorAll('.lang-btn').forEach(b=>{
@@ -2457,8 +2417,6 @@ document.querySelectorAll('.lang-btn').forEach(b=>{
   b.addEventListener('click',set);
   b.addEventListener('touchstart',e=>{e.preventDefault();set();},{passive:false});
 });
-document.getElementById('btnResetProgress').addEventListener('click',doResetProgress);
-document.getElementById('btnResetProgress').addEventListener('touchstart',e=>{e.preventDefault();doResetProgress();},{passive:false});
 document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
   const set=()=>{ difficulty=b.dataset.diff; saveAll(); updateDiffBtns(); };
   b.addEventListener('click',set);
