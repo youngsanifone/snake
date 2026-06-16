@@ -462,10 +462,10 @@
   .skin-dot.locked-dot{opacity:0.42;filter:grayscale(0.55);cursor:default;}
   .dot-emoji{font-size:1.45rem;line-height:1;pointer-events:none;}
   .dot-badge{
-    font-size:0.46rem;font-weight:800;color:#fff;
-    background:rgba(0,0,0,0.65);border-radius:5px;
-    padding:1px 3px;white-space:nowrap;line-height:1.5;pointer-events:none;
-    max-width:46px;overflow:hidden;text-overflow:ellipsis;
+    font-size:0.62rem;font-weight:800;color:#fff;
+    background:rgba(0,0,0,0.72);border-radius:5px;
+    padding:2px 4px;white-space:nowrap;line-height:1.4;pointer-events:none;
+    max-width:62px;overflow:hidden;text-overflow:ellipsis;
   }
   .dot-badge.b-eq{background:#16a34a;}
   /* Action button */
@@ -2300,9 +2300,9 @@ function startSkinPreviewAnim(s){
     // Foreground particles (drawn over snake)
     particles.filter(p=>!BG_FX.has(p.type)).forEach(p=>drawFx(p));
 
-    // Animated food — orbits ahead of the snake head
-    const foodX=pts[0].x+Math.cos(_skinAnimT*1.1)*W*0.10+18;
-    const foodY=pts[0].y+Math.sin(_skinAnimT*1.7)*H*0.18;
+    // Animated food — orbits around canvas center (snake "chases" it)
+    const foodX=W*0.5+Math.cos(_skinAnimT*0.75)*W*0.30;
+    const foodY=H*0.5+Math.sin(_skinAnimT*1.1)*H*0.26;
     const pulse=0.85+Math.sin(_skinAnimT*3)*0.15;
     const fr=FR*pulse;
     ctx.beginPath();ctx.arc(foodX,foodY,fr*2.2,0,Math.PI*2);
