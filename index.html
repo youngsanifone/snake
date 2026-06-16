@@ -1700,7 +1700,7 @@ function applyLocalCache(){
   coins        = parseInt(localStorage.getItem(S+'Coins')||'0');
   best         = parseInt(localStorage.getItem(S+'Best')||'0');
   bestLevel    = parseInt(localStorage.getItem(S+'BestLevel')||'1');
-  bestByMode.classic  = parseInt(localStorage.getItem(S+'BestClassic') ||localStorage.getItem(S+'Best')||'0');
+  bestByMode.classic  = Math.max(parseInt(localStorage.getItem(S+'BestClassic') ||'0'), parseInt(localStorage.getItem(S+'Best')||'0'));
   bestByMode.time     = parseInt(localStorage.getItem(S+'BestTime')    ||'0');
   bestByMode.survival = parseInt(localStorage.getItem(S+'BestSurvival')||'0');
   bestByMode.mirror   = parseInt(localStorage.getItem(S+'BestMirror')  ||'0');
