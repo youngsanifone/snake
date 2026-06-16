@@ -1652,7 +1652,8 @@ function upsertProfile(){
       achievements:[...unlockedAch],
       quests:questData||[],
       difficulty,music_on:musicOn,sfx_on:sfxOn,theme,lang:currentLang,
-      updated_at:new Date().toISOString()
+      updated_at:new Date().toISOString(),
+      last_seen:new Date().toISOString()
     })
   }).catch(()=>{});
 }
