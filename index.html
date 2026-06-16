@@ -1844,7 +1844,7 @@ async function fetchLeaderboard(){
   try{
     const isAll=lbMode==='all';
     const url=isAll
-      ? `${SB_URL}/rest/v1/leaderboard_top?select=name,score,level,mode,rating&order=rating.desc&limit=20`
+      ? `${SB_URL}/rest/v1/leaderboard_top?select=name,score,level,mode&order=score.desc&limit=20`
       : `${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20&mode=eq.${lbMode}`;
     const r=await fetch(url,{
       headers:SB_HEADERS,
@@ -2775,10 +2775,10 @@ function loop(ts){
   }
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
-    const pts = combo>=5 ? 3 : combo>=3 ? 2 : 1;
+    const pts = level>=10 ? 2 : 1; // score based on level difficulty, not combo
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
-    coins+=1; // 1 coin per food (combo only affects score, not coins)
+    coins+=1; // 1 coin per food
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
@@ -2799,9 +2799,9 @@ function loop(ts){
     } else {
       comboHudEl.style.display='none';
     }
-    if(combo>=5)       spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x3`,'#f87171');
-    else if(combo>=3)  spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥COMBO x2`,'#fb923c');
-    else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`            ,skin().foodColor);
+    if(combo>=5)       spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥x${combo}`,  '#f87171');
+    else if(combo>=3)  spawnFloatText(food.x,food.y-FR-4,`+${pts} 🔥x${combo}`,  '#fb923c');
+    else               spawnFloatText(food.x,food.y-FR-4,`+${pts}`,               skin().foodColor);
     playEat();
     // Achievements — food
     if(totalFood===1) unlockAch('first_bite');
@@ -2826,11 +2826,11 @@ function loop(ts){
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
-      const pts=3;
+      const pts=(level>=10?2:1)+1; // gold = level bonus +1 extra
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
-      coins+=2; // gold food = 2 coins (score stays 3)
+      coins+=2; // gold food = 2 coins
       totalLen+=LEN_PER_FOOD*pts;
       scoreEl.textContent=score;
       updateProg();
