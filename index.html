@@ -1648,7 +1648,7 @@ function upsertProfile(){
       bought_skins:[...boughtSkins],
       achievements:[...unlockedAch],
       quests:questData||[],
-      difficulty,music_on:musicOn,sfx_on:sfxOn,theme,
+      difficulty,music_on:musicOn,sfx_on:sfxOn,theme,lang:currentLang,
       updated_at:new Date().toISOString()
     })
   }).catch(()=>{});
@@ -1686,6 +1686,7 @@ function applyProfile(row){
   musicOn      = row.music_on!==false;
   sfxOn        = row.sfx_on!==false;
   theme        = row.theme||'dark';
+  if(row.lang) currentLang = row.lang;
   if(row.quests){
     try{
       const q=typeof row.quests==='object'?row.quests:JSON.parse(row.quests);
@@ -1707,6 +1708,7 @@ function applyProfile(row){
   localStorage.setItem(S+'Music',  musicOn?'on':'off');
   localStorage.setItem(S+'Sfx',    sfxOn?'on':'off');
   localStorage.setItem(S+'Theme',  theme);
+  localStorage.setItem(S+'Lang',   currentLang);
   // Refresh live HUD elements if they exist
   const _bestHud=document.getElementById('bestHud');if(_bestHud)_bestHud.textContent=best;
   if(typeof refreshMenuUI==='function')refreshMenuUI();
