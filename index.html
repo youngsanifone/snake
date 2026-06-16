@@ -413,6 +413,9 @@
   .lb-tabs{display:flex;gap:6px;margin-bottom:12px;width:min(320px,calc(100vw - 24px));}
   .lb-tab{flex:1;padding:7px 0;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;}
   .lb-tab.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 10%,var(--panel));}
+  .lb-mode-tabs{display:flex;gap:5px;margin-bottom:10px;width:min(320px,calc(100vw - 24px));}
+  .lb-mode-tab{flex:1;padding:5px 2px;border-radius:8px;border:1.5px solid var(--border);background:var(--panel);color:var(--text2);font-size:0.72rem;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all 0.15s;white-space:nowrap;}
+  .lb-mode-tab.active{border-color:#4ade80;color:#4ade80;background:color-mix(in srgb,#4ade80 10%,var(--panel));}
   .lb-list{display:flex;flex-direction:column;gap:6px;width:min(320px,calc(100vw - 24px));max-height:calc(100dvh - 200px);overflow-y:auto;}
   .lb-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--panel);border:1.5px solid var(--border);border-radius:11px;}
   .lb-rank{font-size:1rem;font-weight:900;width:24px;text-align:center;flex-shrink:0;}
@@ -670,6 +673,7 @@
   @media(hover:none){.mode-card:hover{border-color:var(--border);}}
   /* Leaderboard */
   .lb-tab.active{border-color:#818cf8;color:#818cf8;background:color-mix(in srgb,#818cf8 10%,var(--panel));}
+  .lb-mode-tab.active{border-color:#818cf8;color:#818cf8;background:color-mix(in srgb,#818cf8 10%,var(--panel));}
   .lb-score{color:#818cf8;}
   .lb-input:focus{border-color:#818cf8;}
   .lb-submit-btn{background:linear-gradient(135deg,#4338ca,#7c3aed);}
@@ -1031,6 +1035,13 @@
   </div>
   <!-- Online leaderboard -->
   <div id="panelOnline" style="display:none;">
+    <div class="lb-mode-tabs">
+      <button class="lb-mode-tab active" id="lbm-all"      onclick="setLbMode('')">🌐</button>
+      <button class="lb-mode-tab"        id="lbm-classic"  onclick="setLbMode('classic')">🐍</button>
+      <button class="lb-mode-tab"        id="lbm-time"     onclick="setLbMode('time')">⏱</button>
+      <button class="lb-mode-tab"        id="lbm-survival" onclick="setLbMode('survival')">💀</button>
+      <button class="lb-mode-tab"        id="lbm-mirror"   onclick="setLbMode('mirror')">🪞</button>
+    </div>
     <div class="lb-list" id="lbList"><div class="lb-loading">Загрузка...</div></div>
   </div>
   <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Назад</button>
@@ -1816,12 +1827,23 @@ loadQuests();
 // ── LEADERBOARD ────────────────────────────────────────────────────
 let lbNickname = ''; // populated from Supabase in initGame()
 let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
+let lbMode = ''; // current mode filter: '' = all, 'classic', 'time', 'survival', 'mirror'
+
+function setLbMode(mode){
+  lbMode=mode;
+  ['all','classic','time','survival','mirror'].forEach(m=>{
+    const btn=document.getElementById('lbm-'+m);
+    if(btn) btn.classList.toggle('active', (m==='all'&&mode==='')||(m===mode));
+  });
+  fetchLeaderboard();
+}
 
 async function fetchLeaderboard(){
   const el=document.getElementById('lbList');
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20`,{
+    const modeFilter=lbMode?`&mode=eq.${lbMode}`:'';
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20${modeFilter}`,{
       headers:SB_HEADERS,
       signal:AbortSignal.timeout?.(8000) // 8s timeout
     });
