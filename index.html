@@ -161,10 +161,15 @@
   @media(hover:none){.mgrid-btn:hover{border-color:var(--border);background:var(--panel);}}
   /* Quest badge — absolute positioned */
   .quest-badge{
-    position:absolute;top:-6px;right:-8px;
+    position:absolute;top:-5px;right:-5px;
     background:#ef4444;color:#fff;border-radius:99px;
-    font-size:0.58rem;font-weight:bold;padding:2px 6px;
-    pointer-events:none;line-height:1.4;border:2px solid var(--bg);
+    font-size:0.55rem;font-weight:900;
+    min-width:16px;height:16px;
+    display:flex;align-items:center;justify-content:center;
+    padding:0 4px;box-sizing:border-box;
+    pointer-events:none;line-height:1;
+    border:1.5px solid #1a0a2e;
+    box-shadow:0 2px 6px rgba(239,68,68,0.5);
     z-index:10;
   }
   /* HORIZONTAL NAVIGATION */
@@ -179,7 +184,7 @@
     border-radius:12px;cursor:pointer;touch-action:manipulation;
     transition:all 0.15s;position:relative;overflow:visible;
   }
-  .mnav-icon{font-size:1.2rem;line-height:1;flex-shrink:0;position:relative;}
+  .mnav-icon{font-size:1.2rem;line-height:1;flex-shrink:0;}
   .mnav-label{font-size:0.46rem;font-weight:700;color:var(--text3);letter-spacing:0.2px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .mnav-btn.clr-yellow{border-color:rgba(250,204,21,0.35);}
@@ -819,7 +824,7 @@
       <div class="mnav-label">Ачивки</div>
     </button>
     <button class="mnav-btn clr-blue" id="btnQuests">
-      <div class="mnav-icon" id="questIconWrap">📋</div>
+      <div class="mnav-icon">📋</div>
       <div class="mnav-label">Квесты</div>
     </button>
     <button class="mnav-btn clr-orange" id="btnShop">
@@ -1824,15 +1829,15 @@ function claimQuest(i){
   setTimeout(()=>t.remove(),1400);
 }
 function updateQuestBadge(){
-  const wrap=document.getElementById('questIconWrap');
-  if(!wrap||!questData) return;
+  const btn=document.getElementById('btnQuests');
+  if(!btn||!questData) return;
   const claimable=questData.quests.filter(q=>!q.claimed&&q.progress>=q.goal).length;
-  const old=wrap.querySelector('.quest-badge');
+  const old=btn.querySelector('.quest-badge');
   if(old) old.remove();
   if(claimable>0){
     const b=document.createElement('span');
     b.className='quest-badge';b.textContent=claimable;
-    wrap.appendChild(b);
+    btn.appendChild(b);
   }
 }
 function buildQuestScreen(){
