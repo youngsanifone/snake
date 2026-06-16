@@ -2049,9 +2049,9 @@ function buildSkinRow(){
     dot.style.boxShadow=isActive?`0 0 18px ${s.glow}`:'0 2px 10px rgba(0,0,0,0.4)';
     // Badge label
     let badge='';
-    if(isEq) badge=`<span class="dot-badge b-eq">✓ Надет</span>`;
+    if(isEq) badge=`<span class="dot-badge b-eq">✓ ${T().shopEquipped}</span>`;
     else if(!unlocked&&s.price) badge=`<span class="dot-badge">🪙 ${s.price}</span>`;
-    else if(!unlocked) badge=`<span class="dot-badge">Ур. ${s.unlockLevel}</span>`;
+    else if(!unlocked) badge=`<span class="dot-badge">${T().skinLvlFmt(s.unlockLevel)}</span>`;
     dot.innerHTML=`<span class="dot-emoji">${s.emoji}</span>${badge}`;
     const sel=()=>{shopPreviewIdx=i;buildSkinRow();buildShopPreview();};
     dot.addEventListener('click',sel);
@@ -2087,8 +2087,7 @@ function startSkinPreviewAnim(s){
   if(!canvas) return;
   const ctx=canvas.getContext('2d');
   const W=canvas.width, H=canvas.height;
-  const R=9, FR=7;
-  const foodX=W*0.78, foodY=H*0.28;
+  const R=9;
 
   // Per-skin particle effect map
   const SKIN_FX={
@@ -2249,7 +2248,7 @@ function startSkinPreviewAnim(s){
   const BG_FX=new Set(['star','snow','leaf','sakura']);
 
   function draw(){
-    _skinAnimT+=0.018;
+    _skinAnimT+=0.028;
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle=s.bg;ctx.fillRect(0,0,W,H);
     ctx.fillStyle='rgba(255,255,255,0.04)';
@@ -2298,17 +2297,13 @@ function startSkinPreviewAnim(s){
 
     // Foreground particles (drawn over snake)
     particles.filter(p=>!BG_FX.has(p.type)).forEach(p=>drawFx(p));
-
-    // Food glow + food
-    ctx.beginPath();ctx.arc(foodX,foodY,FR*2,0,Math.PI*2);
-    ctx.fillStyle=s.foodColor+'33';ctx.fill();
-    const fg=ctx.createRadialGradient(foodX-FR*0.3,foodY-FR*0.3,0,foodX,foodY,FR);
-    fg.addColorStop(0,s.foodInner);fg.addColorStop(1,s.foodColor);
-    ctx.beginPath();ctx.arc(foodX,foodY,FR,0,Math.PI*2);ctx.fillStyle=fg;ctx.fill();
-
-    _skinAnimId=requestAnimationFrame(draw);
   }
-  draw();
+
+  function loop(){
+    try{draw();}catch(e){particles=[];}
+    _skinAnimId=requestAnimationFrame(loop);
+  }
+  loop();
 }
 
 function buildShopPreview(){
@@ -2325,10 +2320,10 @@ function buildShopPreview(){
   // Name + status
   document.getElementById('shopSkinName').textContent=s.name;
   let statusTxt='';
-  if(isEquipped) statusTxt='✓ Надет';
-  else if(owned) statusTxt='Открыт';
+  if(isEquipped) statusTxt='✓ '+T().shopEquipped;
+  else if(owned) statusTxt=T().shopBought;
   else if(lockedByLevel) statusTxt=T().shopLevelFmt(s.unlockLevel);
-  else statusTxt=T().shopCoinPriceFmt(s.price)+(tooExpensive?' — не хватает монет':'');
+  else statusTxt=T().shopCoinPriceFmt(s.price)+(tooExpensive?' — '+T().shopNotEnough:'');
   document.getElementById('shopSkinStatus').textContent=statusTxt;
 
   // Action button
@@ -2336,21 +2331,21 @@ function buildShopPreview(){
   btn.className='shop-action-btn';
   btn.disabled=false;
   if(isEquipped){
-    btn.classList.add('equipped');btn.disabled=true;btn.textContent='✓ Надет';
+    btn.classList.add('equipped');btn.disabled=true;btn.textContent='✓ '+T().shopEquipped;
   } else if(owned){
     btn.classList.add('equip');btn.textContent=T().shopEquip;
   } else if(lockedByLevel){
     btn.classList.add('equipped');btn.disabled=true;btn.textContent=T().skinLvlFmt(s.unlockLevel);
   } else if(tooExpensive){
-    btn.classList.add('buy');btn.disabled=true;btn.textContent='🪙 '+s.price+' — мало монет';
+    btn.classList.add('buy');btn.disabled=true;btn.textContent='🪙 '+s.price+' — '+T().shopNotEnough;
   } else {
     btn.classList.add('buy');btn.textContent=T().shopCoinPriceFmt(s.price);
   }
 
-  // Bind action
-  const newBtn=btn.cloneNode(true);
-  btn.parentNode.replaceChild(newBtn,btn);
-  if(!newBtn.disabled){
+  // Bind action — use onclick/ontouchstart so re-calling buildShopPreview
+  // always replaces the handler without cloneNode/replaceChild (which caused button jump)
+  btn.onclick=null; btn.ontouchstart=null;
+  if(!btn.disabled){
     const action=()=>{
       if(!owned&&s.price){
         if(coins<s.price) return;
@@ -2361,8 +2356,8 @@ function buildShopPreview(){
       document.getElementById('shopCoins').textContent=T().shopCoinsFmt(coins);
       buildSkinRow(); buildShopPreview();
     };
-    newBtn.addEventListener('click',action);
-    newBtn.addEventListener('touchstart',e=>{e.preventDefault();action();},{passive:false});
+    btn.onclick=action;
+    btn.ontouchstart=e=>{e.preventDefault();action();};
   }
 }
 
