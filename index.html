@@ -2786,7 +2786,7 @@ function loop(ts){
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
     const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
-    const pts = (currentLevel>=10 ? 2 : 1) + comboBonus; // base + combo bonus
+    const pts = (currentLevel>=10 ? 3 : 2) + comboBonus; // base + combo bonus
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
@@ -2838,7 +2838,7 @@ function loop(ts){
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
       const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
-      const pts=(currentLevel>=10?2:1)+comboBonus+1; // gold = level + combo + 1 extra
+      const pts=(currentLevel>=10?3:2)+comboBonus+2; // gold = level + combo + 2 extra
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
