@@ -1867,7 +1867,7 @@ async function fetchLeaderboard(){
           <div class="lb-name">${escHtml(row.name)}</div>
           <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
         </div>
-        <div class="lb-score">${lbMode==='all'?(row.rating??row.score):row.score}</div>
+        <div class="lb-score">${row.score}</div>
       </div>`).join('');
   }catch(e){
     console.error('lb fetch failed:',e.message);
