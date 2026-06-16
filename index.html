@@ -3189,15 +3189,15 @@ function drawSkinTrailFx(){
     if(p.rot!==undefined) p.rot+=p.rotV||0;
     ctx.save();
     switch(p.type){
-      case 'fire':{const t=1-p.life,fc=['#fff9c4','#ffeb3b','#ff9800','#ff5722','#9e9e9e'];ctx.globalAlpha=p.life*0.85;ctx.fillStyle=fc[Math.min(Math.floor(t*5),4)];ctx.shadowBlur=10;ctx.shadowColor='#ff6a00';ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fill();break;}
+      case 'fire':{const t=1-p.life,fc=['#fff9c4','#ffeb3b','#ff9800','#ff5722','#9e9e9e'];ctx.globalAlpha=p.life*0.85;ctx.fillStyle=fc[Math.min(Math.floor(t*5),4)];ctx.shadowBlur=10;ctx.shadowColor='#ff6a00';ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.01,p.r*p.life),0,Math.PI*2);ctx.fill();break;}
       case 'spark':{ctx.globalAlpha=p.life;ctx.strokeStyle='#fde047';ctx.lineWidth=2;ctx.shadowBlur=8;ctx.shadowColor='#fde047';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.vx*3,p.y+p.vy*3);ctx.stroke();break;}
       case 'heart':{ctx.translate(p.x,p.y);ctx.globalAlpha=p.life*0.85;ctx.fillStyle='#f472b6';ctx.shadowBlur=8;ctx.shadowColor='#f472b6';ctx.font=`${p.r*1.8}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♥',0,0);break;}
       case 'bubble':{ctx.globalAlpha=p.life*0.5;ctx.strokeStyle='rgba(200,240,255,0.9)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=p.life*0.2;ctx.fillStyle='rgba(255,255,255,0.5)';ctx.beginPath();ctx.arc(p.x-p.r*0.3,p.y-p.r*0.3,p.r*0.28,0,Math.PI*2);ctx.fill();break;}
       case 'star':{p.pulse=(p.pulse||0)+0.1;const intensity=Math.abs(Math.sin(p.pulse));ctx.globalAlpha=p.life*intensity*0.85;ctx.fillStyle='#fef3c7';ctx.shadowBlur=6;ctx.shadowColor='#fef3c7';const sz=p.r*(0.4+intensity*0.6);ctx.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/2,r2=i%2===0?sz:sz*0.38;ctx.lineTo(p.x+Math.cos(a)*r2,p.y+Math.sin(a)*r2);}ctx.closePath();ctx.fill();break;}
       case 'magic':{ctx.globalAlpha=p.life*0.85;ctx.fillStyle=sk.glow;ctx.shadowBlur=12;ctx.shadowColor=sk.glow;const sz=p.r*p.life;ctx.fillRect(p.x-sz*0.25,p.y-sz*1.2,sz*0.5,sz*2.4);ctx.fillRect(p.x-sz*1.2,p.y-sz*0.25,sz*2.4,sz*0.5);break;}
       case 'crystal':{ctx.globalAlpha=p.life*0.9;ctx.fillStyle=`hsl(${p.hue},95%,75%)`;ctx.shadowBlur=8;ctx.shadowColor=`hsl(${p.hue},95%,75%)`;ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);break;}
-      case 'sparkle':{ctx.globalAlpha=p.life*0.75;ctx.fillStyle=sk.shine;ctx.shadowBlur=8;ctx.shadowColor=sk.shine;ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fill();break;}
-      case 'ember':{ctx.globalAlpha=p.life*0.85;ctx.fillStyle=p.life>0.5?'#fca5a5':'#ef4444';ctx.shadowBlur=8;ctx.shadowColor='#ef4444';ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fill();break;}
+      case 'sparkle':{ctx.globalAlpha=p.life*0.75;ctx.fillStyle=sk.shine;ctx.shadowBlur=8;ctx.shadowColor=sk.shine;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.01,p.r*p.life),0,Math.PI*2);ctx.fill();break;}
+      case 'ember':{ctx.globalAlpha=p.life*0.85;ctx.fillStyle=p.life>0.5?'#fca5a5':'#ef4444';ctx.shadowBlur=8;ctx.shadowColor='#ef4444';ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.01,p.r*p.life),0,Math.PI*2);ctx.fill();break;}
       case 'sakura':{ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.globalAlpha=p.life*0.85;for(let i=0;i<5;i++){ctx.save();ctx.rotate(i*Math.PI*0.4);ctx.fillStyle=i%2===0?'#fda4af':'#fce7f3';ctx.beginPath();ctx.ellipse(0,-p.r*0.65,p.r*0.32,p.r*0.65,0,0,Math.PI*2);ctx.fill();ctx.restore();}break;}
       case 'leaf':{ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.globalAlpha=p.life*0.8;ctx.fillStyle='#4ade80';ctx.beginPath();ctx.moveTo(0,-p.r);ctx.quadraticCurveTo(p.r*0.85,0,0,p.r);ctx.quadraticCurveTo(-p.r*0.85,0,0,-p.r);ctx.fill();break;}
       case 'snow':{ctx.globalAlpha=p.life*0.75;ctx.fillStyle='#e2e8f0';ctx.shadowBlur=4;ctx.shadowColor='#e2e8f0';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();break;}
@@ -3292,8 +3292,8 @@ function draw(){
   if(path.length<2) return;
 
   // ── Skin trail particles ──────────────────────────────────────────
-  spawnSkinTrailFx();
-  drawSkinTrailFx();
+  try{spawnSkinTrailFx();}catch(e){skinTrailFx=[];ctx.globalAlpha=1;}
+  try{drawSkinTrailFx();}catch(e){skinTrailFx=[];ctx.globalAlpha=1;}
 
   // ── Sample path into ball segments ───────────────────────────────
   const BALL_SPACING=R*1.75;
