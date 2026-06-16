@@ -1654,6 +1654,24 @@ function upsertProfile(){
   }).catch(()=>{});
 }
 // Apply Supabase profile to variables + write to localStorage
+async function fetchModeBests(pid){
+  if(!pid) return;
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/game_results?select=mode,score&player_id=eq.${encodeURIComponent(pid)}`,{headers:SB_HEADERS,signal:AbortSignal.timeout?.(6000)});
+    if(!r.ok) return;
+    const rows=await r.json();
+    if(!Array.isArray(rows)) return;
+    rows.forEach(row=>{
+      if(bestByMode.hasOwnProperty(row.mode)&&row.score>bestByMode[row.mode]) bestByMode[row.mode]=row.score;
+    });
+    localStorage.setItem(S+'BestClassic', bestByMode.classic);
+    localStorage.setItem(S+'BestTime',    bestByMode.time);
+    localStorage.setItem(S+'BestSurvival',bestByMode.survival);
+    localStorage.setItem(S+'BestMirror',  bestByMode.mirror);
+    if(typeof refreshMenuUI==='function') refreshMenuUI();
+  }catch(e){}
+}
+
 function applyProfile(row){
   lbNickname   = row.nick||'';
   coins        = row.coins||0;
@@ -2437,6 +2455,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
               localStorage.setItem(S+'pid',p.player_id);
               setCookie(S+'pid',p.player_id);
               applyProfile(p);
+              fetchModeBests(p.player_id);
               applyLang();
               showScreen('menuScreen');
               refreshMenuUI();
@@ -2489,6 +2508,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     if(rows.length>0){
       // Profile found — apply data from Supabase
       applyProfile(rows[0]);
+      fetchModeBests(pid);
       currentLang = localStorage.getItem(S+'Lang')||'ru';
       applyTheme();
       applyLang();
