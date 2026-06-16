@@ -982,8 +982,8 @@
             <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
           </div>
           <div class="go-stat">
-            <span class="go-stat-val" id="goLevel">3</span>
-            <span class="go-stat-lbl" id="goLevelLbl">Длина</span>
+            <span class="go-stat-val" id="goLevel">0</span>
+            <span class="go-stat-lbl" id="goLevelLbl">Еда</span>
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goBest">0</span>
@@ -1748,7 +1748,7 @@ const QUEST_POOL=[
 ];
 const QUEST_PARAMS={
   eat_food:   [{n:10,coins:8},{n:25,coins:15},{n:50,coins:30}],
-  score:      [{n:250,coins:10},{n:750,coins:20},{n:1500,coins:35}],
+  score:      [{n:50,coins:10},{n:150,coins:20},{n:300,coins:35}],
   play_games: [{n:1,coins:5},{n:3,coins:12},{n:5,coins:20}],
   reach_level:[{n:3,coins:8},{n:5,coins:15},{n:10,coins:30}],
   eat_gold:   [{n:1,coins:10},{n:3,coins:20},{n:5,coins:35}],
@@ -2785,7 +2785,8 @@ function loop(ts){
   }
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
-    const pts = currentLevel>=10 ? 10 : 5; // score based on level difficulty
+    const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
+    const pts = (currentLevel>=10 ? 2 : 1) + comboBonus; // base + combo bonus
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
@@ -2836,7 +2837,8 @@ function loop(ts){
       goldFoodSpawnIn=GOLD_SPAWN_INTERVAL;
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
-      const pts=(currentLevel>=10?10:5)+5; // gold = level pts + 5 bonus
+      const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
+      const pts=(currentLevel>=10?2:1)+comboBonus+1; // gold = level + combo + 1 extra
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
@@ -3077,9 +3079,8 @@ function endGame(){
     goScore.textContent=score;
     const goLevelEl=document.getElementById('goLevel');
     const goLevelLbl=document.getElementById('goLevelLbl');
-    const snakeLen=Math.round(totalLen/LEN_PER_FOOD);
-    goLevelEl.textContent=snakeLen;
-    if(goLevelLbl) goLevelLbl.textContent='Длина';
+    goLevelEl.textContent=totalFood||0;
+    if(goLevelLbl) goLevelLbl.textContent='Еда';
     const coinsEarned=coins-coinsAtGameStart;
     goCoins.textContent=(coinsEarned>0?coinsEarned:0);
     document.getElementById('goCoinsBadge').style.display=coinsEarned>0?'':'none';
