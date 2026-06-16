@@ -2301,8 +2301,8 @@ function startSkinPreviewAnim(s){
     particles.filter(p=>!BG_FX.has(p.type)).forEach(p=>drawFx(p));
 
     // Animated food — orbits near snake head so it looks like snake is chasing it
-    const foodX=Math.max(FR+4,Math.min(W-FR-4, pts[0].x-W*0.14+Math.cos(_skinAnimT*1.4)*W*0.07));
-    const foodY=Math.max(FR+4,Math.min(H-FR-4, pts[0].y+Math.sin(_skinAnimT*2.0)*H*0.20));
+    const foodX=Math.max(FR+4,Math.min(W-FR-4, pts[0].x-W*0.06+Math.cos(_skinAnimT*1.4)*W*0.04));
+    const foodY=Math.max(FR+4,Math.min(H-FR-4, pts[0].y+Math.sin(_skinAnimT*2.0)*H*0.10));
     const pulse=0.85+Math.sin(_skinAnimT*3)*0.15;
     const fr=FR*pulse;
     // outer glow
