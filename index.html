@@ -1182,6 +1182,7 @@ const TRANSLATIONS={
     tapToStart:'Šípka / swipe — štart!',
     restoreFound:(nick,best,lvl,coins)=>`Našiel sa profil «${nick}»: rekord ${best}, úroveň ${lvl}, 🪙 ${coins}. Obnoviť tento postup?`,
     nickTaken:(n)=>`Prezývka «${n}» je už obsadená. Zvoľ inú.`,
+    nickCooldown:'Prezývku možno meniť len raz za hodinu.',
     achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
     achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
     achEmptyLocked:'Všetky ocenenia sú už otvorené!',
@@ -1271,6 +1272,7 @@ const TRANSLATIONS={
     tapToStart:'Стрелка / свайп — старт!',
     restoreFound:(nick,best,lvl,coins)=>`Найден профиль «${nick}»: рекорд ${best}, уровень ${lvl}, 🪙 ${coins}. Восстановить этот прогресс?`,
     nickTaken:(n)=>`Ник «${n}» уже занят. Введи другой ник.`,
+    nickCooldown:'Менять ник можно раз в час. Попробуй позже.',
     achCounterFmt:(u,t)=>`${u}/${t} открыто`,
     achEmptyUnlocked:'Пока нет открытых достижений',
     achEmptyLocked:'Все достижения уже открыты!',
@@ -1360,6 +1362,7 @@ const TRANSLATIONS={
     tapToStart:'Arrow / swipe to start!',
     restoreFound:(nick,best,lvl,coins)=>`Found profile "${nick}": best ${best}, level ${lvl}, 🪙 ${coins}. Restore this progress?`,
     nickTaken:(n)=>`Nickname "${n}" is already taken. Pick another one.`,
+    nickCooldown:'You can only change your nickname once per hour.',
     achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
     achEmptyUnlocked:'No achievements unlocked yet',
     achEmptyLocked:'All achievements unlocked!',
@@ -4015,22 +4018,37 @@ function stopMusic(){
       }
     }catch(e){}
 
-    // Apply locally
-    const oldNick=lbNickname;
-    lbNickname=newNick;
-    localStorage.setItem(S+'Nick',newNick);
-
     if(statusEl) statusEl.textContent='💾 Сохраняем...';
 
     // Update players.nick + all game_results.name via SECURITY DEFINER RPC (bypasses RLS)
+    // Apply locally ONLY after server confirms success
     const pid=getPlayerId();
     try{
-      await fetch(`${SB_URL}/rest/v1/rpc/rename_player`,{
+      const renameRes=await fetch(`${SB_URL}/rest/v1/rpc/rename_player`,{
         method:'POST',
         headers:SB_HEADERS,
         body:JSON.stringify({p_player_id:pid, p_new_nick:newNick})
       });
-    }catch(e){}
+      const renameJson=await renameRes.json().catch(()=>({}));
+      if(renameJson && renameJson.ok===false){
+        if(statusEl) statusEl.textContent='';
+        saveBtn.disabled=false; cancelBtn.disabled=false;
+        if(renameJson.error==='rename_cooldown'){
+          inp.classList.add('err');
+          errEl.textContent=T().nickCooldown||'Подождите 1 час между переименованиями';
+        } else {
+          inp.classList.add('err');
+          errEl.textContent=renameJson.error||'Ошибка сервера';
+        }
+        return;
+      }
+    }catch(e){
+      // Network error — still apply locally so UX is not broken
+    }
+
+    // Server confirmed — apply locally
+    lbNickname=newNick;
+    localStorage.setItem(S+'Nick',newNick);
 
     // Update display
     const dispEl=document.getElementById('settNickDisplay');
