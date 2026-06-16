@@ -780,7 +780,7 @@ const TBL_SQL={
   },
   players:(off,s)=>{
     const w=s?`WHERE (nick ILIKE '%${_esc(s)}%' OR player_id::text ILIKE '%${_esc(s)}%')`:'';
-    return `SELECT nick,coins,best,best_level,games_played,total_score,lang,skin_idx,difficulty,theme,last_seen,created_at,LEFT(player_id::text,8) AS pid_short
+    return `SELECT nick,last_seen,created_at,games_played,best,best_level,total_score,coins,lang,difficulty,theme,skin_idx,LEFT(player_id::text,8) AS pid_short
     FROM players ${w} ORDER BY last_seen DESC NULLS LAST LIMIT ${TBL_SZ} OFFSET ${off}`;
   },
   game_results:(off,s)=>{
