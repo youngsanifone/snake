@@ -1590,7 +1590,6 @@ let boughtSkins = new Set();
 let skinIdx     = 0;
 const skin=()=>SKINS[skinIdx];
 function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
-const isUnlocked=isUnlockedIdx;
 const isUnlocked=(i)=>isUnlockedIdx(i);
 // ── PROFILE SAVE ──────────────────────────────────────────────────
 function saveAll(){
