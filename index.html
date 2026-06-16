@@ -3016,13 +3016,15 @@ function loop(ts){
   const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
   const spd=levelData.speed*dt/16*spdMult;
   dir=nextDir;
-  const head={x:path[0].x+dir.x*spd,y:path[0].y+dir.y*spd};
-  // Walls are always solid — clamp position in all cases
-  head.x=Math.max(R+1,Math.min(W-R-1,head.x));
-  head.y=Math.max(R+1,Math.min(H-R-1,head.y));
+  // Compute raw (unclamped) position for accurate collision detection
+  const rawX=path[0].x+dir.x*spd, rawY=path[0].y+dir.y*spd;
+  // Clamp so the snake never renders outside the field
+  const head={x:Math.max(R+1,Math.min(W-R-1,rawX)),y:Math.max(R+1,Math.min(H-R-1,rawY))};
   if(invincible<=0&&!dbgInvOn){
     let hit=false;
-    if(head.x<=R+1||head.x>=W-R-1||head.y<=R+1||head.y>=H-R-1) hit=true;
+    // Wall hit: only when the snake actively moves INTO the wall (raw position exits bounds)
+    // This prevents false death when running parallel to a wall at the boundary
+    if(rawX<R+1||rawX>W-R-1||rawY<R+1||rawY>H-R-1) hit=true;
     if(!hit) for(const o of obstacles){
       if(head.x>o.x-R&&head.x<o.x+o.w+R&&head.y>o.y-R&&head.y<o.y+o.h+R){hit=true;break;}
     }
@@ -3666,7 +3668,11 @@ document.addEventListener('keydown',e=>{
     w:{x:0,y:-1},s:{x:0,y:1},a:{x:-1,y:0},d:{x:1,y:0},
     W:{x:0,y:-1},S:{x:0,y:1},A:{x:-1,y:0},D:{x:1,y:0}};
   const nd=m[e.key];
-  if(nd){applyDir(nd);if(e.key.startsWith('Arrow'))e.preventDefault();}
+  if(nd){
+    // Don't start the snake on a held/repeating key — require a fresh press
+    if(awaitingStart&&e.repeat) return;
+    applyDir(nd);if(e.key.startsWith('Arrow'))e.preventDefault();
+  }
 });
 // D-pad
 function bindDir(id,nd){
