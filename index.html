@@ -136,6 +136,9 @@
   .msb-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;}
   .msb-val{font-size:1rem;font-weight:800;color:var(--text);line-height:1;}
   .msb-lbl{font-size:0.56rem;color:var(--text3);letter-spacing:0.3px;text-transform:uppercase;}
+  .mode-bests{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;margin-bottom:1px;}
+  .mb-cell{font-size:0.72rem;font-weight:800;color:var(--text);white-space:nowrap;line-height:1.3;}
+  .mb-cell .mb-mode{font-size:0.6rem;opacity:0.7;}
   .msb-sep{width:1px;height:24px;background:var(--border2);flex-shrink:0;}
   /* MENU BUTTONS */
   .menu-play-btn{
@@ -817,8 +820,13 @@
   <!-- Statový panel -->
   <div class="menu-stats-bar">
     <div class="msb-item">
-      <div class="msb-val" id="menuBest">0</div>
-      <div class="msb-lbl">Рекорд</div>
+      <div class="mode-bests">
+        <span class="mb-cell"><span class="mb-mode">🐍</span><span id="mBestC">0</span></span>
+        <span class="mb-cell"><span class="mb-mode">💀</span><span id="mBestS">0</span></span>
+        <span class="mb-cell"><span class="mb-mode">⏱</span><span id="mBestT">0</span></span>
+        <span class="mb-cell"><span class="mb-mode">🪞</span><span id="mBestM">0</span></span>
+      </div>
+      <div class="msb-lbl" id="msbRecLbl">Рекорды</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
@@ -1593,6 +1601,7 @@ let savedLevel  = 1;
 let coins       = 0;
 let boughtSkins = new Set();
 let skinIdx     = 0;
+let bestByMode  = {classic:0,time:0,survival:0,mirror:0};
 const skin=()=>SKINS[skinIdx];
 function isUnlockedIdx(i){return bestLevel>=SKINS[i].unlockLevel||boughtSkins.has(i);}
 const isUnlocked=(i)=>isUnlockedIdx(i);
@@ -1601,6 +1610,10 @@ function saveAll(){
   // 1. Cache in localStorage (instant)
   localStorage.setItem(S+'Best',best);
   localStorage.setItem(S+'BestLevel',bestLevel);
+  localStorage.setItem(S+'BestClassic', bestByMode.classic);
+  localStorage.setItem(S+'BestTime',    bestByMode.time);
+  localStorage.setItem(S+'BestSurvival',bestByMode.survival);
+  localStorage.setItem(S+'BestMirror',  bestByMode.mirror);
   localStorage.setItem(S+'Games',gamesPlayed);
   localStorage.setItem(S+'Skin',skinIdx);
   localStorage.setItem(S+'SavedLevel',savedLevel);
@@ -1687,6 +1700,10 @@ function applyLocalCache(){
   coins        = parseInt(localStorage.getItem(S+'Coins')||'0');
   best         = parseInt(localStorage.getItem(S+'Best')||'0');
   bestLevel    = parseInt(localStorage.getItem(S+'BestLevel')||'1');
+  bestByMode.classic  = parseInt(localStorage.getItem(S+'BestClassic') ||localStorage.getItem(S+'Best')||'0');
+  bestByMode.time     = parseInt(localStorage.getItem(S+'BestTime')    ||'0');
+  bestByMode.survival = parseInt(localStorage.getItem(S+'BestSurvival')||'0');
+  bestByMode.mirror   = parseInt(localStorage.getItem(S+'BestMirror')  ||'0');
   gamesPlayed  = parseInt(localStorage.getItem(S+'Games')||'0');
   savedLevel   = parseInt(localStorage.getItem(S+'SavedLevel')||'1');
   skinIdx      = parseInt(localStorage.getItem(S+'Skin')||'0');
@@ -2066,7 +2083,10 @@ function buildSkinRow(){
 }
 // ── MENU ──────────────────────────────────────────────────────────
 function refreshMenuUI(){
-  document.getElementById('menuBest').textContent=best;
+  document.getElementById('mBestC').textContent=bestByMode.classic||0;
+  document.getElementById('mBestT').textContent=bestByMode.time||0;
+  document.getElementById('mBestS').textContent=bestByMode.survival||0;
+  document.getElementById('mBestM').textContent=bestByMode.mirror||0;
   document.getElementById('menuLevel').textContent=bestLevel;
   document.getElementById('menuCoins').textContent=coins;
   const _nd=document.getElementById('settNickDisplay');
@@ -3418,6 +3438,7 @@ function endGame(){
   // Compare against best AT GAME START (best updates live during the game)
   const isNewRecord = score > 0 && score > sessionStartBest;
   if(score>best){best=score;bestHud.textContent=best;}
+  if(score>(bestByMode[gameMode]||0)){bestByMode[gameMode]=score;}
   comboHudEl.style.display='none';
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
   if(navigator.vibrate) navigator.vibrate([180]); // haptic on death (mobile)
