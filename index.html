@@ -2092,7 +2092,7 @@ function startSkinPreviewAnim(s){
   if(!canvas) return;
   const ctx=canvas.getContext('2d');
   const W=canvas.width, H=canvas.height;
-  const R=9;
+  const R=9, FR=7;
 
   // Per-skin particle FX — indexed by SKINS position (language-independent)
   // 0:Зелёный  1:Синий   2:Красный 3:Джунгли 4:Золотой 5:Сакура  6:Молния 7:Фиолетовый
@@ -2299,6 +2299,18 @@ function startSkinPreviewAnim(s){
 
     // Foreground particles (drawn over snake)
     particles.filter(p=>!BG_FX.has(p.type)).forEach(p=>drawFx(p));
+
+    // Animated food — orbits ahead of the snake head
+    const foodX=pts[0].x+Math.cos(_skinAnimT*1.1)*W*0.10+18;
+    const foodY=pts[0].y+Math.sin(_skinAnimT*1.7)*H*0.18;
+    const pulse=0.85+Math.sin(_skinAnimT*3)*0.15;
+    const fr=FR*pulse;
+    ctx.beginPath();ctx.arc(foodX,foodY,fr*2.2,0,Math.PI*2);
+    ctx.fillStyle=s.foodColor+'28';ctx.fill();
+    const fg=ctx.createRadialGradient(foodX-fr*0.3,foodY-fr*0.3,0,foodX,foodY,fr);
+    fg.addColorStop(0,s.foodInner);fg.addColorStop(1,s.foodColor);
+    ctx.beginPath();ctx.arc(foodX,foodY,fr,0,Math.PI*2);
+    ctx.fillStyle=fg;ctx.fill();
   }
 
   let _prevTs=0;
