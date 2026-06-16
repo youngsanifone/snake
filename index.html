@@ -87,7 +87,29 @@
     animation:glow 2s ease-in-out infinite;margin-bottom:clamp(4px,1vh,10px);
   }
   @keyframes glow{0%,100%{filter:brightness(1);}50%{filter:brightness(1.3);}}
-  /* SKINS */
+  /* SKINS GRID */
+  .skin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:340px;margin:0 auto 12px;}
+  .skin-card{
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    background:var(--panel);border:2px solid var(--border);border-radius:14px;
+    padding:11px 6px 9px;cursor:pointer;touch-action:manipulation;
+    transition:all 0.15s;position:relative;overflow:hidden;
+  }
+  .skin-card:active{transform:scale(0.96);}
+  .skin-card.active{border-color:#facc15;background:color-mix(in srgb,#facc15 10%,var(--panel));box-shadow:0 0 12px rgba(250,204,21,0.25);}
+  .skin-card.owned-card{border-color:#4ade80;background:color-mix(in srgb,#4ade80 8%,var(--panel));}
+  .skin-card.locked-card{opacity:0.5;cursor:default;filter:grayscale(0.6);}
+  .skin-card-ball{width:36px;height:36px;border-radius:50%;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+  .skin-card-name{font-size:0.58rem;font-weight:700;color:var(--text2);text-align:center;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .skin-card-badge{
+    position:absolute;top:4px;right:4px;
+    font-size:0.48rem;font-weight:800;padding:1px 4px;border-radius:6px;line-height:1.4;
+  }
+  .skin-card-badge.lvl{background:rgba(99,102,241,0.25);color:#a5b4fc;}
+  .skin-card-badge.price{background:rgba(250,204,21,0.2);color:#facc15;}
+  .skin-card-badge.free{background:rgba(74,222,128,0.2);color:#4ade80;}
+  .skin-card-badge.equipped{background:rgba(250,204,21,0.3);color:#facc15;}
+  /* Row compat (used elsewhere) */
   .skin-row{display:flex;gap:5px;margin-bottom:clamp(4px,1vh,8px);flex-wrap:wrap;justify-content:center;}
   .skin-btn{
     width:clamp(36px,9vw,44px);height:clamp(40px,10vw,50px);border-radius:11px;border:2px solid var(--border2);
@@ -837,11 +859,9 @@
 </div>
 <!-- SHOP -->
 <div class="screen" id="shopScreen">
-  <div class="rec-title">🪙 Магазин</div>
+  <div class="rec-title">🛒 Магазин</div>
   <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
-  <div id="shopSkinLabel" style="font-size:0.65rem;color:var(--text3);margin-bottom:8px;letter-spacing:1px;">ВЫБОР СКИНА</div>
-  <div class="skin-row" id="shopSkinRow"></div>
-  <!-- Selected skin card -->
+  <div class="skin-grid" id="shopSkinRow"></div>
   <div class="shop-preview-card" id="shopPreviewCard"></div>
   <button class="shop-back" id="shopBack">← Назад</button>
 </div>
@@ -1178,7 +1198,7 @@ const TRANSLATIONS={
     dbgBomb:'💣 Bomba',dbgGold:'⭐ Zlato',dbgInv:'♾ Inv.',
     dbgAllSkins:'🔓 Všetky skiny',dbgAllAch:'🏅 Všetky ocenenia',dbgResetAll:'🗑 Resetovať všetko',
     kbHint:'↑↓←→ / WASD · SPACE — pauza',
-    skinNames:['Zelený','Modrý','Červený','Zlatý','Fialový','Ružový','Tmavý','Oceán','Oheň'],
+    skinNames:['Zelený','Modrý','Červený','Džungľa','Zlatý','Sakura','Blesk','Fialový','Ružový','Tmavý','Oceán','Nočný','Oheň','Diamant'],
     achNames:['Prvé sústo','Desiatka','Combo majster','Zlatokop','Pod ochranou','Demolačník','Rýchlik','Mraziak','Úroveň 5','Úroveň 10','Preživší','Časový šampión','Zrkadlár'],
     achDescs:['Zjedz prvé jedlo','Zjedz 10 jedál za jednu hru','Dosiahni combo x3 (5+ za sebou)','Zjedz zlaté jedlo','Zober štít','Použi bombu','Použi turbo','Použi mrazenie','Dosiahni 5. úroveň','Dosiahni 10. úroveň','Prežij 30 sek. v Prežití','Nazber 20+ bodov za 60 sek.','Zjedz 5 jedál v režime Zrkadlo'],
     questTitles:['Jedák','Bodovač','Hráč','Horolezec','Zlatokop','Zberateľ','Combo'],
@@ -1266,7 +1286,7 @@ const TRANSLATIONS={
     dbgBomb:'💣 Бомба',dbgGold:'⭐ Золото',dbgInv:'♾ Инв.',
     dbgAllSkins:'🔓 Все скины',dbgAllAch:'🏅 Все ачивки',dbgResetAll:'🗑 Сбросить всё',
     kbHint:'↑↓←→ / WASD · SPACE — пауза',
-    skinNames:['Зелёный','Синий','Красный','Золотой','Фиолетовый','Розовый','Тёмный','Океан','Огонь'],
+    skinNames:['Зелёный','Синий','Красный','Джунгли','Золотой','Сакура','Молния','Фиолетовый','Розовый','Тёмный','Океан','Ночной','Огонь','Алмаз'],
     achNames:['Первый укус','Десятка','Комбо-мастер','Золотоискатель','Под защитой','Подрывник','Спидстер','Заморозка','Уровень 5','Уровень 10','Выживший','Чемпион времени','Зеркальщик'],
     achDescs:['Съешь первую еду','Съешь 10 еды за одну игру','Сделай комбо x3 (5+ подряд)','Съешь золотую еду','Подбери щит-предмет','Используй бомбу','Используй ускорение','Используй заморозку','Достигни 5-го уровня','Достигни 10-го уровня','Продержись 30 сек в Выживании','Набери 20+ очков за 60 сек','Съешь 5 еды в режиме Зеркало'],
     questTitles:['Обжора','Очкарик','Игроман','Скалолаз','Золотоискатель','Коллекционер','Комбо'],
@@ -1354,7 +1374,7 @@ const TRANSLATIONS={
     dbgBomb:'💣 Bomb',dbgGold:'⭐ Gold',dbgInv:'♾ Inv.',
     dbgAllSkins:'🔓 All skins',dbgAllAch:'🏅 All achiev.',dbgResetAll:'🗑 Reset all',
     kbHint:'↑↓←→ / WASD · SPACE — pause',
-    skinNames:['Green','Blue','Red','Golden','Purple','Pink','Dark','Ocean','Fire'],
+    skinNames:['Green','Blue','Red','Jungle','Golden','Sakura','Lightning','Purple','Pink','Dark','Ocean','Night','Fire','Diamond'],
     achNames:['First bite','Ten food','Combo master','Gold digger','Protected','Demolisher','Speedster','Freezer','Level 5','Level 10','Survivor','Time champ','Mirror player'],
     achDescs:['Eat first food','Eat 10 food in one game','Get combo ×3 (5+ in a row)','Eat golden food','Pick up a shield','Use a bomb','Use speed boost','Use freeze','Reach level 5','Reach level 10','Survive 30 sec in Survival','Score 20+ pts in 60 sec','Eat 5 food in Mirror mode'],
     questTitles:['Glutton','Scorer','Gamer','Climber','Gold digger','Collector','Combo'],
@@ -1523,16 +1543,22 @@ async function fetchGlobalStats(){
 fetchGlobalStats();
 
 const SKINS=[
+  // Free — unlock by level
   {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Зелёный'},
   {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Синий'},
   {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Красный'},
+  {emoji:'🌿',body:'#34d399',shine:'#a7f3d0',glow:'#10b981',bg:'#051a10',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#0a2e1a',unlockLevel:15,name:'Джунгли'},
   {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
+  {emoji:'🌸',body:'#f9a8d4',shine:'#fce7f3',glow:'#ec4899',bg:'#1a0510',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d0a20',unlockLevel:25,name:'Сакура'},
+  {emoji:'⚡',body:'#fde047',shine:'#fefce8',glow:'#eab308',bg:'#0a0a00',foodColor:'#818cf8',foodInner:'#c7d2fe',obs:'#1a1a00',unlockLevel:30,name:'Молния'},
   {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолетовый'},
   // Shop skins — purchased for coins
   {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:100,name:'Розовый'},
   {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:150,name:'Тёмный'},
   {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:200,name:'Океан'},
+  {emoji:'🌙',body:'#818cf8',shine:'#c7d2fe',glow:'#6366f1',bg:'#020617',foodColor:'#f9a8d4',foodInner:'#fce7f3',obs:'#0f0a2e',unlockLevel:999,price:250,name:'Ночной'},
   {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:300,name:'Огонь'},
+  {emoji:'💎',body:'#67e8f9',shine:'#e0f2fe',glow:'#22d3ee',bg:'#001a20',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#002a30',unlockLevel:999,price:400,name:'Алмаз'},
 ];
 // ── SAVES ───────────────────────────────────────────────────────
 // Reset on version change — clears localStorage for ALL players on page reload
@@ -1978,35 +2004,40 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
   if(id==='menuScreen') fetchGlobalStats();
 }
-// ── SKINS (now in shop) ──────────────────────────────────────────────
+// ── SKINS GRID (shop) ────────────────────────────────────────────────
 function buildSkinRow(){
   const row=document.getElementById('shopSkinRow');
   if(!row) return;
-  // Determine mode: in shop (shopPreviewCard exists) or plain skin selection
-  const inShop = !!document.getElementById('shopPreviewCard');
   row.innerHTML='';
   SKINS.forEach((s,i)=>{
     const unlocked=isUnlocked(i);
-    const b=document.createElement('button');
-    // In shop: highlight preview selection; outside shop: the equipped skin
-    const isHighlighted = inShop ? (i===shopPreviewIdx) : (i===skinIdx);
-    b.className='skin-btn'+(isHighlighted?' active':'')+(unlocked?'':' locked');
-    b.innerHTML=`<span class="skin-emoji">${s.emoji}</span><span class="skin-lbl">${unlocked?s.name:T().skinLvlFmt(s.unlockLevel)}</span>`;
+    const isActive=i===shopPreviewIdx;
+    const isEquipped=i===skinIdx;
+    const hasPriceTag=s.price&&!unlocked;
+    const card=document.createElement('button');
+    let cls='skin-card';
+    if(isActive) cls+=' active';
+    else if(unlocked) cls+=' owned-card';
+    else cls+=' locked-card';
+    // Badge text
+    let badge='';
+    if(isEquipped) badge=`<span class="skin-card-badge equipped">✓</span>`;
+    else if(hasPriceTag) badge=`<span class="skin-card-badge price">${s.price}🪙</span>`;
+    else if(!unlocked) badge=`<span class="skin-card-badge lvl">Ур.${s.unlockLevel}</span>`;
+    else badge=`<span class="skin-card-badge free">✓</span>`;
+    card.className=cls;
+    card.innerHTML=`
+      ${badge}
+      <div class="skin-card-ball" style="background:radial-gradient(circle at 35% 35%,${s.shine},${s.body});box-shadow:0 0 10px ${s.glow}55;"></div>
+      <div class="skin-card-name">${s.name}</div>`;
     const sel=()=>{
-      if(inShop){
-        // In shop — select for preview only, don't change skinIdx
-        shopPreviewIdx=i;
-        buildSkinRow();
-        buildShopPreview();
-      } else {
-        // Outside shop — switch skin immediately
-        if(!unlocked) return;
-        skinIdx=i;saveAll();buildSkinRow();
-      }
+      shopPreviewIdx=i;
+      buildSkinRow();
+      buildShopPreview();
     };
-    b.addEventListener('click',sel);
-    b.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
-    row.appendChild(b);
+    card.addEventListener('click',sel);
+    card.addEventListener('touchstart',e=>{e.preventDefault();sel();},{passive:false});
+    row.appendChild(card);
   });
 }
 // ── MENU ──────────────────────────────────────────────────────────
