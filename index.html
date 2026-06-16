@@ -253,32 +253,71 @@
     0%{opacity:0;transform:translateY(40px) scale(0.95);}
     100%{opacity:1;transform:translateY(0) scale(1);}
   }
+  @keyframes goCardIn{
+    0%{opacity:0;transform:translateY(20px) scale(0.9);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
+  @keyframes goMsgIn{
+    0%{opacity:0;transform:scale(0.7);}
+    60%{transform:scale(1.08);}
+    100%{opacity:1;transform:scale(1);}
+  }
+  @keyframes goRecordPulse{
+    0%,100%{text-shadow:0 0 12px #facc15,0 0 24px #f59e0b;opacity:1;}
+    50%{text-shadow:0 0 24px #facc15,0 0 48px #f59e0b,0 0 64px #fde68a;opacity:0.85;}
+  }
+  @keyframes goConfetti{
+    0%{transform:translateY(0) rotate(0deg);opacity:1;}
+    100%{transform:translateY(220px) rotate(720deg);opacity:0;}
+  }
+  @keyframes goBgPulse{
+    0%,100%{opacity:0.82;}
+    50%{opacity:0.92;}
+  }
   #gameOverlay{position:absolute;top:0;left:0;width:100%;height:100%;
     display:none;flex-direction:column;align-items:center;justify-content:center;
-    gap:9px;pointer-events:none;background:rgba(5,5,16,0.82);border-radius:8px;
-    backdrop-filter:blur(4px);}
+    gap:10px;pointer-events:none;border-radius:8px;overflow:hidden;}
+  #gameOverlay::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 30%,rgba(99,102,241,0.22) 0%,rgba(5,5,16,0.88) 70%);
+    backdrop-filter:blur(6px);z-index:0;animation:goBgPulse 3s ease-in-out infinite;}
   #gameOverlay.visible{animation:goSlideIn 0.35s cubic-bezier(0.22,1,0.36,1) both;}
-  .go-msg{font-size:clamp(1rem,4vw,1.4rem);font-weight:bold;color:#f9fafb;text-align:center;}
+  #goConfettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
+  #goInner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;pointer-events:none;}
+  .go-msg{font-size:clamp(1.2rem,5vw,1.7rem);font-weight:900;color:#f9fafb;text-align:center;
+    letter-spacing:0.02em;text-shadow:0 2px 16px rgba(99,102,241,0.4);}
+  #gameOverlay.visible .go-msg{animation:goMsgIn 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s both;}
   .go-sub{font-size:0.76rem;color:var(--text3);text-align:center;padding:0 12px;}
   /* record row */
-  .go-record-row{display:flex;gap:18px;margin:2px 0;}
-  .go-stat{display:flex;flex-direction:column;align-items:center;gap:2px;
-    background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);
-    border-radius:10px;padding:6px 16px;min-width:70px;}
-  .go-stat-val{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:800;
+  .go-record-row{display:flex;gap:12px;margin:2px 0;}
+  .go-stat{display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);
+    border-radius:14px;padding:10px 18px;min-width:76px;
+    box-shadow:0 2px 16px rgba(99,102,241,0.1),inset 0 1px 0 rgba(255,255,255,0.06);}
+  #gameOverlay.visible .go-stat:nth-child(1){animation:goCardIn 0.4s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+  #gameOverlay.visible .go-stat:nth-child(2){animation:goCardIn 0.4s cubic-bezier(0.22,1,0.36,1) 0.25s both;}
+  #gameOverlay.visible .go-stat:nth-child(3){animation:goCardIn 0.4s cubic-bezier(0.22,1,0.36,1) 0.35s both;}
+  .go-stat-val{font-size:clamp(1.3rem,5vw,1.8rem);font-weight:900;
     background:linear-gradient(135deg,#c084fc,#818cf8);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
   .go-stat-val.gold{background:linear-gradient(135deg,#fde68a,#facc15);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-  .go-stat-lbl{font-size:0.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;}
-  .go-new-record{font-size:0.78rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;
-    background:linear-gradient(135deg,#fde68a,#facc15);
+  .go-stat-lbl{font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;}
+  .go-new-record{font-size:0.82rem;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;
+    background:linear-gradient(135deg,#fde68a,#facc15,#fb923c);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    display:none;}
-  .go-btn{padding:9px 22px;background:#4ade80;color:#0f0f0f;border:none;border-radius:8px;
-    font-size:0.88rem;font-weight:bold;cursor:pointer;pointer-events:all;touch-action:manipulation;margin:2px;}
-  .go-btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border);}
-  .go-btn.share{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;}
+    display:none;animation:goRecordPulse 1.5s ease-in-out infinite;}
+  .go-btns{display:flex;flex-direction:column;gap:7px;width:min(200px,72%);pointer-events:all;}
+  .go-btn{padding:11px 22px;border:none;border-radius:12px;
+    font-size:0.9rem;font-weight:800;cursor:pointer;touch-action:manipulation;
+    transition:transform 0.12s,box-shadow 0.12s;letter-spacing:0.01em;}
+  .go-btn:active{transform:scale(0.96);}
+  .go-btn.primary{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;
+    box-shadow:0 4px 20px rgba(34,197,94,0.35);}
+  .go-btn.share{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
+    box-shadow:0 4px 20px rgba(99,102,241,0.35);}
+  .go-btn.sec{background:rgba(255,255,255,0.07);color:var(--text2);border:1px solid rgba(255,255,255,0.12);box-shadow:none;}
+  #gameOverlay.visible .go-btns{animation:goCardIn 0.4s cubic-bezier(0.22,1,0.36,1) 0.42s both;}
   /* ── NICK CHANGE MODAL ────────────────────────────────────────── */
   #nickModal{
     position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.72);
@@ -928,26 +967,31 @@
       </div>
     </div>
     <div id="gameOverlay">
-      <div class="go-msg" id="goMsg"></div>
-      <div class="go-new-record" id="goNewRecord">★ НОВЫЙ РЕКОРД ★</div>
-      <div class="go-record-row">
-        <div class="go-stat">
-          <span class="go-stat-val" id="goScore">0</span>
-          <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
+      <canvas id="goConfettiCanvas"></canvas>
+      <div id="goInner">
+        <div class="go-msg" id="goMsg"></div>
+        <div class="go-new-record" id="goNewRecord">✦ НОВЫЙ РЕКОРД ✦</div>
+        <div class="go-record-row">
+          <div class="go-stat">
+            <span class="go-stat-val" id="goScore">0</span>
+            <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
+          </div>
+          <div class="go-stat">
+            <span class="go-stat-val gold" id="goCoins">+0</span>
+            <span class="go-stat-lbl">Монеты</span>
+          </div>
+          <div class="go-stat">
+            <span class="go-stat-val" id="goBest">0</span>
+            <span class="go-stat-lbl" id="goBestLbl">Рекорд</span>
+          </div>
         </div>
-        <div class="go-stat">
-          <span class="go-stat-val gold" id="goCoins">+0</span>
-          <span class="go-stat-lbl">Монеты</span>
-        </div>
-        <div class="go-stat">
-          <span class="go-stat-val" id="goBest">0</span>
-          <span class="go-stat-lbl" id="goBestLbl">Рекорд</span>
+        <div class="go-sub" id="goSub"></div>
+        <div class="go-btns">
+          <button class="go-btn primary" id="goReplay">▶ Начать заново</button>
+          <button class="go-btn share" id="goShare">📤 Поделиться</button>
+          <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
         </div>
       </div>
-      <div class="go-sub" id="goSub"></div>
-      <button class="go-btn" id="goReplay">▶ Начать заново</button>
-      <button class="go-btn share" id="goShare">📤 Поделиться</button>
-      <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
     </div>
   </div>
   <div class="dpad">
@@ -3074,9 +3118,50 @@ function endGame(){
     gameOverlay.classList.remove('visible');
     void gameOverlay.offsetWidth;
     gameOverlay.classList.add('visible');
+    // Confetti on new record
+    if(isNewRecord) launchGoConfetti();
     // Auto-submit to leaderboard if score > 0
     if(score>0) submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);
   },350);
+}
+// ── GAME OVER CONFETTI ────────────────────────────────────────────
+function launchGoConfetti(){
+  const canvas=document.getElementById('goConfettiCanvas');
+  if(!canvas) return;
+  const W=canvas.offsetWidth||300, H=canvas.offsetHeight||500;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const colors=['#c084fc','#818cf8','#facc15','#4ade80','#f87171','#fb923c','#38bdf8'];
+  const shapes=['rect','circle','tri'];
+  const pieces=Array.from({length:60},()=>({
+    x:Math.random()*W, y:-10-Math.random()*60,
+    vx:(Math.random()-0.5)*2.5, vy:2.5+Math.random()*2.5,
+    rot:Math.random()*360, rotV:(Math.random()-0.5)*8,
+    size:5+Math.random()*6, color:colors[Math.random()*colors.length|0],
+    shape:shapes[Math.random()*shapes.length|0], alpha:1
+  }));
+  let rafId;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    let alive=false;
+    for(const p of pieces){
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotV; p.vy+=0.04;
+      if(p.y>H-40) p.alpha-=0.04;
+      if(p.alpha<=0) continue;
+      alive=true;
+      ctx.save(); ctx.globalAlpha=p.alpha;
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;
+      if(p.shape==='rect'){ ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);}
+      else if(p.shape==='circle'){ ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill();}
+      else{ ctx.beginPath();ctx.moveTo(0,-p.size/2);ctx.lineTo(p.size/2,p.size/2);ctx.lineTo(-p.size/2,p.size/2);ctx.closePath();ctx.fill();}
+      ctx.restore();
+    }
+    if(alive) rafId=requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,W,H);
+  }
+  if(rafId) cancelAnimationFrame(rafId);
+  draw();
 }
 // ── DEBUG PANEL ───────────────────────────────────────────────────
 const debugPanel=document.getElementById('debugPanel');
