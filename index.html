@@ -1843,7 +1843,7 @@ async function fetchLeaderboard(){
   el.innerHTML='<div class="lb-loading">'+T().lbLoading+'</div>';
   try{
     const modeFilter=lbMode?`&mode=eq.${lbMode}`:'';
-    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode&order=score.desc&limit=20${modeFilter}`,{
+    const r=await fetch(`${SB_URL}/rest/v1/leaderboard_best?select=name,score,level,mode,rating&order=rating.desc&limit=20${modeFilter}`,{
       headers:SB_HEADERS,
       signal:AbortSignal.timeout?.(8000) // 8s timeout
     });
@@ -1862,9 +1862,9 @@ async function fetchLeaderboard(){
         <span class="lb-rank ${rankClass[i]||''}">${medals[i]||`<span style="font-size:.72rem;color:#64748b">${i+1}</span>`}</span>
         <div style="flex:1;">
           <div class="lb-name">${escHtml(row.name)}</div>
-          <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle}</div>
+          <div class="lb-meta">${T().skinLvlFmt(row.level)} · ${modeMap[row.mode]||T().modeClassicTitle} · <span style="color:var(--text2)">${row.score}×${row.level}</span></div>
         </div>
-        <div class="lb-score">${row.score}</div>
+        <div class="lb-score">${row.rating}</div>
       </div>`).join('');
   }catch(e){
     console.error('lb fetch failed:',e.message);
