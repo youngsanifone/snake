@@ -1073,7 +1073,7 @@
     </div>
     <!-- Sound -->
     <div class="sett-card">
-      <div class="sett-label">🔊 Звук</div>
+      <div class="sett-label" id="settSoundLbl">🔊 Звук</div>
       <div class="sett-row">
         <span class="rl">🎵 Музыка</span>
         <button class="sett-toggle" id="btnMusicToggle">вкл</button>
@@ -1159,6 +1159,7 @@ const TRANSLATIONS={
     questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
     settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
+    settingsSound:'🔊 Zvuk',settingsChangeNick:'✏️ Zmeniť',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
     settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
     settingsLang:'🌐 Jazyk',langBtn:'🇬🇧 EN',
@@ -1247,6 +1248,7 @@ const TRANSLATIONS={
     questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
     settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
+    settingsSound:'🔊 Звук',settingsChangeNick:'✏️ Изменить',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
     settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
     settingsLang:'🌐 Язык',langBtn:'🇸🇰 SK',
@@ -1335,6 +1337,7 @@ const TRANSLATIONS={
     questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
     settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',
     diffEasy:'😌 Easy',diffNormal:'😐 Normal',diffHard:'😤 Hardcore',
+    settingsSound:'🔊 Sound',settingsChangeNick:'✏️ Change',
     settingsMusic:'🎵 Music',settingsSfx:'🔊 Sound effects',
     settingsTheme:'🎨 Theme',themeLight:'☀️ Light',themeDark:'🌙 Dark',
     settingsLang:'🌐 Language',langBtn:'🇷🇺 RU',
@@ -1458,9 +1461,11 @@ function applyLang(){
   const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
   // Settings labels — use IDs to avoid index-shift bugs
   const _sl=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
-  _sl('settNickLbl', '👤 '+(L.settingsNick||'Никнейм'));
+  _sl('settNickLbl', L.settingsNick||'👤 Никнейм');
   _sl('settDiffLbl', L.settingsDiff||'🎯 Сложность');
+  _sl('settSoundLbl', L.settingsSound||'🔊 Звук');
   _sl('settLangLbl', L.settingsLang||'🌐 Язык');
+  _sl('btnChangeNick', L.settingsChangeNick||'✏️ Изменить');
   // Sound .rl sub-labels
   const setRls=document.querySelectorAll('#settingsScreen .rl');
   if(setRls[0])setRls[0].textContent=L.settingsMusic;
@@ -2089,14 +2094,11 @@ function startSkinPreviewAnim(s){
   const W=canvas.width, H=canvas.height;
   const R=9;
 
-  // Per-skin particle effect map
-  const SKIN_FX={
-    'Зелёный':'sparkle','Синий':'bubble','Красный':'ember','Джунгли':'leaf',
-    'Золотой':'star','Сакура':'sakura','Молния':'spark','Фиолетовый':'magic',
-    'Розовый':'heart','Тёмный':'snow','Океан':'bubble','Ночной':'star',
-    'Огонь':'fire','Алмаз':'crystal'
-  };
-  const fx=SKIN_FX[s.name]||'sparkle';
+  // Per-skin particle FX — indexed by SKINS position (language-independent)
+  // 0:Зелёный  1:Синий   2:Красный 3:Джунгли 4:Золотой 5:Сакура  6:Молния 7:Фиолетовый
+  // 8:Розовый  9:Тёмный 10:Океан  11:Ночной 12:Огонь  13:Алмаз
+  const SKIN_FX_IDX=['sparkle','bubble','ember','leaf','star','sakura','spark','magic','heart','snow','bubble','star','fire','crystal'];
+  const fx=SKIN_FX_IDX[SKINS.indexOf(s)]||'sparkle';
   let particles=[];
 
   function spawnFx(pts){
