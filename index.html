@@ -2062,9 +2062,9 @@ function startSkinPreviewAnim(s){
     const count=22;
     for(let i=0;i<count;i++){
       const prog=i/(count-1);
-      // S-curve path that moves slowly
-      const x=W*0.12+prog*(W*0.72);
-      const y=H*0.5+Math.sin(prog*Math.PI*2.2+t)*H*0.28;
+      // Head (i=0) on the right side, tail on the left
+      const x=W*0.88-prog*(W*0.72);
+      const y=H*0.5+Math.sin((1-prog)*Math.PI*2.2+t)*H*0.28;
       pts.push({x,y});
     }
     return pts;
