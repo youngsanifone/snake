@@ -2468,7 +2468,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const anon2=!lbNickname||['Аноним','Anonym','Anonymous'].includes(lbNickname);
     showScreen(anon2?'welcomeScreen':'menuScreen');
     if(anon2) setTimeout(()=>welcInp2?.focus(),300);
-  },8000);
+  },13000);
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
@@ -2553,7 +2553,14 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         // If safety timeout already fired (slow connection) — we're in menu, just refresh UI silently
         // Otherwise hide loading and navigate to menu
         if(loading.style.display==='none'){
-          console.log('[TG] auth completed after timeout — profile synced silently');
+          // Safety timeout already fired — user sees welcomeScreen or menuScreen
+          // If we got a valid non-anon nick, navigate to menu now
+          const isAnon=!lbNickname||['Аноним','Anonym','Anonymous','Player'].includes(lbNickname)||lbNickname.startsWith('Игрок');
+          if(!isAnon){
+            try{ tg.ready(); }catch(_){}
+            showScreen('menuScreen');
+          }
+          console.log('[TG] auth completed after timeout — nick:',lbNickname,'anon:',isAnon);
         } else {
           loading.style.display='none';
           try{ tg.ready(); }catch(_){}
