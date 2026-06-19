@@ -3777,7 +3777,8 @@ async function shareScore(){
   const _tg=window.Telegram?.WebApp;
   if(_tg?.initData){
     const url='https://t.me/snakegameone_bot/snake';
-    _tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text));
+    // openLink opens in external browser → shows Telegram share dialog correctly
+    _tg.openLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text));
     return;
   }
   if(navigator.share){
