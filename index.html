@@ -2477,7 +2477,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const dbg=document.createElement('div');
     dbg.id='tg-debug';
     dbg.style.cssText='position:fixed;bottom:60px;left:10px;right:10px;background:rgba(0,0,0,.85);color:#0f0;font-size:11px;font-family:monospace;padding:8px;border-radius:6px;z-index:99999;word-break:break-all;';
-    dbg.innerHTML='TG SDK: '+(window.Telegram?'✅':'❌')+
+    dbg.innerHTML='<b style="color:#ff0">v4</b> TG SDK: '+(window.Telegram?'✅':'❌')+
       '<br>WebApp: '+(tg?'✅':'❌')+
       '<br>initData: '+(tg?.initData?'✅ (len='+tg.initData.length+')':'❌ empty')+
       '<br>platform: '+(tg?.platform||'n/a')+
