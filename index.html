@@ -1084,6 +1084,7 @@
       <div class="sett-row">
         <span class="sett-nick-val" id="settNickDisplay">—</span>
         <button class="sett-toggle" id="btnChangeNick">✏️ Изменить</button>
+        <span id="tgNickHint" style="display:none;font-size:.72rem;color:#2da7e0;margin-left:4px">✈️ из Telegram</span>
       </div>
     </div>
     <!-- Difficulty -->
@@ -2532,6 +2533,8 @@ function buildShopPreview_compat(){ buildShopPreview(); }
           profileLoaded=true;
           upsertProfile();
         }
+        // ── Mark as TG-linked (disables manual nick change) ──
+        localStorage.setItem(S+'tgLinked','1');
         // ── Telegram Profile Card ──
         const tgUser=tgData.telegram_user||tg.initDataUnsafe?.user||{};
         if(tgUser.first_name||tgUser.username){
@@ -4273,6 +4276,18 @@ function stopMusic(){
     closeModal();
     saveBtn.disabled=false; cancelBtn.disabled=false;
   }
+
+  // TG users cannot change nick manually — it comes from Telegram profile
+  function updateNickBtnVisibility(){
+    const isTg=localStorage.getItem(S+'tgLinked')==='1';
+    if(changeBtn){
+      changeBtn.style.display=isTg?'none':'';
+      const hint=document.getElementById('tgNickHint');
+      if(hint) hint.style.display=isTg?'inline':'none';
+    }
+  }
+  updateNickBtnVisibility();
+  document.getElementById('settingsScreen')?.addEventListener('transitionend',updateNickBtnVisibility);
 
   changeBtn.addEventListener('click',openModal);
   changeBtn.addEventListener('touchstart',e=>{e.preventDefault();openModal();},{passive:false});
