@@ -3752,7 +3752,7 @@ async function shareScore(){
   // Telegram Mini App — native share dialog
   const _tg=window.Telegram?.WebApp;
   if(_tg?.initData){
-    const url='https://t.me/snakegameone_bot';
+    const url='https://t.me/snakegameone_bot/snake';
     _tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text));
     return;
   }
