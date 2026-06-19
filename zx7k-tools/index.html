@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Snake — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f0f4f8;--card:#fff;--brd:#e2e8f0;--txt:#0f172a;--sub:#64748b;--mut:#94a3b8;--acc:#6366f1;--acc2:#4f46e5;--green:#16a34a;--red:#dc2626}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+/* ── Login ── */
+#loginWrap{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:9999}
+.lbox{background:#1e293b;border-radius:16px;padding:38px 32px;width:310px;text-align:center}
+.llogo{font-size:2.2rem;margin-bottom:6px}.ltitle{color:#fff;font-size:1.05rem;font-weight:700;margin-bottom:2px}
+.lsub{color:#475569;font-size:.74rem;margin-bottom:20px}
+.linput{width:100%;background:#0f172a;border:1.5px solid #334155;color:#fff;padding:10px 12px;border-radius:8px;font-size:.88rem;outline:none;transition:border-color .15s}
+.linput:focus{border-color:var(--acc)}.linput.shake{animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+.lbtn{width:100%;margin-top:9px;background:var(--acc);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer}
+.lbtn:hover{background:var(--acc2)}.lerr{color:#f87171;font-size:.72rem;margin-top:7px;min-height:15px}
+
+/* ── Header ── */
+.hdr{background:#0f172a;color:#fff;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.hdr-l{display:flex;align-items:center;gap:8px}
+.pulse{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:blink 2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.hdr h1{font-size:.9rem;font-weight:700}
+.hdr-r{display:flex;align-items:center;gap:9px}
+.times{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.t-local{font-size:.8rem;font-weight:600;font-variant-numeric:tabular-nums}
+.t-utc{font-size:.6rem;color:#475569}
+.ticker{font-size:.66rem;color:#334155;font-variant-numeric:tabular-nums}
+.hbtn{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.65);padding:5px 11px;border-radius:5px;cursor:pointer;font-size:.73rem;font-weight:600}
+.hbtn:hover{background:rgba(255,255,255,.15)}
+
+/* ── Services strip ── */
+.svc-bar{background:#111827;border-bottom:1px solid #0f172a;padding:5px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:38px;z-index:190}
+.si{display:flex;align-items:center;gap:4px;font-size:.69rem;color:#64748b;text-decoration:none;transition:color .12s;cursor:pointer}
+.si:hover{color:#94a3b8}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.don{background:#4ade80}.doff{background:#f87171}.dwrn{background:#fbbf24}
+.sms{font-size:.6rem;color:#334155;margin-left:1px}
+.sbar-r{margin-left:auto;font-size:.6rem;color:#1e3a5f}
+
+/* ── Quick actions (top) ── */
+.qa-bar{background:var(--card);border-bottom:1px solid var(--brd);padding:7px 16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;overflow-x:auto}
+.qb{padding:5px 13px;border:1.5px solid var(--brd);border-radius:20px;background:transparent;color:var(--sub);font-size:.74rem;font-weight:600;text-decoration:none;white-space:nowrap;cursor:pointer;transition:all .12s;display:inline-block}
+.qb:hover{border-color:var(--acc);color:var(--acc);background:#eef2ff}
+.qb-g{border-color:#bbf7d0;color:#15803d;background:#f0fdf4}
+.qb-g:hover{background:#dcfce7}
+.qb-d{border-color:#334155;color:#94a3b8;background:#0f172a}
+.qb-d:hover{background:#1e293b;color:#fff}
+
+/* ── Layout ── */
+.wrap{max-width:1020px;margin:0 auto;padding:14px 14px 6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:var(--card);border-radius:11px;border:1px solid var(--brd);box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden;margin-bottom:12px}
+.ch{padding:10px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.ct{font-size:.82rem;font-weight:700}
+.badge{font-size:.6rem;padding:2px 7px;border-radius:14px;font-weight:700}
+.bg{background:#dcfce7;color:#15803d}.bq{background:#f1f5f9;color:#475569}
+.bb{background:#dbeafe;color:#1d4ed8}.bp{background:#ede9fe;color:#7c3aed}
+.by{background:#fef9c3;color:#854d0e}.br{background:#fee2e2;color:#dc2626}
+
+/* ── Stats ── */
+.stat{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.st-ico{font-size:1.25rem;flex-shrink:0}
+.st-n{font-size:1.4rem;font-weight:800;line-height:1}
+.st-l{font-size:.59rem;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.st-d{font-size:.67rem;color:var(--sub);margin-top:1px}
+.stat.online .st-n{color:#16a34a}
+
+/* ── List items ── */
+.gi{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid #f8fafc;font-size:.79rem}
+.gi:last-child{border:none}
+.gi:hover{background:#fafafa}
+
+.pt td,.pt th{padding:5px 8px;font-size:.72rem;border-bottom:1px solid var(--brd)}
+.pt th{color:var(--mut);font-weight:600;white-space:nowrap}
+.pt td:first-child{color:#94a3b8;font-size:.68rem}
+.pid{font-size:.62rem;color:#94a3b8;font-family:monospace}
+.coin{color:#f59e0b;font-weight:700}
+.ach-cnt{color:#8b5cf6;font-weight:600}
+.sk-badge{display:inline-block;background:#e0e7ff;color:#4338ca;border-radius:4px;padding:1px 5px;font-size:.63rem;font-weight:600}
+
+.gi-nm{font-weight:600;min-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gi-sc{font-weight:800;color:var(--green);min-width:30px;font-size:.84rem}
+.gi-tg{font-size:.59rem;background:#ede9fe;color:#7c3aed;padding:1px 6px;border-radius:9px;font-weight:700;white-space:nowrap}
+.gi-mt{font-size:.64rem;color:var(--mut);flex:1}
+.gi-tm{font-size:.62rem;color:var(--mut);white-space:nowrap}
+.odot{width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;flex-shrink:0;animation:blink 2s infinite}
+.dev{font-size:.59rem;padding:1px 5px;border-radius:6px;font-weight:600;margin-left:2px}
+.dev-m{background:#fef3c7;color:#92400e}.dev-d{background:#e0f2fe;color:#0369a1}.dev-u{background:#f1f5f9;color:#94a3b8}
+
+/* ── Charts ── */
+.chart-box{padding:11px 13px;height:185px;position:relative}
+
+/* ── Tables ── */
+.lb{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:.59rem;text-transform:uppercase;color:var(--mut);padding:6px 12px;text-align:left;border-bottom:1px solid var(--brd);white-space:nowrap;background:#fafafa}
+td{padding:6px 12px;font-size:.78rem;border-bottom:1px solid #f8fafc}
+tr:last-child td{border:none}
+tr:hover td{background:#fafafa}
+.tsc{font-weight:800;color:var(--green)}
+.ttg{font-size:.59rem;background:#ede9fe;color:#7c3aed;padding:1px 5px;border-radius:8px;font-weight:600}
+
+/* ── Commits ── */
+.cmt{display:flex;align-items:flex-start;gap:8px;padding:6px 13px;border-bottom:1px solid #f8fafc;text-decoration:none;color:inherit;transition:background .1s;font-size:.75rem}
+.cmt:last-child{border:none}
+.cmt:hover{background:#fafafa}
+.chsh{font-family:monospace;font-size:.62rem;color:var(--mut);flex-shrink:0;padding-top:1px;width:46px}
+.cmsg{flex:1;line-height:1.4;color:#334155}
+.ctag{font-size:.57rem;padding:1px 5px;border-radius:7px;font-weight:700;margin-right:3px}
+.tf{background:#dcfce7;color:#15803d}.tx{background:#fee2e2;color:#dc2626}.tc{background:#f1f5f9;color:#475569}
+.cdt{font-size:.61rem;color:var(--mut);white-space:nowrap}
+
+/* ── States ── */
+.empty{text-align:center;padding:18px;font-size:.77rem;color:var(--mut)}
+.sp{display:inline-block;width:12px;height:12px;border:2px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-box{background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:7px 11px;margin:10px;font-size:.73rem;color:var(--red);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.err-box button{background:var(--red);color:#fff;border:none;padding:2px 8px;border-radius:5px;cursor:pointer;font-size:.68rem;font-weight:600}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:6px 14px;border-radius:16px;font-size:.74rem;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9998}
+#toast.show{opacity:1}
+
+/* ═══════ TABS ═══════ */
+.tb-nav{background:var(--card);border-radius:10px 10px 0 0;border:1px solid var(--brd);border-bottom:none;padding:8px 12px;display:flex;gap:4px;flex-wrap:wrap}
+.tb-btn{padding:6px 13px;border:1.5px solid var(--brd);border-radius:7px;background:transparent;color:var(--sub);font-size:.76rem;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap}
+.tb-btn:hover{border-color:var(--acc);color:var(--acc);background:#eef2ff}
+.tb-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.tb-body{display:none;background:var(--card);border:1px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;margin-bottom:12px}
+.tb-body.active{display:block}
+.tb-desc{font-size:.71rem;color:var(--sub);padding:7px 13px;background:#f8fafc;border-bottom:1px solid var(--brd);line-height:1.4}
+
+/* ═══════ SQL TAB ═══════ */
+/* Result panel at TOP — always visible */
+.sql-result-area{border-bottom:2px solid var(--brd);min-height:56px;background:#fafafa;position:relative}
+.sql-ra-empty{padding:14px 14px;font-size:.74rem;color:var(--mut);text-align:center}
+.sql-ra-meta{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--brd);font-size:.71rem;font-weight:600;background:var(--card)}
+.sql-ra-meta.ok{color:var(--green)}.sql-ra-meta.err{color:var(--red);background:#fff8f8}
+.sql-ra-scroll{overflow-x:auto;max-height:260px;overflow-y:auto}
+.sql-ra-scroll table th{background:#f8fafc;font-size:.6rem}
+.sql-ra-scroll table td{font-family:monospace;font-size:.72rem;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+.sql-ra-scroll table td:hover{white-space:normal;max-width:none;background:#fffbe6}
+/* Preset list */
+.preset-list{padding:0}
+.preset-row{display:flex;align-items:center;gap:8px;padding:8px 13px;border-bottom:1px solid #f8fafc;transition:background .1s}
+.preset-row:last-child{border:none}
+.preset-row:hover{background:#fafafa}
+.preset-info{flex:1;min-width:0}
+.preset-lbl{font-size:.77rem;font-weight:600;line-height:1.3}
+.preset-desc{font-size:.62rem;color:var(--mut);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preset-btns{display:flex;gap:4px;flex-shrink:0}
+.pbtn{font-size:.72rem;padding:5px 11px;border:none;border-radius:6px;cursor:pointer;font-weight:700;transition:all .11s;white-space:nowrap}
+.pbtn-r{background:#16a34a;color:#fff}.pbtn-r:hover{background:#15803d}.pbtn-r:disabled{background:#86efac;cursor:wait}
+.pbtn-c{background:#ede9fe;color:#7c3aed}.pbtn-c:hover{background:#ddd6fe}
+.pbtn-red{background:var(--red);color:#fff}.pbtn-red:hover{background:#b91c1c}
+.preset-status{font-size:.62rem;width:12px;text-align:center;flex-shrink:0;color:var(--mut)}
+/* Custom SQL */
+.sql-custom{padding:11px 13px;border-top:1px solid var(--brd)}
+.sq-area{width:100%;height:80px;background:#0f172a;color:#e2e8f0;border:1.5px solid #334155;border-radius:7px;padding:8px 11px;font-family:monospace;font-size:.78rem;resize:vertical;outline:none;line-height:1.5}
+.sq-area:focus{border-color:var(--acc)}
+.sq-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.sq-run{background:var(--acc);color:#fff;border:none;padding:6px 16px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer}
+.sq-run:hover{background:var(--acc2)}.sq-run:disabled{background:#a5b4fc;cursor:wait}
+.sq-hint{font-size:.65rem;color:var(--mut)}
+
+/* ═══════ TABLE EDITOR ═══════ */
+.tbl-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:9px 13px;border-bottom:1px solid var(--brd);background:#fafafa}
+.ttb{padding:5px 12px;border:1.5px solid var(--brd);border-radius:16px;background:var(--card);color:var(--sub);font-size:.73rem;font-weight:600;cursor:pointer;transition:all .12s}
+.ttb:hover{border-color:var(--acc);color:var(--acc)}.ttb.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.tbl-search-row{padding:7px 13px;border-bottom:1px solid var(--brd);display:flex;gap:7px;align-items:center}
+.tbl-inp{flex:1;border:1px solid var(--brd);border-radius:6px;padding:5px 9px;font-size:.77rem;outline:none}
+.tbl-inp:focus{border-color:var(--acc)}
+.tbl-data{overflow-x:auto;max-height:360px;overflow-y:auto}
+.tbl-data table td{font-family:monospace;font-size:.72rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl-pager{display:flex;align-items:center;gap:7px;padding:6px 13px;border-top:1px solid var(--brd);font-size:.72rem;color:var(--sub)}
+.tbl-pager button{padding:4px 11px;border:1px solid var(--brd);border-radius:5px;background:var(--card);cursor:pointer;font-size:.73rem;font-weight:600}
+.tbl-pager button:disabled{opacity:.4;cursor:default}
+/* Date cell highlight */
+.dt-cell{color:#1d4ed8;font-family:inherit!important;font-size:.72rem!important}
+
+/* ═══════ ADVISORS ═══════ */
+.adv-list{padding:10px 13px;display:flex;flex-direction:column;gap:6px}
+.adv{display:flex;align-items:flex-start;gap:8px;padding:8px 11px;border-radius:8px;border:1px solid}
+.adv-w{background:#fffbeb;border-color:#fde68a}.adv-o{background:#f0fdf4;border-color:#bbf7d0}
+.adv-i{background:#eff6ff;border-color:#bfdbfe}.adv-e{background:#fef2f2;border-color:#fecaca}
+.adv-lbl{font-size:.62rem;font-weight:800;padding:1px 6px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.lbl-w{background:#fbbf24;color:#fff}.lbl-o{background:#4ade80;color:#fff}
+.lbl-i{background:#60a5fa;color:#fff}.lbl-e{background:#f87171;color:#fff}
+.adv-body{flex:1}.adv-title{font-size:.78rem;font-weight:700;line-height:1.3}
+.adv-detail{font-size:.69rem;color:var(--sub);margin-top:2px;line-height:1.4}
+.adv-sec{font-size:.67rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;padding:9px 13px 2px;margin-top:2px}
+
+/* ═══════ STORAGE / AUTH ═══════ */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ic{background:#f8fafc;border:1px solid var(--brd);border-radius:8px;padding:10px 11px}
+.ic-t{font-size:.64rem;font-weight:700;text-transform:uppercase;color:var(--mut);letter-spacing:.05em;margin-bottom:5px}
+.ic-b{font-size:.73rem;line-height:1.5;color:var(--txt)}
+.prov{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:14px;font-size:.67rem;font-weight:600;margin:2px;border:1px solid var(--brd)}
+.prov-on{background:#dcfce7;color:#15803d}.prov-off{background:#f1f5f9;color:#94a3b8}
+
+/* ═══════ ACTION LOG ═══════ */
+.log-list{max-height:300px;overflow-y:auto;padding:6px 13px}
+.log-e{display:flex;align-items:flex-start;gap:7px;padding:4px 0;border-bottom:1px solid #f8fafc;font-size:.73rem}
+.log-e:last-child{border:none}
+.log-t{font-size:.6rem;color:var(--mut);white-space:nowrap;min-width:48px;font-variant-numeric:tabular-nums}
+.log-m{flex:1;line-height:1.35;color:var(--txt)}
+.log-ft{padding:6px 13px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center}
+.log-cnt{font-size:.66rem;color:var(--mut)}
+.log-clr{font-size:.67rem;padding:2px 9px;border:1px solid var(--brd);border-radius:5px;background:var(--card);cursor:pointer}
+
+.footer{text-align:center;padding:10px;font-size:.62rem;color:var(--mut);background:var(--card);border-radius:10px;border:1px solid var(--brd);margin-bottom:6px}
+@media(max-width:720px){.g4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="loginWrap">
+  <div class="lbox">
+    <div class="llogo">🐍</div>
+    <div class="ltitle">Snake — Control Panel</div>
+    <div class="lsub">Пароль администратора</div>
+    <input class="linput" id="pwInput" type="password" placeholder="Пароль"
+      autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">Войти →</button>
+    <div class="lerr" id="loginErr"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="pulse"></div>
+    <h1>🐍 Snake Admin</h1>
+  </div>
+  <div class="hdr-r">
+    <div class="times">
+      <span class="t-local" id="clock">--:--:--</span>
+      <span class="t-utc" id="clockUTC">UTC --:--</span>
+    </div>
+    <span class="ticker">↺ <span id="cd">5</span>с</span>
+    <span class="ticker" style="margin-left:6px;color:#64748b">обн: <span id="lastRefresh">—</span></span>
+    <button class="hbtn" onclick="refresh()">↻ Обновить</button>
+  </div>
+</div>
+
+<!-- SERVICES STRIP -->
+<div class="svc-bar">
+  <a class="si" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr" target="_blank">
+    <div class="sdot dwrn" id="sd-sb"></div><span style="color:#94a3b8">Supabase</span><span class="sms" id="ms-sb"></span>
+  </a>
+  <a class="si" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/functions" target="_blank">
+    <div class="sdot dwrn" id="sd-ef"></div><span style="color:#94a3b8">Edge Functions (SQL API)</span><span class="sms" id="ms-ef" title="Время ответа Edge Function — SQL запросы идут через него"></span>
+  </a>
+  <a class="si" href="https://github.com/youngsanifone/snake" target="_blank">
+    <div class="sdot dwrn" id="sd-gh"></div><span style="color:#94a3b8">GitHub</span><span class="sms" id="ms-gh"></span>
+  </a>
+  <a class="si" href="https://youngsanifone.github.io/snake/" target="_blank">
+    <div class="sdot dwrn" id="sd-gm"></div><span style="color:#94a3b8">Игра</span>
+  </a>
+  <a class="si" href="https://analytics.google.com" target="_blank">
+    <div class="sdot don"></div><span style="color:#94a3b8">Analytics</span>
+  </a>
+  <span class="sbar-r" id="svc-sum"></span>
+</div>
+
+<!-- QUICK ACTIONS BAR -->
+<div class="qa-bar">
+  <a class="qb qb-g" href="https://youngsanifone.github.io/snake/" target="_blank">🎮 Открыть игру</a>
+  <a class="qb qb-d" href="https://github.com/youngsanifone/snake" target="_blank">🐙 GitHub репо</a>
+  <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/editor" target="_blank">🗄️ SQL редактор</a>
+  <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/database/tables" target="_blank">📋 Tables</a>
+  <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/functions" target="_blank">⚡ Edge Functions</a>
+  <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/logs/explorer" target="_blank">📄 Логи</a>
+  <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/storage" target="_blank">🗂️ Storage</a>
+  <a class="qb" href="https://analytics.google.com" target="_blank">📊 Analytics</a>
+</div>
+
+<div class="wrap">
+
+  <!-- STATS -->
+  <div class="g4" style="margin-bottom:12px">
+    <div class="stat online">
+      <div class="st-ico">🟢</div>
+      <div><div class="st-n" id="s-online">—</div><div class="st-l">Онлайн</div><div class="st-d">сейчас · окно 2 мин</div></div>
+    </div>
+    <div class="stat">
+      <div class="st-ico">🏆</div>
+      <div><div class="st-n" id="s-top">—</div><div class="st-l">Топ счёт</div><div class="st-d" id="s-top-d">—</div></div>
+    </div>
+    <div class="stat">
+      <div class="st-ico">📅</div>
+      <div><div class="st-n" id="s-week">—</div><div class="st-l">За неделю</div><div class="st-d">игр за 7 дней</div></div>
+    </div>
+    <div class="stat">
+      <div class="st-ico">👥</div>
+      <div><div class="st-n" id="s-players">—</div><div class="st-l">Игроков</div><div class="st-d">уникальных</div></div>
+    </div>
+    <div class="stat">
+      <div class="st-ico">✈️</div>
+      <div><div class="st-n" id="s-tg">—</div><div class="st-l">Telegram</div><div class="st-d">пользователей</div></div>
+    </div>
+  </div>
+
+  <!-- ONLINE + RECENT -->
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="ch">
+        <span class="ct">🟢 Онлайн сейчас</span>
+        <span class="badge bg" id="onlineBadge">—</span>
+      </div>
+      <div id="onlineList"><div class="empty"><span class="sp"></span></div></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ch">
+        <span class="ct">🕹️ Последние игры</span>
+        <span class="badge bq">последние 10</span>
+      </div>
+      <div id="recentList"><div class="empty"><span class="sp"></span></div></div>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+
+  <!-- CHARTS -->
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="ch"><span class="ct">📈 Активность (последние 20)</span><span class="badge bq" id="chBadge"></span></div>
+      <div class="chart-box"><canvas id="chartLine"></canvas></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ch"><span class="ct">🥧 Режимы</span><span class="badge bb" id="modBadge"></span></div>
+      <div class="chart-box"><canvas id="chartMode"></canvas></div>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+
+  <!-- COMMITS — up here, important -->
+  <div class="card">
+    <div class="ch">
+      <span class="ct">🕐 Последние коммиты</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="badge bq" id="cmtBadge">—</span>
+        <a class="qb" style="padding:3px 9px;font-size:.68rem" href="https://github.com/youngsanifone/snake/commits/main" target="_blank">GitHub →</a>
+      </div>
+    </div>
+    <div id="commits"><div class="empty"><span class="sp"></span></div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tb-nav">
+    <button class="tb-btn"        id="tbn-sql"      onclick="openTab('sql')">💻 SQL</button>
+    <button class="tb-btn active" id="tbn-tables"   onclick="openTab('tables')">📋 Таблицы</button>
+    <button class="tb-btn"        id="tbn-advisors" onclick="openTab('advisors')">🔍 Советники</button>
+    <button class="tb-btn"        id="tbn-storage"  onclick="openTab('storage')">🗂️ Storage</button>
+    <button class="tb-btn"        id="tbn-auth"     onclick="openTab('auth')">🔐 Auth</button>
+    <button class="tb-btn"        id="tbn-actlog"   onclick="openTab('actlog')">📝 Лог</button>
+  </div>
+
+  <!-- TAB: SQL -->
+  <div id="tab-sql" class="tb-body">
+    <div class="tb-desc">Нажми <b>▶ Run</b> — результат появится внизу этой секции. Без copy-paste.</div>
+    <!-- PRESETS -->
+    <div class="preset-list" id="presetList">
+      <div class="preset-row">
+        <span class="preset-status" id="ps0"></span>
+        <div class="preset-info"><div class="preset-lbl">📊 Статистика по режимам</div><div class="preset-desc">Игры, средний и максимальный счёт по каждому режиму</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-0" onclick="runP(0,`SELECT mode,COUNT(*) AS games,ROUND(AVG(score)) AS avg_score,MAX(score) AS top_score FROM game_results GROUP BY mode ORDER BY games DESC`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT mode,COUNT(*) AS games,ROUND(AVG(score)) AS avg_score,MAX(score) AS top_score FROM game_results GROUP BY mode ORDER BY games DESC`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps1"></span>
+        <div class="preset-info"><div class="preset-lbl">📅 Активность за 7 дней</div><div class="preset-desc">Игры и лучший счёт по дням за неделю</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-1" onclick="runP(1,`SELECT DATE(created_at AT TIME ZONE 'Europe/Bratislava') AS day,COUNT(*) AS games,MAX(score) AS best FROM game_results WHERE created_at > NOW()-INTERVAL '7 days' GROUP BY day ORDER BY day DESC`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT DATE(created_at AT TIME ZONE 'Europe/Bratislava') AS day,COUNT(*) AS games,MAX(score) AS best FROM game_results WHERE created_at > NOW()-INTERVAL '7 days' GROUP BY day ORDER BY day DESC`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps2"></span>
+        <div class="preset-info"><div class="preset-lbl">🟢 Онлайн прямо сейчас</div><div class="preset-desc">Игроки с heartbeat за последние 2 минуты (реалтайм)</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-2" onclick="runP(2,`SELECT COALESCE(nick,'Аноним') AS nick, MAX(created_at) AS last_seen FROM player_events WHERE event='visit' AND created_at > NOW()-INTERVAL '2 minutes' GROUP BY nick, player_id ORDER BY last_seen DESC`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT COALESCE(nick,'Аноним') AS nick, MAX(created_at) AS last_seen FROM player_events WHERE event='visit' AND created_at > NOW()-INTERVAL '2 minutes' GROUP BY nick, player_id ORDER BY last_seen DESC`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps3"></span>
+        <div class="preset-info"><div class="preset-lbl">🏆 Топ-10 по лучшему счёту</div><div class="preset-desc">Лучший результат каждого игрока</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-3" onclick="runP(3,`SELECT p.nick, MAX(lb.score) AS best_score, COUNT(*) AS games, MAX(lb.level) AS max_level, p.coins FROM game_results lb LEFT JOIN players p ON p.player_id=lb.player_id GROUP BY p.player_id,p.nick,p.coins ORDER BY best_score DESC LIMIT 10`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT p.nick, MAX(lb.score) AS best_score, COUNT(*) AS games, MAX(lb.level) AS max_level, p.coins FROM game_results lb LEFT JOIN players p ON p.player_id=lb.player_id GROUP BY p.player_id,p.nick,p.coins ORDER BY best_score DESC LIMIT 10`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps4"></span>
+        <div class="preset-info"><div class="preset-lbl">🗄️ Здоровье таблиц (размер, строки)</div><div class="preset-desc">Живые/мёртвые кортежи, размер каждой таблицы</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-4" onclick="runP(4,`SELECT relname AS table_name,n_live_tup AS live_rows,n_dead_tup AS dead_rows,pg_size_pretty(pg_relation_size(relid)) AS size FROM pg_stat_user_tables WHERE schemaname='public' ORDER BY n_live_tup DESC`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT relname AS table_name,n_live_tup AS live_rows,n_dead_tup AS dead_rows,pg_size_pretty(pg_relation_size(relid)) AS size FROM pg_stat_user_tables WHERE schemaname='public' ORDER BY n_live_tup DESC`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps5"></span>
+        <div class="preset-info"><div class="preset-lbl">📈 Использование индексов</div><div class="preset-desc">Сколько раз каждый индекс использовался</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-5" onclick="runP(5,`SELECT relname AS tablename, indexrelname AS indexname, idx_scan AS scans, idx_tup_read AS rows_read FROM pg_stat_user_indexes WHERE schemaname='public' ORDER BY idx_scan DESC`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT relname AS tablename, indexrelname AS indexname, idx_scan AS scans, idx_tup_read AS rows_read FROM pg_stat_user_indexes WHERE schemaname='public' ORDER BY idx_scan DESC`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps6"></span>
+        <div class="preset-info"><div class="preset-lbl">🕐 pg_cron задания</div><div class="preset-desc">Список scheduled заданий (авто-очистка и др.)</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-6" onclick="runP(6,`SELECT jobid,jobname,schedule,active FROM cron.job ORDER BY jobid`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT jobid,jobname,schedule,active FROM cron.job ORDER BY jobid`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps8"></span>
+        <div class="preset-info"><div class="preset-lbl">👤 Профили игроков (players)</div><div class="preset-desc">nick, монеты, лучший счёт, игр сыграно, уровень, скин, тема</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-8" onclick="runP(8,`SELECT nick, telegram_id, photo_url, referred_by, coins, best, best_level, games_played, total_score, lang, difficulty, last_seen, created_at FROM players ORDER BY last_seen DESC NULLS LAST`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT nick, telegram_id, photo_url, referred_by, coins, best, best_level, games_played, total_score, lang, difficulty, last_seen, created_at FROM players ORDER BY last_seen DESC NULLS LAST`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row">
+        <span class="preset-status" id="ps9"></span>
+        <div class="preset-info"><div class="preset-lbl">🎮 События game_over (последние 50)</div><div class="preset-desc">Результаты игр с nick игрока, очками и режимом</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-r" id="prun-9" onclick="runP(9,`SELECT created_at, COALESCE(nick,'Аноним') AS nick, score, mode FROM player_events WHERE event='game_over' ORDER BY created_at DESC LIMIT 50`)">▶ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`SELECT created_at, COALESCE(nick,'Аноним') AS nick, score, mode FROM player_events WHERE event='game_over' ORDER BY created_at DESC LIMIT 50`)">Копировать</button>
+        </div>
+      </div>
+      <div class="preset-row" style="background:#fffbeb">
+        <span class="preset-status" id="ps7"></span>
+        <div class="preset-info"><div class="preset-lbl" style="color:#92400e">⚠ Удалить тестовые записи</div><div class="preset-desc">Удаляет строки где name содержит "test" — с подтверждением</div></div>
+        <div class="preset-btns">
+          <button class="pbtn pbtn-red" id="prun-7" onclick="confirmDel()">⚠ Run</button>
+          <button class="pbtn pbtn-c" onclick="copy(`DELETE FROM game_results WHERE LOWER(name) LIKE '%test%' RETURNING id,name,score`)">Копировать</button>
+        </div>
+      </div>
+    </div>
+    <!-- Custom SQL -->
+    <div class="sql-custom">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:.77rem;font-weight:700">Свой SQL запрос</span>
+        <button onclick="exportCSV()" style="font-size:.65rem;padding:2px 8px;border:1px solid var(--brd);border-radius:5px;cursor:pointer;background:var(--card)">↓ CSV</button>
+      </div>
+      <textarea class="sq-area" id="sqlInput" placeholder="SELECT * FROM game_results ORDER BY score DESC LIMIT 20;"></textarea>
+      <div class="sq-row">
+        <button class="sq-run" id="sqlRunBtn" onclick="runCustom()">▶ Выполнить</button>
+        <span class="sq-hint" id="sqlMeta"></span>
+      </div>
+    </div>
+    <!-- RESULT AREA — bottom, after run button -->
+    <div class="sql-result-area" id="sqlResult" style="display:none">
+      <div class="sql-ra-empty">Результат появится здесь</div>
+    </div>
+  </div>
+
+  <!-- TAB: TABLES -->
+  <div id="tab-tables" class="tb-body active">
+    <div class="tb-desc"><b>Table Editor</b> — просмотр данных, пагинация 50 строк, поиск. Даты в твоём часовом поясе (Братислава). <b>Таблицы</b> хранят данные; <b>view</b> — виртуальная сводка поверх них (не дубликат, места не занимает).</div>
+    <div class="tbl-tabs" style="align-items:center">
+      <span style="font-size:.64rem;color:var(--mut);font-weight:700;letter-spacing:.5px">ТАБЛИЦЫ:</span>
+      <button class="ttb" onclick="loadTbl('game_results',this)" title="Каждая сыгранная партия">🏆 game_results — игры</button>
+      <button class="ttb active" onclick="loadTbl('players',this)" title="Профили игроков (прогресс, монеты, скины)">👤 players — профили</button>
+      <button class="ttb" onclick="loadTbl('player_events',this)" title="Визиты и события (для онлайна)">📡 player_events — события</button>
+      <span style="font-size:.64rem;color:var(--mut);font-weight:700;letter-spacing:.5px;margin-left:6px">VIEW:</span>
+      <button class="ttb" onclick="loadTbl('leaderboard_best',this)" title="Виртуальная таблица: лучший результат каждого игрока. Её читает игра для онлайн-рекордов">🥇 leaderboard_best — лидерборд</button>
+    </div>
+    <div class="tbl-search-row">
+      <input type="text" class="tbl-inp" id="tblSearch" placeholder="Поиск по строкам..." oninput="filterTbl()">
+      <span id="tblMeta" style="font-size:.68rem;color:var(--mut);white-space:nowrap;margin-left:4px"></span>
+      <button style="font-size:.68rem;padding:3px 9px;border:1px solid var(--brd);border-radius:5px;cursor:pointer;background:var(--card);margin-left:4px" onclick="loadTbl(curTbl)">↻</button>
+    </div>
+    <div class="tbl-data" id="tblData"><div class="empty">Выбери таблицу выше</div></div>
+    <div class="tbl-pager">
+      <button id="tblPrev" onclick="tblPage(-1)" disabled>← Назад</button>
+      <span id="tblPageLbl" style="font-size:.71rem">Стр. 1</span>
+      <button id="tblNext" onclick="tblPage(1)">Вперёд →</button>
+      <span id="tblCnt" style="margin-left:auto;font-size:.68rem;color:var(--mut)"></span>
+    </div>
+  </div>
+
+  <!-- TAB: ADVISORS -->
+  <div id="tab-advisors" class="tb-body">
+    <div class="tb-desc"><b>Советники</b> — автоматический анализ безопасности и производительности базы данных.</div>
+    <div style="padding:8px 13px;border-bottom:1px solid var(--brd);display:flex;gap:6px;flex-wrap:wrap">
+      <button class="pbtn pbtn-r" onclick="loadAdv()">Обновить анализ</button>
+      <button class="pbtn pbtn-c" onclick="runP(null,`SELECT relname AS table_name,n_live_tup AS live_rows,n_dead_tup AS dead_rows,pg_size_pretty(pg_relation_size(relid)) AS size FROM pg_stat_user_tables WHERE schemaname='public' ORDER BY n_live_tup DESC`);openTab('sql')">Таблицы → SQL</button>
+    </div>
+    <div id="advList"><div class="empty">Нажми "Обновить анализ"</div></div>
+  </div>
+
+  <!-- TAB: STORAGE -->
+  <div id="tab-storage" class="tb-body">
+    <div class="tb-desc"><b>Storage</b> — файловое хранилище Supabase. Сейчас не используется.</div>
+    <div id="storContent" style="padding:12px 13px"><div class="empty"><span class="sp"></span></div></div>
+  </div>
+
+  <!-- TAB: AUTH -->
+  <div id="tab-auth" class="tb-body">
+    <div class="tb-desc"><b>Auth</b> — сервис аутентификации. Игра работает анонимно через UUID в localStorage.</div>
+    <div id="authContent" style="padding:12px 13px"><div class="empty"><span class="sp"></span></div></div>
+  </div>
+
+  <!-- TAB: LOG -->
+  <div id="tab-actlog" class="tb-body">
+    <div class="tb-desc"><b>Лог</b> — все действия администратора в этой сессии.</div>
+    <div class="log-list" id="logList"><div class="empty">Пока пусто</div></div>
+    <div class="log-ft">
+      <span class="log-cnt" id="logCnt">0 действий</span>
+      <button class="log-clr" onclick="clearLog()">Очистить</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD + TOP PLAYERS side-by-side -->
+  <div class="g2">
+    <div class="card" style="margin-bottom:0">
+      <div class="ch">
+        <span class="ct">🏆 Лидерборд (топ-20)</span>
+        <span class="badge bq" id="lbBadge">—</span>
+      </div>
+      <div class="lb" id="lb"><div class="empty"><span class="sp"></span></div></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ch">
+        <span class="ct">🎮 Активнее всех</span>
+        <span class="badge bp" id="plBadge">—</span>
+      </div>
+      <div class="lb" id="topPlayers"><div class="empty"><span class="sp"></span></div></div>
+    </div>
+  </div>
+
+  <div style="height:12px"></div>
+
+  <!-- PLAYERS PROFILES -->
+  <div class="card">
+    <div class="ch">
+      <span class="ct">👤 Профили игроков</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="badge bp" id="profBadge">—</span>
+        <button class="qb" style="padding:3px 9px;font-size:.68rem" onclick="loadPlayers()">🔄 Обновить</button>
+      </div>
+    </div>
+    <div id="playerProfiles"><div class="empty"><span class="sp"></span></div></div>
+  </div>
+  <div style="height:12px"></div>
+
+  <div class="footer">
+    Данные обновляются каждые <b>5 сек</b> · GitHub кешируется <b>15 мин</b> · Часовой пояс: <b>Europe/Bratislava (CEST = UTC+2)</b> · Смещение браузера: <b id="tzOff">...</b>
+  </div>
+</div>
+
+<script>
+// Disable browser scroll restoration — always start at top on refresh
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+// ── Constants ──────────────────────────────────────────────────────────────
+const SB   = 'https://wopvlulqfzecujmfoezr.supabase.co'
+const KEY  = 'sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH'
+const H    = {'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'}
+const EF   = SB+'/functions/v1/admin-sql'
+const TZ   = 'Europe/Bratislava'
+
+// ── State ──────────────────────────────────────────────────────────────────
+let authHash='', allRows=[], onlineEvts=[]
+let curTbl='players', tblPageN=0, tblRows=[]
+const actLog=[]
+
+// ── Timezone display ───────────────────────────────────────────────────────
+const tzOff = -new Date().getTimezoneOffset()
+const tzStr = (tzOff>=0?'+':'')+Math.floor(tzOff/60)+':'+(String(Math.abs(tzOff%60)).padStart(2,'0'))
+document.getElementById('tzOff').textContent = 'UTC'+tzStr
+
+// ── Auth ───────────────────────────────────────────────────────────────────
+async function sha256(s){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')
+}
+async function doLogin(){
+  const v=document.getElementById('pwInput').value.trim(); if(!v) return
+  const h=await sha256(v)
+  // Verify against server — no hash stored in client code
+  const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({query:'SELECT 1 AS ok',auth:h})})
+  const d=await r.json()
+  if(r.ok && !d.error){
+    authHash=h; sessionStorage.setItem('authHash',h)
+    document.getElementById('loginWrap').style.display='none'
+    log('🔐 Вход выполнен'); startApp()
+  } else {
+    document.getElementById('loginErr').textContent='Неверный пароль'
+    const i=document.getElementById('pwInput')
+    i.classList.remove('shake'); void i.offsetWidth; i.classList.add('shake'); i.value=''; i.focus()
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+// Force UTC parsing: Supabase returns "2026-06-10T19:40:00" without Z
+function utc(d){
+  if(!d) return null
+  if(typeof d==='string'&&!d.includes('Z')&&!d.match(/[+-]\d{2}:?\d{2}$/)) return d+'Z'
+  return d
+}
+function ago(d){
+  if(!d) return '—'
+  const s=(Date.now()-new Date(utc(d)))/1000
+  if(s<60) return Math.floor(s)+'с'
+  if(s<3600) return Math.floor(s/60)+'м'
+  if(s<86400) return Math.floor(s/3600)+'ч'
+  return Math.floor(s/86400)+'д'
+}
+// DD.MM.YYYY HH:MM in Bratislava timezone
+function fmtDate(d){
+  if(!d) return '—'
+  return new Date(utc(d)).toLocaleString('ru',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:TZ})
+}
+function fmtTime(d){
+  if(!d) return '—'
+  return new Date(utc(d)).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',timeZone:TZ})
+}
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function copy(sql){ navigator.clipboard.writeText(sql).then(()=>toast('Скопировано ✓')) }
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show')
+  setTimeout(()=>t.classList.remove('show'),2000)
+}
+function isDateCol(k){ return /at$|date|time|created|updated/i.test(k) }
+function parseDevice(meta){
+  if(!meta) return null
+  if(typeof meta==='string'){ try{meta=JSON.parse(meta)}catch{return null} }
+  const ua=meta.ua||meta.userAgent||''
+  if(meta.device) return meta.device
+  if(!ua) return null
+  if(/iPhone|iPad/i.test(ua)) return '📱 iOS'
+  if(/Android/i.test(ua)) return '📱 Android'
+  if(/Windows/i.test(ua)) return '💻 Win'
+  if(/Macintosh|Mac OS/i.test(ua)) return '💻 Mac'
+  if(/Linux/i.test(ua)) return '💻 Linux'
+  return null
+}
+
+// ── Services ───────────────────────────────────────────────────────────────
+function setDot(id,st,ms){
+  const el=document.getElementById('sd-'+id); if(el) el.className='sdot '+(st==='on'?'don':st==='off'?'doff':'dwrn')
+  const mel=document.getElementById('ms-'+id); if(mel&&ms!=null) mel.textContent=ms?ms+'ms':''
+  const ok=['sb','ef','gh','gm'].filter(i=>{const d=document.getElementById('sd-'+i);return d&&d.classList.contains('don')}).length
+  const s=document.getElementById('svc-sum'); if(s) s.textContent=ok+' из 4 в сети'
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+function openTab(n){
+  document.querySelectorAll('.tb-body').forEach(e=>e.classList.remove('active'))
+  document.querySelectorAll('.tb-btn').forEach(e=>e.classList.remove('active'))
+  document.getElementById('tab-'+n)?.classList.add('active')
+  document.getElementById('tbn-'+n)?.classList.add('active')
+  log('📂 '+n)
+  if(n==='storage') loadStor()
+  if(n==='auth')    loadAuth()
+  if(n==='advisors') loadAdv()
+  if(n==='tables')  loadTbl(curTbl)
+}
+
+// ── Edge Function / SQL ────────────────────────────────────────────────────
+async function execSQL(q){
+  const t0=Date.now()
+  try{
+    const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({query:q.trim().replace(/;+\s*$/,''),auth:authHash})})
+    const ms=Date.now()-t0, json=await r.json()
+    if(!r.ok) return {error:json.error||'HTTP '+r.status,ms}
+    if(json.data&&json.data.error) return {error:json.data.error+(json.data.code?' ['+json.data.code+']':''),ms}
+    return {data:json.data,ms}
+  } catch(e){ return {error:e.message,ms:Date.now()-t0} }
+}
+
+// ── Render SQL result (at bottom of SQL tab) ───────────────────────────────
+function renderResult(result){
+  const box=document.getElementById('sqlResult')
+  box.style.display='block'
+  const {data,error,ms}=result
+  if(error){
+    box.innerHTML=`<div class="sql-ra-meta err">❌ Ошибка · ${ms}мс</div><div style="padding:9px 14px;font-size:.76rem;color:var(--red);background:#fff8f8;font-family:monospace">${escH(error)}</div>`
+    return
+  }
+  // DML без RETURNING → { ok: true, affected_rows: N }
+  if(data&&data.ok===true){
+    box.innerHTML=`<div class="sql-ra-meta ok">✓ ${ms}мс</div><div style="padding:8px 14px;font-size:.75rem;color:var(--mut)">Выполнено успешно · затронуто строк: <b>${data.affected_rows??0}</b></div>`
+    return
+  }
+  const rows=Array.isArray(data)?data:(data?[data]:[])
+  if(!rows.length){
+    box.innerHTML=`<div class="sql-ra-meta ok">✓ ${ms}мс · 0 строк</div><div style="padding:8px 14px;font-size:.75rem;color:var(--mut)">Запрос выполнен успешно, строк не возвращено</div>`
+    return
+  }
+  const cols=Object.keys(rows[0])
+  const show=Math.min(rows.length,500)
+  box.innerHTML=`<div class="sql-ra-meta ok">✓ ${ms}мс · ${rows.length} строк · ${cols.length} кол${rows.length>show?` (первые ${show})`:''}
+    <button onclick="exportCSV()" style="margin-left:auto;font-size:.63rem;padding:2px 7px;border:1px solid var(--brd);border-radius:4px;cursor:pointer;background:var(--card)">↓ CSV</button>
+  </div>
+  <div class="sql-ra-scroll"><table>
+    <thead><tr>${cols.map(c=>`<th>${colLabel(c)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.slice(0,show).map(r=>`<tr>${cols.map(c=>{
+      const v=r[c]??'null', vs=String(v)
+      const isDate=isDateCol(c)&&vs.length>10
+      const disp=isDate?fmtDate(vs):escH(vs)
+      return `<td class="${isDate?'dt-cell':''}" title="${escH(vs)}">${disp}</td>`
+    }).join('')}</tr>`).join('')}</tbody>
+  </table></div>`
+  window._lastSQL={cols,rows}
+  setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'nearest'}),50)
+}
+
+// Run preset
+const pBtns={}
+async function runP(idx,query){
+  if(!document.getElementById('tab-sql').classList.contains('active')) openTab('sql')
+  const btn=idx!==null?document.getElementById('prun-'+idx):null
+  const status=idx!==null?document.getElementById('ps'+idx):null
+  const origTxt=btn?btn.textContent:''
+  if(btn){btn.disabled=true;btn.textContent='⏳'}
+  if(status) status.textContent='⏳'
+  log('💻 SQL: '+query.substring(0,55)+(query.length>55?'…':''))
+  const result=await execSQL(query)
+  if(btn){btn.disabled=false;btn.textContent=origTxt}
+  if(status) status.textContent=result.error?'❌':'✅'
+  renderResult(result)
+}
+
+// Delete with confirm
+function confirmDel(){
+  if(!confirm('⚠️ Удалить все записи где name содержит "test"?\nЭто нельзя отменить!')) return
+  // Use proper LIKE without URL encoding
+  runP(7, "DELETE FROM game_results WHERE LOWER(name) LIKE '%' || 'test' || '%' RETURNING id,name,score")
+}
+
+async function runCustom(){
+  const q=document.getElementById('sqlInput').value.trim(); if(!q){toast('Введи SQL');return}
+  const btn=document.getElementById('sqlRunBtn')
+  btn.disabled=true; btn.textContent='⏳ Выполняю...'
+  document.getElementById('sqlMeta').textContent=''
+  if(!document.getElementById('tab-sql').classList.contains('active')) openTab('sql')
+  log('💻 Custom: '+q.substring(0,50)+(q.length>50?'…':''))
+  const result=await execSQL(q)
+  btn.disabled=false; btn.textContent='▶ Выполнить'
+  document.getElementById('sqlMeta').textContent=result.error?'❌ '+result.error:`✓ ${result.ms}мс · ${Array.isArray(result.data)?result.data.length:0} строк`
+  renderResult(result)
+}
+
+function exportCSV(){
+  const d=window._lastSQL; if(!d){toast('Нет данных');return}
+  const csv=[d.cols.join(','),...d.rows.map(r=>d.cols.map(c=>JSON.stringify(r[c]??'')).join(','))].join('\n')
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv)
+  a.download='snake_export_'+Date.now()+'.csv'; a.click(); log('📥 Экспорт CSV')
+}
+
+// ── Table Editor ───────────────────────────────────────────────────────────
+const TBL_SZ=50
+
+// Custom SQL for tables — server-side search via WHERE ILIKE
+function _esc(s){return s.replace(/'/g,"''")}  // safe for SQL string literals
+const TBL_SQL={
+  player_events:(off,s)=>{
+    const w=s?`WHERE (pe.player_id::text ILIKE '%${_esc(s)}%' OR COALESCE(pe.nick,'') ILIKE '%${_esc(s)}%' OR pe.event ILIKE '%${_esc(s)}%')`:'';
+    return `SELECT
+    pe.created_at,
+    COALESCE(pe.nick,'—') AS nick,
+    pe.event, pe.score, pe.mode,
+    COALESCE(p.best,0) AS player_best,
+    COALESCE(p.games_played,0) AS total_games,
+    COALESCE(p.coins,0) AS coins,
+    LEFT(pe.player_id::text,8) AS pid_short
+    FROM player_events pe
+    LEFT JOIN players p ON p.player_id=pe.player_id
+    ${w} ORDER BY pe.created_at DESC LIMIT ${TBL_SZ} OFFSET ${off}`;
+  },
+  players:(off,s)=>{
+    const w=s?`WHERE (nick ILIKE '%${_esc(s)}%' OR player_id::text ILIKE '%${_esc(s)}%')`:'';
+    return `SELECT nick,telegram_id,last_seen,created_at,games_played,best,best_level,total_score,coins,lang,difficulty,theme,skin_idx,LEFT(player_id::text,8) AS pid_short
+    FROM players ${w} ORDER BY last_seen DESC NULLS LAST LIMIT ${TBL_SZ} OFFSET ${off}`;
+  },
+  game_results:(off,s)=>{
+    const w=s?`WHERE (name ILIKE '%${_esc(s)}%' OR mode ILIKE '%${_esc(s)}%' OR score::text ILIKE '%${_esc(s)}%')`:'';
+    return `SELECT created_at,name,score,level,mode
+    FROM game_results ${w} ORDER BY created_at DESC LIMIT ${TBL_SZ} OFFSET ${off}`;
+  },
+}
+
+async function loadTbl(name, btn, silent){
+  curTbl=name
+  if(btn){document.querySelectorAll('.ttb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');tblPageN=0}
+  // Hide search for views (no server-side filter support)
+  const searchRow=document.querySelector('.tbl-search-row')
+  if(searchRow) searchRow.style.display = TBL_SQL[name] ? '' : 'none'
+  if(!silent){
+    document.getElementById('tblData').innerHTML='<div class="empty"><span class="sp"></span></div>'
+    document.getElementById('tblCnt').textContent=''
+  }
+  try{
+    const off=tblPageN*TBL_SZ
+    const srch=(document.getElementById('tblSearch')?.value||'').trim()
+    // Special tables: use execSQL (JOIN + bypasses RLS, supports server-side search)
+    if(TBL_SQL[name]){
+      // Count query: include search filter for accurate total
+      const cntWhere={
+        player_events: srch?`WHERE (pe.player_id::text ILIKE '%${_esc(srch)}%' OR COALESCE(pe.nick,'') ILIKE '%${_esc(srch)}%' OR pe.event ILIKE '%${_esc(srch)}%')`:'',
+        players: srch?`WHERE (nick ILIKE '%${_esc(srch)}%' OR player_id::text ILIKE '%${_esc(srch)}%')`:'',
+        game_results: srch?`WHERE (name ILIKE '%${_esc(srch)}%' OR mode ILIKE '%${_esc(srch)}%' OR score::text ILIKE '%${_esc(srch)}%')`:'',
+      }
+      const extra = name==='player_events'
+        ? execSQL(`SELECT
+            COUNT(*) FILTER (WHERE created_at > NOW()-INTERVAL '24 hours') AS today,
+            COUNT(*) FILTER (WHERE event='game_over' AND created_at > NOW()-INTERVAL '24 hours') AS games_today,
+            COUNT(DISTINCT player_id) FILTER (WHERE created_at > NOW()-INTERVAL '24 hours') AS players_today,
+            COUNT(DISTINCT player_id) FILTER (WHERE event='visit' AND created_at > NOW()-INTERVAL '2 minutes') AS online_now
+            FROM player_events`)
+        : Promise.resolve(null)
+      const cntSql = name==='player_events'
+        ? `SELECT COUNT(*) AS total FROM player_events pe LEFT JOIN players p ON p.player_id=pe.player_id ${cntWhere[name]||''}`
+        : `SELECT COUNT(*) AS total FROM ${name} ${cntWhere[name]||''}`
+      const [res, cntRes, extR]=await Promise.all([
+        execSQL(TBL_SQL[name](off, srch)),
+        execSQL(cntSql),
+        extra
+      ])
+      if(extR&&extR.data&&extR.data[0]){
+        const s=extR.data[0]
+        const box=document.getElementById('tblData')
+        const statsEl=document.getElementById('tblExtraStats')
+        const statsHtml=`<div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 13px;background:#f8fafc;border-bottom:1px solid var(--brd);font-size:.72rem">
+          <span>🟢 <b>${s.online_now??0}</b> онлайн сейчас</span>
+          <span>📅 <b>${s.today??0}</b> событий за 24ч</span>
+          <span>🎮 <b>${s.games_today??0}</b> игр за 24ч</span>
+          <span>👤 <b>${s.players_today??0}</b> игроков за 24ч</span>
+        </div>`
+        if(statsEl) statsEl.innerHTML=statsHtml
+        else {
+          const d=document.createElement('div'); d.id='tblExtraStats'; d.innerHTML=statsHtml
+          const wrap=document.getElementById('tbl-tables-inner-wrap')
+          if(wrap) wrap.insertBefore(d, wrap.firstChild)
+          else box.insertAdjacentHTML('beforebegin', statsHtml.replace('<div ','<div id="tblExtraStats" '))
+        }
+      } else {
+        const st=document.getElementById('tblExtraStats'); if(st) st.innerHTML=''
+      }
+      if(res.error) throw new Error(res.error)
+      tblRows=Array.isArray(res.data)?res.data:[]
+      const total=cntRes.data?.[0]?.total||0
+      renderTbl(tblRows)
+      document.getElementById('tblMeta').textContent=`${total} строк · обн. ${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:TZ})}`
+      document.getElementById('tblCnt').textContent=`стр. ${tblPageN+1} / ${Math.ceil(total/TBL_SZ)||1}`
+      document.getElementById('tblPrev').disabled=tblPageN<=0
+      document.getElementById('tblNext').disabled=(tblPageN+1)*TBL_SZ>=Number(total)
+      document.getElementById('tblPageLbl').textContent='Стр. '+(tblPageN+1)
+    } else {
+      // Regular tables via REST API
+      const TBL_ORDER={game_results:'id.desc',leaderboard_best:'score.desc'}
+      const r=await fetch(`${SB}/rest/v1/${name}?limit=${TBL_SZ}&offset=${off}&order=${TBL_ORDER[name]||'id.desc'}`,{headers:{...H,'Prefer':'count=exact'}})
+      const total=parseInt(r.headers.get('content-range')?.split('/')[1]||'0')
+      tblRows=await r.json()
+      renderTbl(tblRows)
+      document.getElementById('tblMeta').textContent=`${total} строк`
+      document.getElementById('tblCnt').textContent=`стр. ${tblPageN+1} / ${Math.ceil(total/TBL_SZ)||1}`
+      document.getElementById('tblPrev').disabled=tblPageN<=0
+      document.getElementById('tblNext').disabled=(tblPageN+1)*TBL_SZ>=total
+      document.getElementById('tblPageLbl').textContent='Стр. '+(tblPageN+1)
+    }
+    log('📋 Таблица "'+name+'" ('+tblRows.length+' строк)')
+  } catch(e){document.getElementById('tblData').innerHTML=`<div class="err-box">❌ ${e.message}<button onclick="loadTbl(curTbl)">Повторить</button></div>`}
+}
+const COL_RU={
+  nick:'Ник', coins:'Монеты', best:'Рекорд', best_level:'Ур. рекорда',
+  games_played:'Игр сыграно', total_score:'Всего очков', saved_level:'Сохр. уровень', difficulty:'Сложность',
+  theme:'Тема', lang:'Язык', skin_idx:'Скин', updated_at:'Обновлён', player_id:'ID игрока',
+  last_seen:'Последний раз', created_at:'Дата рег.', event:'Событие', score:'Очки', mode:'Режим', level:'Уровень',
+  name:'Игрок', pid_short:'ID (кратко)', player_name:'Ник игрока',
+  player_best:'Рекорд игрока', total_games:'Игр всего',
+  // health / indexes
+  table_name:'Таблица', live_rows:'Живые строки', dead_rows:'Мёртвые строки', size:'Размер',
+  indexname:'Индекс', tablename:'Таблица', scans:'Обращений', idx_scan:'Обращений', rows_read:'Строк прочитано',
+  // presets
+  games:'Игр', avg_score:'Сред. очки', top_score:'Макс. очки',
+  day:'День', online_now:'Онлайн', today:'Событий 24ч', games_today:'Игр 24ч', players_today:'Игроков 24ч',
+  total:'Всего', jobid:'ID задания', jobname:'Название', schedule:'Расписание', active:'Активно',
+}
+function colLabel(c){
+  const ru=COL_RU[c.toLowerCase()]
+  return ru ? `${c.toUpperCase()} <span style="font-weight:400;color:#64748b;font-size:.64rem;text-transform:none">${ru}</span>` : escH(c.toUpperCase())
+}
+function renderTbl(rows){
+  const box=document.getElementById('tblData')
+  if(!rows.length){setHTML(box,'<div class="empty">Ничего не найдено</div>');return}
+  const cols=Object.keys(rows[0])
+  setHTML(box,`<table>
+    <thead><tr>${cols.map(c=>`<th>${colLabel(c)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${cols.map(c=>{
+      const v=r[c]??'null', vs=String(v)
+      const isDate=isDateCol(c)&&vs.length>10&&vs!=='null'
+      const disp=isDate?fmtDate(vs):escH(vs.substring(0,60)+(vs.length>60?'…':''))
+      return `<td class="${isDate?'dt-cell':''}" title="${escH(vs)}">${disp}</td>`
+    }).join('')}</tr>`).join('')}</tbody>
+  </table>`)
+}
+let _srchTimer
+function filterTbl(){clearTimeout(_srchTimer);_srchTimer=setTimeout(()=>{tblPageN=0;loadTbl(curTbl)},350)}
+function tblPage(dir){tblPageN=Math.max(0,tblPageN+dir);loadTbl(curTbl)}
+
+// ── Advisors ───────────────────────────────────────────────────────────────
+async function loadAdv(){
+  document.getElementById('advList').innerHTML='<div class="empty"><span class="sp"></span>Анализирую...</div>'
+  log('🔍 Советники')
+  const [tblR,idxR]=await Promise.all([
+    execSQL(`SELECT relname AS tname,n_live_tup AS live,n_dead_tup AS dead,pg_size_pretty(pg_relation_size(relid)) AS sz FROM pg_stat_user_tables WHERE schemaname='public' ORDER BY n_live_tup DESC`),
+    execSQL(`SELECT relname AS tablename, indexrelname AS indexname, idx_scan AS scans FROM pg_stat_user_indexes WHERE schemaname='public' ORDER BY idx_scan DESC`)
+  ])
+  let html='<div class="adv-sec">БЕЗОПАСНОСТЬ</div><div class="adv-list">'
+  html+=adv('w','!','RLS INSERT без ограничений (game_results, player_events, players)','Намеренно для публичной игры без аккаунтов. Защита: rate-limit триггеры (макс 5/мин на game_results).')
+  html+=adv('o','OK','admin_execute — только service_role','Функция SQL закрыта от anon/authenticated. Доступ только через Edge Function с проверкой пароля.')
+  html+=adv('o','OK','Таймауты настроены','statement_timeout=30s, idle_in_transaction=30s, lock_timeout=10s для anon/authenticated.')
+  html+='</div><div class="adv-sec">ПРОИЗВОДИТЕЛЬНОСТЬ</div><div class="adv-list">'
+  if(tblR.error){
+    html+=adv('e','ERR','Ошибка загрузки данных таблиц',escH(tblR.error))
+  } else if(tblR.data&&Array.isArray(tblR.data)){
+    tblR.data.forEach(t=>{
+      const dead=Number(t.dead)||0, live=Number(t.live)||0
+      const ratio=live>0?Math.round(dead/live*100):0
+      // Для маленьких таблиц (<500 строк) мёртвые кортежи — норма, autovacuum справится
+      const needVac=dead>200&&live>500
+      const smallNote=dead>0&&!needVac?' — pg_autovacuum очистит автоматически':''
+      html+=adv(needVac?'w':'o',needVac?'!':'OK',
+        escH(String(t.tname))+' — '+live+' строк · '+escH(String(t.sz)),
+        'Мёртвых кортежей: '+dead+(needVac?' — рекомендуется VACUUM':smallNote))
+    })
+  }
+  html+=adv('i','i','pg_cron — авто-очистка активна','daily-cleanup-player-events: каждую ночь в 3:00 UTC удаляет события старше 60 дней.')
+  if(idxR.data&&Array.isArray(idxR.data)){
+    const unused=idxR.data.filter(i=>Number(i.scans)===0)
+    if(unused.length) html+=adv('i','i','Индексов без обращений: '+unused.length,unused.map(i=>escH(i.tablename+'.'+i.indexname)).join(', ')+' — 0 сканирований (норма при малом объёме данных, индексы нужны для роста)')
+    else html+=adv('o','OK','Все индексы используются','Нет неиспользуемых индексов')
+  }
+  html+='</div>'
+  document.getElementById('advList').innerHTML=html
+}
+function adv(type,lbl,title,detail=''){
+  const cls={'w':'adv-w','o':'adv-o','i':'adv-i','e':'adv-e'}[type]||'adv-i'
+  const lcls={'w':'lbl-w','o':'lbl-o','i':'lbl-i','e':'lbl-e'}[type]||'lbl-i'
+  return `<div class="adv ${cls}"><span class="adv-lbl ${lcls}">${lbl}</span><div class="adv-body"><div class="adv-title">${title}</div>${detail?`<div class="adv-detail">${detail}</div>`:''}</div></div>`
+}
+
+// ── Storage ────────────────────────────────────────────────────────────────
+async function loadStor(){
+  const el=document.getElementById('storContent'); if(el.dataset.ok) return
+  log('🗂️ Storage')
+  try{
+    const r=await fetch(SB+'/storage/v1/bucket',{headers:H})
+    const bkts=r.ok?await r.json():[]
+    let html=''
+    if(!Array.isArray(bkts)||!bkts.length){
+      html=`<div style="text-align:center;padding:16px">
+        <div style="font-size:1.8rem;margin-bottom:6px">🗂️</div>
+        <div style="font-size:.85rem;font-weight:700;margin-bottom:5px">Бакетов нет</div>
+        <div style="font-size:.73rem;color:var(--mut);max-width:340px;margin:0 auto;line-height:1.5">Supabase Storage не используется. Рекомендация: перенести <b>Only Today.mp3 (~13 МБ)</b> из GitHub репо в Storage — это ускорит загрузку игры.</div>
+      </div>`
+    } else {
+      html=bkts.map(b=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:#f8fafc;border:1px solid var(--brd);border-radius:7px;margin-bottom:5px">
+        <span>🗂️</span><div><div style="font-size:.8rem;font-weight:700">${escH(b.name)}</div>
+        <div style="font-size:.66rem;color:var(--mut)">${b.public?'Публичный':'Приватный'} · ${b.id}</div></div></div>`).join('')
+    }
+    html+=`<div class="info-grid" style="margin-top:10px">
+      <div class="ic"><div class="ic-t">Когда использовать</div><div class="ic-b">Скины, иконки персонажей<br>Фоновая музыка<br>Аватарки игроков (Фаза 4)</div></div>
+      <div class="ic"><div class="ic-t">Рекомендация</div><div class="ic-b">Перенести MP3 в Storage или CDN (Cloudflare R2). Сейчас 13МБ замедляют загрузку.</div></div>
+    </div>`
+    el.innerHTML=html; el.dataset.ok='1'
+  } catch(e){el.innerHTML=`<div class="err-box">❌ ${e.message}</div>`}
+}
+
+// ── Auth ───────────────────────────────────────────────────────────────────
+async function loadAuth(){
+  const el=document.getElementById('authContent'); if(el.dataset.ok) return
+  log('🔐 Auth')
+  try{
+    const r=await fetch(SB+'/auth/v1/health')
+    const h=r.ok?await r.json():{}
+    el.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 11px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin-bottom:10px">
+        <span style="font-size:1.1rem">🔐</span><div>
+          <div style="font-size:.83rem;font-weight:700">GoTrue — <span style="color:#16a34a">активен</span></div>
+          <div style="font-size:.66rem;color:var(--mut)">${h.name||'GoTrue'} v${h.version||'—'}</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="ic"><div class="ic-t">Текущий подход</div><div class="ic-b">Игроки анонимны (UUID в localStorage). Нет паролей = нет утечек. Anon key для публичного доступа.</div></div>
+        <div class="ic"><div class="ic-t">Провайдеры</div><div class="ic-b"><span class="prov prov-on">✓ Anon</span><span class="prov prov-off">✗ Email</span><span class="prov prov-off">✗ Google</span><span class="prov prov-off">✗ Discord</span></div></div>
+        <div class="ic"><div class="ic-t">JWT</div><div class="ic-b">Expiry: 1 ч · Refresh: 14 дней · PKCE вкл.</div></div>
+        <div class="ic"><div class="ic-t">Фаза 4</div><div class="ic-b">Добавить Google OAuth для профилей с аватаркой при выходе в App Store.</div></div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:7px;flex-wrap:wrap">
+        <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/auth/users" target="_blank">👥 Пользователи</a>
+        <a class="qb" href="https://supabase.com/dashboard/project/wopvlulqfzecujmfoezr/auth/providers" target="_blank">⚙️ Провайдеры</a>
+      </div>`
+    el.dataset.ok='1'
+  } catch(e){el.innerHTML=`<div class="err-box">❌ ${e.message}</div>`}
+}
+
+// ── Charts ─────────────────────────────────────────────────────────────────
+let cL=null, cM=null
+function initCharts(){
+  cL=new Chart(document.getElementById('chartLine').getContext('2d'),{type:'line',data:{labels:[],datasets:[{label:'Счёт',data:[],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.1)',tension:.4,pointRadius:2,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:true,ticks:{font:{size:9},maxTicksLimit:5,color:'#94a3b8'},grid:{display:false}},y:{display:true,ticks:{font:{size:9},color:'#94a3b8'},grid:{color:'#f8fafc'}}}}})
+  cM=new Chart(document.getElementById('chartMode').getContext('2d'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#6366f1','#22d3ee','#4ade80','#f59e0b','#f87171'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:11}}}}})
+}
+function updCharts(rows){
+  if(!cL||!cM) return
+  const r20=[...rows].sort((a,b)=>new Date(utc(a.created_at))-new Date(utc(b.created_at))).slice(-20)
+  cL.data.labels=r20.map(r=>fmtTime(r.created_at))
+  cL.data.datasets[0].data=r20.map(r=>r.score); cL.update('none')
+  const mc={}; rows.forEach(r=>{const m=r.mode||'classic';mc[m]=(mc[m]||0)+1})
+  cM.data.labels=Object.keys(mc); cM.data.datasets[0].data=Object.values(mc); cM.update('none')
+  document.getElementById('modBadge').textContent=Object.keys(mc).join(', ')
+  document.getElementById('chBadge').textContent='последние '+Math.min(r20.length,20)
+}
+
+// ── Online events (slow, separate from main 5s loop) ──────────────────────
+async function loadOnline(){
+  const r=await execSQL(`SELECT pe.player_id, pe.created_at,
+    COALESCE(p.nick,'Аноним') AS player_name,
+    COALESCE(p.best,0) AS best, COALESCE(p.best_level,1) AS best_level,
+    COALESCE(p.games_played,0) AS games, COALESCE(p.coins,0) AS coins
+    FROM player_events pe
+    LEFT JOIN players p ON p.player_id=pe.player_id
+    WHERE pe.event='visit' AND pe.created_at > NOW()-INTERVAL '2 minutes'
+    ORDER BY pe.created_at DESC LIMIT 100`)
+  if(Array.isArray(r.data)) onlineEvts=r.data
+  if(allRows.length) renderAll()
+}
+
+// ── Main data load — only fast REST calls every 5s ─────────────────────────
+async function loadData(){
+  const t0=Date.now()
+  try{
+    const rLB=await fetch(SB+'/rest/v1/game_results?select=name,score,level,mode,created_at&order=created_at.desc&limit=300',{headers:H,cache:'no-store'})
+    if(!rLB.ok) throw new Error('HTTP '+rLB.status)
+    allRows=await rLB.json()
+    setDot('sb','on',Date.now()-t0)
+    renderAll()
+    const lr=document.getElementById('lastRefresh'); if(lr) lr.textContent=new Date().toLocaleTimeString('ru',{timeZone:TZ})
+  } catch(e){
+    setDot('sb','off',null)
+    const errHtml=`<div class="err-box">⚠️ ${e.message}<button onclick="loadData()">Повторить</button></div>`
+    document.getElementById('lb').innerHTML=errHtml
+    document.getElementById('recentList').innerHTML=errHtml
+    const el=document.getElementById('lastRefresh'); if(el) el.textContent='Ошибка: '+e.message
+  }
+}
+
+function renderAll(){
+  const rows=allRows; if(!rows.length) return
+  const today=new Date(); today.setHours(0,0,0,0)
+  const weekAgo=new Date(Date.now()-7*86400*1000)
+  const byScore=[...rows].sort((a,b)=>b.score-a.score)
+  const names=[...new Set(rows.map(r=>r.name).filter(Boolean))]
+  // Build latest-per-key, then deduplicate: if same player_id appears as both Аноним and named, keep named
+  const _latestTmp={}
+  const _oKey=e=>(e.player_name&&e.player_name!=='Аноним')?'n:'+e.player_name:'p:'+e.player_id
+  onlineEvts.forEach(e=>{const k=_oKey(e);if(!_latestTmp[k]||new Date(utc(e.created_at))>new Date(utc(_latestTmp[k].created_at)))_latestTmp[k]=e})
+  const _namedPids=new Set(Object.entries(_latestTmp).filter(([k])=>k.startsWith('n:')).map(([,e])=>e.player_id).filter(Boolean))
+  Object.keys(_latestTmp).forEach(k=>{if(k.startsWith('p:')&&_namedPids.has(_latestTmp[k].player_id))delete _latestTmp[k]})
+  const oIds=Object.keys(_latestTmp)
+  const weekRows=rows.filter(r=>r.created_at&&new Date(utc(r.created_at))>=weekAgo)
+  // Stats
+  document.getElementById('s-online').textContent=oIds.length
+  document.getElementById('s-top').textContent=byScore[0]?.score??'—'
+  document.getElementById('s-top-d').textContent=byScore[0]?.name??'—'
+  document.getElementById('s-week').textContent=weekRows.length
+  document.getElementById('s-players').textContent=names.length
+  // Telegram users count
+  fetch(SB+'/rest/v1/players?select=player_id&telegram_id=not.is.null',{headers:H,cache:'no-store'})
+    .then(r=>r.json()).then(d=>{ const el=document.getElementById('s-tg'); if(el) el.textContent=Array.isArray(d)?d.length:'—'; }).catch(()=>{})
+
+  updCharts(rows)
+
+  // Online — only real heartbeat data (player_events visit, last 30 min)
+  const ob=document.getElementById('onlineBadge')
+  if(oIds.length){
+    ob.textContent=oIds.length+' онлайн'; ob.className='badge bg'
+    // Используем уже дедуплицированный _latestTmp (Аноним + именованный = только именованный)
+    setHTML(document.getElementById('onlineList'),Object.values(_latestTmp).slice(0,20).map(e=>{
+      const anon=!e.player_name||e.player_name==='Аноним'
+      const nm=anon?'Аноним · '+(e.player_id?e.player_id.substring(0,8):'?'):e.player_name
+      return `<div class="gi">
+        <span class="odot"></span>
+        <span class="gi-nm" title="id: ${escH(e.player_id||'')}">${escH(nm)}</span>
+        <span class="gi-mt">🏆 ${e.best||0} · ур.${e.best_level||1} · 🎮 ${e.games||0} · 🪙 ${e.coins||0}</span>
+        <span class="gi-tm">${ago(e.created_at)} назад</span>
+      </div>`
+    }).join(''))
+  } else {
+    ob.textContent='0 онлайн'; ob.className='badge bq'
+    setHTML(document.getElementById('onlineList'),'<div class="empty" style="padding:14px">Сейчас никого в игре</div>')
+  }
+
+  // Recent
+  setHTML(document.getElementById('recentList'),rows.slice(0,10).map(r=>`
+    <div class="gi">
+      <span class="gi-nm">${escH((r.name||'Аноним').substring(0,14))}</span>
+      <span class="gi-sc">${r.score}</span>
+      <span class="gi-mt"><span class="gi-tg">${r.mode||'classic'}</span> ур.${r.level||1}</span>
+      <span class="gi-tm">${ago(r.created_at)} назад</span>
+    </div>`).join(''))
+
+  // Per-player stats (computed once, reused below)
+  const pm={}
+  rows.forEach(r=>{const n=r.name||'Аноним';if(!pm[n])pm[n]={name:n,games:0,best:0,bestLevel:1,total:0};pm[n].games++;pm[n].total+=Number(r.score);if(Number(r.score)>pm[n].best){pm[n].best=Number(r.score);pm[n].bestLevel=r.level||1}})
+
+  // Leaderboard — best score per unique player (no duplicates)
+  const m=['🥇','🥈','🥉']
+  const lbUniq=Object.values(pm).sort((a,b)=>b.best-a.best).slice(0,20)
+  document.getElementById('lbBadge').textContent=lbUniq.length+' игроков'
+  setHTML(document.getElementById('lb'),`<table><thead><tr><th>#</th><th>Игрок</th><th>Рекорд</th><th>Ур.</th><th>Игр</th></tr></thead><tbody>${lbUniq.map((p,i)=>`<tr>
+    <td>${m[i]??`<span style="color:#ddd;font-size:.72rem">${i+1}</span>`}</td>
+    <td style="font-weight:600">${escH(p.name.substring(0,16))}</td>
+    <td><span class="tsc">${p.best}</span></td>
+    <td>${p.bestLevel}</td>
+    <td>${p.games}</td>
+  </tr>`).join('')}</tbody></table>`)
+
+  // Top players — most active (sorted by games played)
+  const pl=Object.values(pm).sort((a,b)=>b.games-a.games).slice(0,10)
+  document.getElementById('plBadge').textContent=names.length+' уникальных'
+  setHTML(document.getElementById('topPlayers'),`<table><thead><tr><th>#</th><th>Игрок</th><th>Рекорд</th><th>Ур.</th><th>Игр</th></tr></thead><tbody>${pl.map((p,i)=>`<tr>
+    <td style="color:#cbd5e1;font-size:.71rem">${i+1}</td>
+    <td style="font-weight:600">${escH(p.name.substring(0,16))}</td>
+    <td><span class="tsc">${p.best}</span></td>
+    <td>${p.bestLevel}</td>
+    <td>${p.games}</td>
+  </tr>`).join('')}</tbody></table>`)
+}
+
+// ── GitHub ─────────────────────────────────────────────────────────────────
+async function loadCommits(){
+  const el=document.getElementById('commits')
+  const [CK,CT]=['ghc','ght']
+  const cached=sessionStorage.getItem(CK), age=Date.now()-Number(sessionStorage.getItem(CT)||0)
+  if(cached&&age<15*60*1000){renderCmts(JSON.parse(cached),el,age);setDot('gh','on');return}
+  try{
+    const r=await fetch('https://api.github.com/repos/youngsanifone/snake/commits?per_page=10',{headers:{Accept:'application/vnd.github.v3+json','User-Agent':'snake-panel'}})
+    if(r.status===403||r.status===429){setDot('gh','wrn');document.getElementById('ms-gh').textContent='rate limit';if(cached)renderCmts(JSON.parse(cached),el,age);else el.innerHTML='<div class="empty" style="color:#f59e0b">GitHub rate limit — жди 1 мин</div>';return}
+    if(!r.ok) throw new Error('HTTP '+r.status)
+    const data=await r.json()
+    sessionStorage.setItem(CK,JSON.stringify(data));sessionStorage.setItem(CT,Date.now())
+    setDot('gh','on');renderCmts(data,el,0)
+  } catch(e){setDot('gh','off');if(!cached)el.innerHTML=`<div class="err-box">⚠️ GitHub: ${e.message}</div>`;else renderCmts(JSON.parse(cached),el,age)}
+}
+function renderCmts(data,el,ageMs){
+  document.getElementById('cmtBadge').textContent=data.length+' коммитов'
+  el.innerHTML=data.map(c=>{
+    const msg=c.commit.message.split('\n')[0]
+    const tag=/^feat/i.test(msg)?'tf':/^fix/i.test(msg)?'tx':'tc'
+    return `<a class="cmt" href="${c.html_url}" target="_blank">
+      <span class="chsh">${c.sha.substring(0,7)}</span>
+      <span class="cmsg"><span class="ctag ${tag}">${tag==='tf'?'feat':tag==='tx'?'fix':'upd'}</span>${escH(msg)}</span>
+      <span class="cdt">${fmtDate(c.commit.author.date)}</span>
+    </a>`
+  }).join('')+(ageMs>60000?`<div style="font-size:.6rem;color:#94a3b8;padding:4px 12px">кеш: ${Math.round(ageMs/60000)}м назад</div>`:'')
+}
+
+// ── Ping EF + Game ─────────────────────────────────────────────────────────
+async function pingEF(){
+  const t0=Date.now()
+  try{
+    const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({query:'SELECT 1 AS ok',auth:authHash})})
+    setDot('ef',r.ok?'on':'wrn',Date.now()-t0)
+  } catch(e){setDot('ef','off')}
+}
+async function pingGame(){
+  try{await fetch('https://youngsanifone.github.io/snake/',{mode:'no-cors'});setDot('gm','on')}
+  catch(e){setDot('gm','off')}
+}
+
+// ── Log ────────────────────────────────────────────────────────────────────
+function log(msg){
+  const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',second:'2-digit'})
+  actLog.unshift({t,msg}); renderLog()
+}
+function renderLog(){
+  const el=document.getElementById('logList'); if(!el) return
+  el.innerHTML=actLog.length?actLog.slice(0,80).map(e=>`<div class="log-e"><span class="log-t">${e.t}</span><span class="log-m">${escH(e.msg)}</span></div>`).join(''):'<div class="empty">Пусто</div>'
+  const c=document.getElementById('logCnt'); if(c) c.textContent=actLog.length+' действий'
+}
+function clearLog(){actLog.length=0;renderLog()}
+
+// ── Anti-flicker helper — only updates DOM if content changed ─────────────
+function setHTML(el,html){if(el&&el.innerHTML!==html)el.innerHTML=html}
+
+// ── Tick / countdown ───────────────────────────────────────────────────────
+let cd=5
+function tick(){cd--;document.getElementById('cd').textContent=cd;if(cd<=0){cd=5;loadData()}}
+setInterval(tick,1000)
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+function tickClock(){
+  const n=new Date()
+  document.getElementById('clock').textContent=n.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:TZ})
+  document.getElementById('clockUTC').textContent='UTC '+String(n.getUTCHours()).padStart(2,'0')+':'+String(n.getUTCMinutes()).padStart(2,'0')+' ('+tzStr+')'
+}
+setInterval(tickClock,1000); tickClock()
+
+function refresh(){loadData();loadCommits();pingGame();pingEF();loadOnline();log('🔄 Ручное обновление')}
+
+// ── Start ──────────────────────────────────────────────────────────────────
+
+// ── Player Profiles ────────────────────────────────────────────────────────
+async function loadPlayers(){
+  const el=document.getElementById('playerProfiles')
+  if(!el.querySelector('table')) el.innerHTML='<div class="empty"><span class="sp"></span></div>'
+  // GROUP BY player_id — correct approach, uses new columns
+  const r=await execSQL(`
+    SELECT
+      p.player_id,
+      p.nick,
+      p.coins,
+      p.best,
+      p.best_level,
+      p.games_played,
+      p.total_score,
+      p.skin_idx,
+      p.lang,
+      p.difficulty,
+      p.theme,
+      p.created_at,
+      p.last_seen,
+      p.photo_url,
+      p.referred_by,
+      p.telegram_id,
+      jsonb_array_length(COALESCE(p.achievements,'[]'::jsonb)) AS ach_count,
+      jsonb_array_length(COALESCE(p.bought_skins,'[]'::jsonb)) AS skins_count
+    FROM players p
+    ORDER BY p.last_seen DESC NULLS LAST
+    LIMIT 50`)
+  if(!Array.isArray(r.data)||!r.data.length){
+    setHTML(el,'<div class="empty">Нет данных</div>'); return
+  }
+  const rows=r.data
+  document.getElementById('profBadge').textContent=rows.length+' игроков'
+  const skinName=['🐍 Дефолт','🟢 Классик','⚡ Неон','👾 Ретро','🌊 Вода','🔥 Огонь','❄️ Лёд','🌿 Природа','👑 Золото','🎮 Пиксель']
+  const langFlag={'ru':'🇷🇺','sk':'🇸🇰','en':'🇬🇧'}
+  setHTML(el,`<div style="overflow-x:auto"><table class="pt" style="width:100%;border-collapse:collapse">
+    <thead><tr>
+      <th>#</th><th>Аватар</th><th>Игрок</th><th>TG</th><th>Lang</th><th>🪙</th><th>🏆 Рекорд</th><th>Ур.</th><th>Игр</th><th>Всего очков</th><th>🏅 Ачивок</th><th>🎨 Скин</th><th>Реферал от</th><th>Последний раз</th><th>Регистрация</th>
+    </tr></thead>
+    <tbody>${rows.map((p,i)=>`<tr>
+      <td style="color:#94a3b8">${i+1}</td>
+      <td style="text-align:center">${p.photo_url?`<img src="${escH(p.photo_url)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle" onerror="this.style.display='none'">`:'<span style="font-size:1.1rem">👤</span>'}</td>
+      <td style="font-weight:700" title="${escH(p.player_id||'')}">${escH((p.nick||'Аноним').substring(0,20))}</td>
+      <td style="text-align:center;font-size:.7rem">${p.telegram_id?`<span style="color:#2da7e0" title="${p.telegram_id}">✈️</span>`:'—'}</td>
+      <td style="text-align:center">${langFlag[p.lang]||p.lang||'—'}</td>
+      <td class="coin">${p.coins??0}</td>
+      <td><span class="tsc">${p.best??0}</span></td>
+      <td style="color:#64748b">${p.best_level??1}</td>
+      <td>${p.games_played??0}</td>
+      <td style="color:#6366f1;font-weight:600">${(p.total_score??0).toLocaleString('ru')}</td>
+      <td class="ach-cnt">${p.ach_count??0}</td>
+      <td><span class="sk-badge">${skinName[p.skin_idx]??'#'+p.skin_idx}</span></td>
+      <td style="font-size:.68rem;color:#7c3aed">${p.referred_by?'🔗 '+escH(p.referred_by.substring(0,8)):'—'}</td>
+      <td style="font-size:.67rem;color:#94a3b8">${p.last_seen?ago(p.last_seen)+' назад':'—'}</td>
+      <td style="font-size:.67rem;color:#94a3b8">${p.created_at?new Date(p.created_at).toLocaleDateString('ru'):'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`)
+  log('👤 Профили: '+rows.length+' игроков')
+}
+
+function startApp(){
+  initCharts(); loadData(); loadCommits(); pingGame(); pingEF(); loadOnline(); loadPlayers(); loadTbl(curTbl)
+  setInterval(loadData,5000)
+  setInterval(loadOnline,10000)
+  // Вкладка «Таблицы» обновляется сама, пока открыта (тихо, без мерцания)
+  setInterval(()=>{
+    if(document.getElementById('tab-tables')?.classList.contains('active')) loadTbl(curTbl,null,true)
+  },5000)
+  setInterval(loadPlayers,10000)
+  setInterval(pingGame,30000)
+  setInterval(pingEF,30000)
+  setInterval(loadCommits,300000)
+}
+
+const _savedHash=sessionStorage.getItem('authHash')
+if(_savedHash){
+  authHash=_savedHash
+  document.getElementById('loginWrap').style.display='none'
+  window.scrollTo(0,0)
+  log('🔐 Автовход'); startApp()
+} else {
+  setTimeout(()=>document.getElementById('pwInput').focus(),100)
+}
+</script>
+</body>
+</html>
