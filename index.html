@@ -1224,7 +1224,7 @@ const TRANSLATIONS={
     pauseInfoFmt:(lvl,score)=>`Úroveň ${lvl} · Skóre: ${score}`,
     resetConfirm:'Resetovať celý postup? Mince, rekordy, ocenenia budú vymazané. Prezývka zostane.',
     shareTitle:'🐍 Had',
-    shareFmt:(emoji,score,mode,best)=>`${emoji} Nazbieral som ${score} bodov v Hadovi (${mode})!\nNajlepší výsledok: ${best} 🏆\nZahraj si: https://youngsanifone.github.io/snake/`,
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Nazbieral som ${score} bodov v Hadovi (${mode})!\nNajlepší výsledok: ${best} 🏆\nSkús poraziť môj rekord!`,
     shareModes:{classic:(n)=>`úroveň ${n}`,time:'režim Čas',survival:'režim Prežitie',mirror:'režim Zrkadlo'},
     shareCopied:'✓ Skopírované!',shareError:'✗ Chyba',
     globalPlayers:(n)=>`🌍 ${n.toLocaleString('sk')} ${n===1?'hráč':n<5?'hráči':'hráčov'}`,
@@ -1314,7 +1314,7 @@ const TRANSLATIONS={
     pauseInfoFmt:(lvl,score)=>`Уровень ${lvl} · Счёт: ${score}`,
     resetConfirm:'Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.',
     shareTitle:'🐍 Змейка',
-    shareFmt:(emoji,score,mode,best)=>`${emoji} Набрал ${score} очков в Змейке (${mode})!\nЛучший результат: ${best} 🏆\nСыграй сам: https://youngsanifone.github.io/snake/`,
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Набрал ${score} очков в Змейке (${mode})!\nЛучший результат: ${best} 🏆\nПобей мой рекорд! 🐍`,
     shareModes:{classic:(n)=>`уровень ${n}`,time:'режим Время',survival:'режим Выживание',mirror:'режим Зеркало'},
     shareCopied:'✓ Скопировано!',shareError:'✗ Ошибка',
     globalPlayers:(n)=>`🌍 ${n.toLocaleString('ru')} ${n===1?'игрок':n<5?'игрока':'игроков'}`,
@@ -1404,7 +1404,7 @@ const TRANSLATIONS={
     pauseInfoFmt:(lvl,score)=>`Level ${lvl} · Score: ${score}`,
     resetConfirm:'Reset all progress? Coins, records, achievements will be deleted. Nickname stays.',
     shareTitle:'🐍 Snake',
-    shareFmt:(emoji,score,mode,best)=>`${emoji} Scored ${score} points in Snake (${mode})!\nBest: ${best} 🏆\nPlay now: https://youngsanifone.github.io/snake/`,
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Scored ${score} points in Snake (${mode})!\nBest: ${best} 🏆\nBeat my record! 🐍`,
     shareModes:{classic:(n)=>`level ${n}`,time:'Time mode',survival:'Survival mode',mirror:'Mirror mode'},
     shareCopied:'✓ Copied!',shareError:'✗ Error',
     globalPlayers:(n)=>`🌍 ${n.toLocaleString('en')} ${n===1?'player':'players'}`,
@@ -3893,15 +3893,15 @@ async function shareScore(){
   // Telegram Mini App — native share dialog
   const _tg=window.Telegram?.WebApp;
   if(_tg?.initData){
-    // Add referral param so friends open the game with this player's ref
+    // Build the referral link with short 8-char code
     const pid=localStorage.getItem(S+'pid');
-    // openLink opens in system browser → browser redirects to Telegram share dialog
-    // IMPORTANT: url param must be a plain web URL, NOT a t.me link —
-    // if it's t.me, Telegram navigates to the Mini App instead of showing share dialog
-    const webUrl='https://youngsanifone.github.io/snake/';
-    const refSuffix=pid?'\n🎮 https://t.me/snakegameone_bot/snake?startapp=ref_'+pid.replace(/-/g,'').slice(0,16):'';
-    const shareText=text+refSuffix;
-    _tg.openLink('https://t.me/share/url?url='+encodeURIComponent(webUrl)+'&text='+encodeURIComponent(shareText));
+    const refCode=pid?pid.replace(/-/g,'').slice(0,8):'';
+    // Use t.me Mini App link as the shared URL — Telegram renders a native app preview card
+    const shareUrl=refCode
+      ?`https://t.me/snakegameone_bot/snake?startapp=ref_${refCode}`
+      :'https://t.me/snakegameone_bot/snake';
+    // openTelegramLink keeps share dialog inside Telegram (no browser redirect)
+    _tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(shareUrl)+'&text='+encodeURIComponent(text));
     return;
   }
   if(navigator.share){
