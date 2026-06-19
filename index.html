@@ -2968,23 +2968,25 @@ function showUnlock(s){
 }
 // ── LEVELS ────────────────────────────────────────────────────────
 function getLevelData(lvl){
-  // foodNeeded: 5 → 15 (cap), gradual growth
-  // speed: 2.15 → 5.5 (cap), no infinite acceleration
-  // obsCount: 0 → 20 (cap), appear from level 2 onwards
+  // foodNeeded: 5 → 20 (cap raised), deeper late-game progression
+  // speed: 2.15 → 5.8 (cap raised), same linear ramp
+  // obsCount: 0 → 22 (cap raised), appear from level 6 (not 3)
   return{
-    foodNeeded: Math.min(4 + Math.round(lvl * 0.7), 15),
-    speed:      Math.min(2.0 + lvl * 0.15, 5.5) * DIFF_MULT[difficulty],
-    obsCount:   Math.min(Math.floor((lvl-1)/2)*2, 20),
+    foodNeeded: Math.min(4 + Math.round(lvl * 0.85), 20),
+    speed:      Math.min(2.0 + lvl * 0.15, 5.8) * DIFF_MULT[difficulty],
+    obsCount:   Math.max(0, Math.min(Math.floor((lvl - 4) / 2) * 2, 22)),
   };
 }
 // Balance table for reference:
 // Lvl.1:  food=5,  speed≈2.15, obstacles=0
-// Lvl.3:  food=6,  speed≈2.45, obstacles=2
-// Lvl.5:  food=8,  speed≈2.75, obstacles=4
-// Lvl.10: food=11, speed≈3.5,  obstacles=10
-// Lvl.15: food=15, speed≈4.25, obstacles=14
-// Lvl.20: food=15, speed≈5.0,  obstacles=20
-// Lvl.24+: everything maxed (food=15, speed=5.5, obs.=20)
+// Lvl.3:  food=7,  speed≈2.45, obstacles=0
+// Lvl.5:  food=8,  speed≈2.75, obstacles=0
+// Lvl.6:  food=9,  speed≈2.90, obstacles=2
+// Lvl.8:  food=11, speed≈3.20, obstacles=4
+// Lvl.10: food=13, speed≈3.50, obstacles=6  ← was 10 obstacles
+// Lvl.15: food=17, speed≈4.25, obstacles=12 ← was 14+food capped
+// Lvl.20: food=20, speed≈5.00, obstacles=18
+// Lvl.26: food=20, speed≈5.80, obstacles=22 (all maxed)
 let currentLevel=1,levelData=null;
 function beginLevel(lvl){
   currentLevel=lvl;
@@ -3297,7 +3299,8 @@ function loop(ts){
   if(dist(head,food)<R+FR){
     combo++;comboTimer=COMBO_WINDOW;
     const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
-    const pts = (currentLevel>=10 ? 3 : 2) + comboBonus; // base + combo bonus
+    const basePts = Math.min(2 + Math.floor(currentLevel / 7), 5); // 2→5 smoothly every 7 levels
+    const pts = basePts + comboBonus; // base + combo bonus
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
@@ -3350,7 +3353,8 @@ function loop(ts){
     } else if(dist(head,goldFood)<R+GFR){
       // collected!
       const comboBonus = combo>=5 ? 2 : combo>=3 ? 1 : 0;
-      const pts=(currentLevel>=10?3:2)+comboBonus+2; // gold = level + combo + 2 extra
+      const basePts = Math.min(2 + Math.floor(currentLevel / 7), 5); // same multiplier as normal food
+      const pts=basePts+comboBonus+2; // gold = level + combo + 2 extra
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
