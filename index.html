@@ -2458,33 +2458,49 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 // ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
+  // Safety timeout — if loading screen is still visible after 12s, force-proceed
+  const _loadingTimeout=setTimeout(()=>{
+    if(loading.style.display!=='none'&&document.getElementById('loadingScreen').classList.contains('active')||document.querySelector('.screen.active')?.id==='loadingScreen'){
+      console.warn('[init] timeout — forcing menu');
+      loading.style.display='none';
+      applyLocalCache(); applyTheme(); applyLang(); refreshMenuUI();
+      const welcInp2=document.getElementById('welcInput');
+      const anon2=!lbNickname||['Аноним','Anonym','Anonymous'].includes(lbNickname);
+      showScreen(anon2?'welcomeScreen':'menuScreen');
+      if(anon2) setTimeout(()=>welcInp2?.focus(),300);
+    }
+  },12000);
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
   if(tg?.initData){
-    tg.expand();
+    try{ tg.expand(); }catch(_){}
     // ── Viewport / safe area ──
-    // Telegram SDK injects --tg-viewport-height and --tg-viewport-stable-height automatically.
-    // We override body height to use the stable TG viewport so layout never jumps on keyboard open.
-    const applyTgViewport=()=>{
-      const h=tg.viewportStableHeight||tg.viewportHeight||window.innerHeight;
-      document.documentElement.style.setProperty('--tg-vh',h+'px');
-    };
-    applyTgViewport();
-    tg.onEvent('viewportChanged',applyTgViewport);
+    try{
+      const applyTgViewport=()=>{
+        const h=tg.viewportStableHeight||tg.viewportHeight||window.innerHeight;
+        document.documentElement.style.setProperty('--tg-vh',h+'px');
+      };
+      applyTgViewport();
+      tg.onEvent('viewportChanged',applyTgViewport);
+    }catch(_){}
     // Apply Telegram theme
-    if(tg.colorScheme==='light') document.documentElement.setAttribute('data-theme','light');
-    tg.setHeaderColor('#0f172a');
-    tg.setBackgroundColor('#0f172a');
+    try{
+      if(tg.colorScheme==='light') document.documentElement.setAttribute('data-theme','light');
+      tg.setHeaderColor('#0f172a');
+      tg.setBackgroundColor('#0f172a');
+    }catch(_){}
     // BackButton — show when not on menuScreen
-    tg.BackButton.onClick(()=>{
-      const active=document.querySelector('.screen.active');
-      if(active&&active.id!=='menuScreen'&&active.id!=='loadingScreen'){
-        showScreen('menuScreen');
-        tg.BackButton.hide();
-        tg.HapticFeedback?.impactOccurred('soft');
-      }
-    });
+    try{
+      tg.BackButton.onClick(()=>{
+        const active=document.querySelector('.screen.active');
+        if(active&&active.id!=='menuScreen'&&active.id!=='loadingScreen'){
+          showScreen('menuScreen');
+          tg.BackButton.hide();
+          tg.HapticFeedback?.impactOccurred('soft');
+        }
+      });
+    }catch(_){}
     console.log('[TG] initData len:',tg.initData.length,'user:',tg.initDataUnsafe?.user?.username||tg.initDataUnsafe?.user?.first_name);
     try{
       const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
@@ -2528,6 +2544,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         applyTheme();
         applyLang();
         refreshMenuUI();
+        clearTimeout(_loadingTimeout);
         loading.style.display='none';
         tg.ready();
         showScreen('menuScreen');
