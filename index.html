@@ -2472,6 +2472,19 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
+  // DEBUG OVERLAY — remove after fix
+  (()=>{
+    const dbg=document.createElement('div');
+    dbg.id='tg-debug';
+    dbg.style.cssText='position:fixed;bottom:60px;left:10px;right:10px;background:rgba(0,0,0,.85);color:#0f0;font-size:11px;font-family:monospace;padding:8px;border-radius:6px;z-index:99999;word-break:break-all;';
+    dbg.innerHTML='TG SDK: '+(window.Telegram?'✅':'❌')+
+      '<br>WebApp: '+(tg?'✅':'❌')+
+      '<br>initData: '+(tg?.initData?'✅ (len='+tg.initData.length+')':'❌ empty')+
+      '<br>platform: '+(tg?.platform||'n/a')+
+      '<br>version: '+(tg?.version||'n/a');
+    document.body.appendChild(dbg);
+    setTimeout(()=>dbg.remove(),20000);
+  })();
   if(tg?.initData){
     try{ tg.expand(); }catch(_){}
     // ── Viewport / safe area ──
