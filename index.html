@@ -3637,6 +3637,14 @@ function endGame(){
   if(score>(bestByMode[gameMode]||0)){bestByMode[gameMode]=score;}
   comboHudEl.style.display='none';
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
+  // Push-уведомления: если новый рекорд — уведомить тех кого обогнали (fire-and-forget)
+  if(isNewRecord && score >= 5){
+    const _pid=localStorage.getItem(S+'pid');
+    if(_pid) fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/notify-beaten',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({winner_id:_pid,winner_nick:lbNickname||'Игрок',new_score:score})
+    }).catch(()=>{});
+  }
   if(navigator.vibrate) navigator.vibrate([180]);
   window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('error');
   trackEvent('game_over',score,gameMode); // global statistics
