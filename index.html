@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="Змейка">
 <meta name="theme-color" content="#0a0a0f">
 <title>Змейка</title>
+<!-- Telegram Mini App SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCWHMVHK4C"></script>
 <script>
@@ -2433,6 +2435,53 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 // ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
+
+  // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
+  const tg=window.Telegram?.WebApp;
+  if(tg?.initData){
+    tg.expand();
+    try{
+      const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({init_data:tg.initData})
+      });
+      if(tgResp.ok){
+        const tgData=await tgResp.json();
+        if(tgData.ok&&tgData.player_id){
+          localStorage.setItem(S+'pid',tgData.player_id);
+          setCookie(S+'pid',tgData.player_id);
+          if(tgData.profile){
+            applyProfile(tgData.profile);
+            fetchModeBests(tgData.player_id);
+          } else {
+            const u=tgData.telegram_user;
+            lbNickname=u?.username||u?.first_name||'Player';
+            localStorage.setItem(S+'Nick',lbNickname);
+            profileLoaded=true;
+            upsertProfile();
+          }
+          applyTheme();
+          applyLang();
+          refreshMenuUI();
+          loading.style.display='none';
+          tg.ready();
+          showScreen('menuScreen');
+          trackEvent('visit',null,null);
+          setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); },60*1000);
+          document.addEventListener('visibilitychange',()=>{
+            if(document.visibilityState==='visible') trackEvent('visit',null,null);
+            if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
+          });
+          window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
+          return;
+        }
+      }
+    }catch(e){ console.warn('[TG] auth failed:',e); }
+    tg.ready();
+  }
+  // ── END TELEGRAM AUTH ──────────────────────────────────────────────
+
   // Attach welcome screen event handlers here (needed in both code paths)
   const welcInp=document.getElementById('welcInput');
   const welcBtn=document.getElementById('welcBtn');
