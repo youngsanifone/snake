@@ -2458,18 +2458,17 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 // ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
-  // Safety timeout — if loading screen is still visible after 12s, force-proceed
+  // Safety timeout — if loading screen still visible after 8s, force-proceed
   const _loadingTimeout=setTimeout(()=>{
-    if(loading.style.display!=='none'&&document.getElementById('loadingScreen').classList.contains('active')||document.querySelector('.screen.active')?.id==='loadingScreen'){
-      console.warn('[init] timeout — forcing menu');
-      loading.style.display='none';
-      applyLocalCache(); applyTheme(); applyLang(); refreshMenuUI();
-      const welcInp2=document.getElementById('welcInput');
-      const anon2=!lbNickname||['Аноним','Anonym','Anonymous'].includes(lbNickname);
-      showScreen(anon2?'welcomeScreen':'menuScreen');
-      if(anon2) setTimeout(()=>welcInp2?.focus(),300);
-    }
-  },12000);
+    if(loading.style.display==='none') return; // already hidden, do nothing
+    console.warn('[init] timeout — forcing menu');
+    loading.style.display='none';
+    applyLocalCache(); applyTheme(); applyLang(); refreshMenuUI();
+    const welcInp2=document.getElementById('welcInput');
+    const anon2=!lbNickname||['Аноним','Anonym','Anonymous'].includes(lbNickname);
+    showScreen(anon2?'welcomeScreen':'menuScreen');
+    if(anon2) setTimeout(()=>welcInp2?.focus(),300);
+  },8000);
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
@@ -2663,7 +2662,9 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 
   try{
     const pid=getPlayerId();
-    const r=await fetch(`${SB_URL}/rest/v1/players?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS});
+    const _ac=new AbortController();
+    setTimeout(()=>_ac.abort(),6000); // 6s timeout — don't wait forever
+    const r=await fetch(`${SB_URL}/rest/v1/players?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS,signal:_ac.signal});
     if(!r.ok) throw new Error('fetch error');
     const rows=await r.json();
     if(rows.length>0){
