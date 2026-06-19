@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Змейка">
@@ -54,8 +54,8 @@
   html{width:100%;height:100%;}
   body{
     width:100%;
-    height:100vh;
-    height:100dvh; /* Safari 15.4+ — correct height without address bar */
+    height:var(--tg-vh,100dvh); /* Telegram overrides this; fallback = dvh */
+    height:var(--tg-vh,100vh);
     min-height:-webkit-fill-available; /* legacy Safari */
     overflow:hidden;
     background:#050508;color:var(--text);transition:var(--transition);
@@ -69,11 +69,13 @@
     display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
     width:100%;max-width:600px;
     touch-action:pan-y;
-    min-height:100vh;
-    min-height:100dvh;
+    min-height:var(--tg-vh,100dvh);
+    min-height:var(--tg-vh,100vh);
     min-height:-webkit-fill-available;
     overflow-y:auto;overflow-x:hidden;
-    padding:10px 0 20px;
+    padding:10px 0 calc(20px + env(safe-area-inset-bottom,0px));
+    padding-left:env(safe-area-inset-left,0px);
+    padding-right:env(safe-area-inset-right,0px);
     background:var(--bg);
   }
   .screen.active{display:flex;}
@@ -1065,6 +1067,17 @@
 <div class="screen" id="settingsScreen">
   <div class="rec-title">⚙️ Настройки</div>
   <div class="rec-list">
+    <!-- Telegram Profile (shown only in Telegram) -->
+    <div class="sett-card" id="tgProfileCard" style="display:none">
+      <div class="sett-row" style="gap:12px;align-items:center">
+        <img id="tgAvatar" src="" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #6366f1;display:none">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:.95rem" id="tgProfileName">—</div>
+          <div style="font-size:.75rem;color:var(--muted)">Telegram аккаунт</div>
+        </div>
+        <span style="font-size:1.2rem">✈️</span>
+      </div>
+    </div>
     <!-- Nickname -->
     <div class="sett-card">
       <div class="sett-label" id="settNickLbl">👤 Никнейм</div>
@@ -1595,6 +1608,8 @@ if(localStorage.getItem('snakeVer')!=='2'){const _keepPid=localStorage.getItem('
 const S='snake2_';
 // ?reset=1 or Telegram startapp=reset — clears localStorage (for testing)
 if(new URLSearchParams(location.search).get('reset')==='1'||window.Telegram?.WebApp?.initDataUnsafe?.start_param==='reset'){localStorage.clear();history.replaceState(null,'',location.pathname);}
+// Telegram startapp=ref_XXXX — save referrer for later bonus processing
+(()=>{const sp=window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';if(sp.startsWith('ref_')&&!localStorage.getItem('snake2_ref_done')){localStorage.setItem('snake2_ref',sp.slice(4));console.log('[TG] referral from:',sp.slice(4));}})();
 currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── VARIABLES (defaults; populated from Supabase on startup) ──────────
 let theme      = 'dark';
@@ -2448,6 +2463,15 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   const tg=window.Telegram?.WebApp;
   if(tg?.initData){
     tg.expand();
+    // ── Viewport / safe area ──
+    // Telegram SDK injects --tg-viewport-height and --tg-viewport-stable-height automatically.
+    // We override body height to use the stable TG viewport so layout never jumps on keyboard open.
+    const applyTgViewport=()=>{
+      const h=tg.viewportStableHeight||tg.viewportHeight||window.innerHeight;
+      document.documentElement.style.setProperty('--tg-vh',h+'px');
+    };
+    applyTgViewport();
+    tg.onEvent('viewportChanged',applyTgViewport);
     // Apply Telegram theme
     if(tg.colorScheme==='light') document.documentElement.setAttribute('data-theme','light');
     tg.setHeaderColor('#0f172a');
@@ -2473,6 +2497,24 @@ function buildShopPreview_compat(){ buildShopPreview(); }
       if(tgData.ok&&tgData.player_id){
         localStorage.setItem(S+'pid',tgData.player_id);
         setCookie(S+'pid',tgData.player_id);
+        // ── Cloud Storage: persist player_id across devices ──
+        if(tg.CloudStorage){
+          tg.CloudStorage.setItem('pid',tgData.player_id,()=>{});
+        }
+        // ── Telegram Profile Card ──
+        const tgUser=tgData.telegram_user||tg.initDataUnsafe?.user||{};
+        if(tgUser.first_name||tgUser.username){
+          const card=document.getElementById('tgProfileCard');
+          const nameEl=document.getElementById('tgProfileName');
+          const avatarEl=document.getElementById('tgAvatar');
+          if(card) card.style.display='block';
+          if(nameEl) nameEl.textContent=(tgUser.username?'@'+tgUser.username:tgUser.first_name)||'—';
+          if(avatarEl&&tgUser.photo_url){
+            avatarEl.src=tgUser.photo_url;
+            avatarEl.style.display='block';
+            avatarEl.onerror=()=>{ avatarEl.style.display='none'; };
+          }
+        }
         if(tgData.profile){
           applyProfile(tgData.profile);
           fetchModeBests(tgData.player_id);
@@ -2501,6 +2543,16 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         console.warn('[TG] auth rejected:',tgData.error||'unknown');
       }
     }catch(e){ console.warn('[TG] auth failed:',e); }
+    // ── Cloud Storage fallback: restore player_id if auth failed ──
+    if(tg.CloudStorage){
+      tg.CloudStorage.getItem('pid',(err,val)=>{
+        if(!err&&val&&!localStorage.getItem(S+'pid')){
+          console.log('[TG] restored pid from CloudStorage:',val.slice(0,8));
+          localStorage.setItem(S+'pid',val);
+          setCookie(S+'pid',val);
+        }
+      });
+    }
     tg.ready();
   }
   // ── END TELEGRAM AUTH ──────────────────────────────────────────────
@@ -3776,7 +3828,10 @@ async function shareScore(){
   // Telegram Mini App — native share dialog
   const _tg=window.Telegram?.WebApp;
   if(_tg?.initData){
-    const url='https://t.me/snakegameone_bot/snake';
+    // Add referral param so friends open the game with this player's ref
+    const pid=localStorage.getItem(S+'pid');
+    const refParam=pid?'?startapp=ref_'+pid.replace(/-/g,'').slice(0,16):'';
+    const url='https://t.me/snakegameone_bot/snake'+refParam;
     // openLink opens in external browser → shows Telegram share dialog correctly
     _tg.openLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text));
     return;
