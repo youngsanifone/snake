@@ -362,6 +362,7 @@ tr:hover td{background:#fafafa}
     <button class="tb-btn"        id="tbn-advisors" onclick="openTab('advisors')">🔍 Советники</button>
     <button class="tb-btn"        id="tbn-storage"  onclick="openTab('storage')">🗂️ Storage</button>
     <button class="tb-btn"        id="tbn-auth"     onclick="openTab('auth')">🔐 Auth</button>
+    <button class="tb-btn"        id="tbn-telegram" onclick="openTab('telegram')">✈️ Telegram</button>
     <button class="tb-btn"        id="tbn-actlog"   onclick="openTab('actlog')">📝 Лог</button>
   </div>
 
@@ -516,6 +517,54 @@ tr:hover td{background:#fafafa}
     <div id="authContent" style="padding:12px 13px"><div class="empty"><span class="sp"></span></div></div>
   </div>
 
+  <!-- TAB: TELEGRAM -->
+  <div id="tab-telegram" class="tb-body">
+    <div class="tb-desc">Статистика по пользователям, пришедшим через Telegram Mini App. Обновляется при открытии вкладки.</div>
+
+    <!-- TG summary cards -->
+    <div class="g4" style="padding:12px 13px 4px;gap:10px" id="tgSummary">
+      <div class="stat" style="padding:12px 14px">
+        <div class="st-ico">✈️</div>
+        <div><div class="st-n" id="tg-total">—</div><div class="st-l">TG игроков</div><div class="st-d">всего</div></div>
+      </div>
+      <div class="stat" style="padding:12px 14px">
+        <div class="st-ico">📊</div>
+        <div><div class="st-n" id="tg-pct">—</div><div class="st-l">от всех</div><div class="st-d">процент TG</div></div>
+      </div>
+      <div class="stat" style="padding:12px 14px">
+        <div class="st-ico">🏆</div>
+        <div><div class="st-n" id="tg-best">—</div><div class="st-l">Топ счёт TG</div><div class="st-d" id="tg-best-nick">—</div></div>
+      </div>
+      <div class="stat" style="padding:12px 14px">
+        <div class="st-ico">📅</div>
+        <div><div class="st-n" id="tg-today">—</div><div class="st-l">Сегодня</div><div class="st-d">новых TG</div></div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="g2" style="padding:10px 13px;gap:10px">
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><span class="ct">📈 Новые TG-пользователи по дням</span><span class="badge bq">14 дней</span></div>
+        <div class="chart-box"><canvas id="chartTgDays"></canvas></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="ch"><span class="ct">🥧 TG vs Аноним</span><span class="badge bb" id="tgVsBadge"></span></div>
+        <div class="chart-box"><canvas id="chartTgVs"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Top TG players table -->
+    <div style="padding:4px 13px 12px">
+      <div class="card" style="margin-bottom:0">
+        <div class="ch">
+          <span class="ct">🥇 Топ Telegram-игроков</span>
+          <span class="badge bg" id="tgTopBadge">—</span>
+        </div>
+        <div id="tgTopList"><div class="empty"><span class="sp"></span></div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- TAB: LOG -->
   <div id="tab-actlog" class="tb-body">
     <div class="tb-desc"><b>Лог</b> — все действия администратора в этой сессии.</div>
@@ -666,10 +715,11 @@ function openTab(n){
   document.getElementById('tab-'+n)?.classList.add('active')
   document.getElementById('tbn-'+n)?.classList.add('active')
   log('📂 '+n)
-  if(n==='storage') loadStor()
-  if(n==='auth')    loadAuth()
+  if(n==='storage')  loadStor()
+  if(n==='auth')     loadAuth()
   if(n==='advisors') loadAdv()
-  if(n==='tables')  loadTbl(curTbl)
+  if(n==='tables')   loadTbl(curTbl)
+  if(n==='telegram') loadTgStats()
 }
 
 // ── Edge Function / SQL ────────────────────────────────────────────────────
@@ -1276,6 +1326,91 @@ async function loadPlayers(){
     </tr>`).join('')}</tbody>
   </table></div>`)
   log('👤 Профили: '+rows.length+' игроков')
+}
+
+// ── Telegram Stats ──────────────────────────────────────────────────────────
+let cTgDays=null, cTgVs=null, tgStatsLoaded=false
+
+function initTgCharts(){
+  if(cTgDays) return
+  cTgDays=new Chart(document.getElementById('chartTgDays').getContext('2d'),{
+    type:'bar',
+    data:{labels:[],datasets:[{label:'Новых TG',data:[],backgroundColor:'rgba(45,167,224,.7)',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:9},color:'#94a3b8'},grid:{display:false}},
+              y:{ticks:{font:{size:9},color:'#94a3b8',stepSize:1},grid:{color:'rgba(148,163,184,.15)'}}}}
+  })
+  cTgVs=new Chart(document.getElementById('chartTgVs').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:['Telegram','Аноним'],datasets:[{data:[0,0],backgroundColor:['#2da7e0','#6366f1'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{font:{size:12},boxWidth:12}}}}
+  })
+}
+
+async function loadTgStats(){
+  initTgCharts()
+  try {
+    // 1. All TG players
+    const [rTg, rAll] = await Promise.all([
+      fetch(SB+'/rest/v1/players?select=nick,best,games_played,coins,photo_url,created_at&telegram_id=not.is.null&order=best.desc',{headers:H,cache:'no-store'}).then(r=>r.json()),
+      fetch(SB+'/rest/v1/players?select=player_id&telegram_id=is.null',{headers:H,cache:'no-store'}).then(r=>r.json())
+    ])
+    if(!Array.isArray(rTg)||!Array.isArray(rAll)) return
+
+    const tgCount = rTg.length
+    const anonCount = rAll.length
+    const total = tgCount + anonCount
+
+    document.getElementById('tg-total').textContent = tgCount
+    document.getElementById('tg-pct').textContent = total ? Math.round(tgCount/total*100)+'%' : '0%'
+    document.getElementById('tgVsBadge').textContent = tgCount+' TG · '+anonCount+' анон'
+
+    // Top player
+    if(rTg.length){
+      document.getElementById('tg-best').textContent = (rTg[0].best??0).toLocaleString('ru')
+      document.getElementById('tg-best-nick').textContent = rTg[0].nick||'—'
+    }
+
+    // Today registrations
+    const todayStr = new Date().toISOString().slice(0,10)
+    const todayCount = rTg.filter(p=>p.created_at&&p.created_at.startsWith(todayStr)).length
+    document.getElementById('tg-today').textContent = todayCount
+
+    // Chart: registrations by day (last 14 days)
+    const days={}
+    for(let i=13;i>=0;i--){
+      const d=new Date(); d.setDate(d.getDate()-i)
+      days[d.toISOString().slice(0,10)]=0
+    }
+    rTg.forEach(p=>{ if(p.created_at){ const d=p.created_at.slice(0,10); if(d in days) days[d]++ } })
+    cTgDays.data.labels = Object.keys(days).map(d=>d.slice(5)) // MM-DD
+    cTgDays.data.datasets[0].data = Object.values(days)
+    cTgDays.update()
+
+    // Chart: TG vs anon
+    cTgVs.data.datasets[0].data=[tgCount, anonCount]
+    cTgVs.update()
+
+    // Top TG table
+    const top = rTg.slice(0,15)
+    document.getElementById('tgTopBadge').textContent = 'топ '+top.length
+    const rows = top.map((p,i)=>`<tr>
+      <td style="text-align:center;font-weight:700;color:#94a3b8">${i+1}</td>
+      <td style="text-align:center">${p.photo_url?`<img src="${escH(p.photo_url)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle" onerror="this.style.display='none'">`:'<span style="font-size:1rem">👤</span>'}</td>
+      <td style="font-weight:700">${escH((p.nick||'—').substring(0,20))}</td>
+      <td style="text-align:right;font-weight:600;color:#6366f1">${(p.best??0).toLocaleString('ru')}</td>
+      <td style="text-align:right">${p.games_played??0}</td>
+      <td style="text-align:right" class="coin">${p.coins??0}</td>
+      <td style="font-size:.67rem;color:#94a3b8">${p.created_at?new Date(p.created_at).toLocaleDateString('ru'):'—'}</td>
+    </tr>`).join('')
+    setHTML(document.getElementById('tgTopList'),`<div style="overflow-x:auto"><table class="tbl"><thead><tr>
+      <th>#</th><th>Фото</th><th>Ник</th><th style="text-align:right">Рекорд</th>
+      <th style="text-align:right">Игр</th><th style="text-align:right">Монет</th><th>Дата</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`)
+    log('✈️ TG-статистика загружена: '+tgCount+' пользователей')
+    tgStatsLoaded=true
+  } catch(e){ log('❌ TG stats error: '+e.message) }
 }
 
 function startApp(){
