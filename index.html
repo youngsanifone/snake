@@ -546,16 +546,16 @@
   .hud-timer.urgent{animation:blink 0.5s ease-in-out infinite;}
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
   /* DPAD */
-  .dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;margin-top:4px;}
-  .dpad-btn{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;color:var(--text2);
-    font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  .dpad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,64px);gap:6px;margin-top:4px;}
+  .dpad-btn{background:var(--panel);border:1.5px solid var(--border2);border-radius:13px;color:var(--text2);
+    font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
     touch-action:manipulation;transition:background 0.1s,transform 0.08s;}
   .dpad-btn:active{background:var(--border);transform:scale(0.9);}
   .dpad-empty{background:transparent;border:none;}
-  .dpad-center{background:var(--panel);border:1.5px solid var(--border2);border-radius:11px;color:#facc15;
-    font-size:0.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    touch-action:manipulation;}
-  .dpad-center:active{background:var(--border2);}
+  .pause-btn-top{background:var(--panel);border:1.5px solid var(--border2);border-radius:20px;color:#facc15;
+    font-size:0.82rem;font-weight:700;padding:6px 16px;cursor:pointer;
+    touch-action:manipulation;transition:background 0.1s;margin-bottom:6px;letter-spacing:0.5px;}
+  .pause-btn-top:active{background:var(--border2);}
   .kb-hint{font-size:0.6rem;color:var(--text3);letter-spacing:1px;}
   /* RECORDS / SETTINGS — shared container */
   .rec-title{font-size:1.3rem;font-weight:900;letter-spacing:2px;margin-bottom:10px;
@@ -1038,12 +1038,13 @@
       </div>
     </div>
   </div>
+  <button class="pause-btn-top" id="btnPause">⏸ Пауза</button>
   <div class="dpad">
     <div class="dpad-empty"></div>
     <button class="dpad-btn" id="btnUp">▲</button>
     <div class="dpad-empty"></div>
     <button class="dpad-btn" id="btnLeft">◀</button>
-    <button class="dpad-center" id="btnPause">⏸</button>
+    <div class="dpad-empty"></div>
     <button class="dpad-btn" id="btnRight">▶</button>
     <div class="dpad-empty"></div>
     <button class="dpad-btn" id="btnDown">▼</button>
@@ -3752,6 +3753,18 @@ bindDir('btnUp',{x:0,y:-1});bindDir('btnDown',{x:0,y:1});
 bindDir('btnLeft',{x:-1,y:0});bindDir('btnRight',{x:1,y:0});
 btnPause.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
 btnPause.addEventListener('click',togglePause);
+// Prevent double-tap zoom on entire page
+let _lastTap=0;
+document.addEventListener('touchend',function(e){
+  const now=Date.now();
+  if(now-_lastTap<300&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){
+    e.preventDefault();
+  }
+  _lastTap=now;
+},{passive:false});
+// Prevent pinch zoom
+document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
 // Swipe controls
 let tx=0,ty=0;
 canvas.addEventListener('touchstart',e=>{e.preventDefault();tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:false});
