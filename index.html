@@ -3865,7 +3865,6 @@ async function shareScore(){
     // IMPORTANT: url param must be a plain web URL, NOT a t.me link —
     // if it's t.me, Telegram navigates to the Mini App instead of showing share dialog
     const webUrl='https://youngsanifone.github.io/snake/';
-    const pid=localStorage.getItem(S+'pid');
     const refSuffix=pid?'\n🎮 https://t.me/snakegameone_bot/snake?startapp=ref_'+pid.replace(/-/g,'').slice(0,16):'';
     const shareText=text+refSuffix;
     _tg.openLink('https://t.me/share/url?url='+encodeURIComponent(webUrl)+'&text='+encodeURIComponent(shareText));
