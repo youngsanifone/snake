@@ -1593,8 +1593,8 @@ const SKINS=[
 // Reset on version change — clears localStorage for ALL players on page reload
 if(localStorage.getItem('snakeVer')!=='2'){const _keepPid=localStorage.getItem('snake2_pid');Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');if(_keepPid)localStorage.setItem('snake2_pid',_keepPid);}
 const S='snake2_';
-// ?reset=1 — clears localStorage (for testing)
-if(new URLSearchParams(location.search).get('reset')==='1'){localStorage.clear();history.replaceState(null,'',location.pathname);}
+// ?reset=1 or Telegram startapp=reset — clears localStorage (for testing)
+if(new URLSearchParams(location.search).get('reset')==='1'||window.Telegram?.WebApp?.initDataUnsafe?.start_param==='reset'){localStorage.clear();history.replaceState(null,'',location.pathname);}
 currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── VARIABLES (defaults; populated from Supabase on startup) ──────────
 let theme      = 'dark';
