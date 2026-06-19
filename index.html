@@ -2442,42 +2442,44 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   const tg=window.Telegram?.WebApp;
   if(tg?.initData){
     tg.expand();
+    console.log('[TG] initData len:',tg.initData.length,'user:',tg.initDataUnsafe?.user?.username||tg.initDataUnsafe?.user?.first_name);
     try{
       const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({init_data:tg.initData})
       });
-      if(tgResp.ok){
-        const tgData=await tgResp.json();
-        if(tgData.ok&&tgData.player_id){
-          localStorage.setItem(S+'pid',tgData.player_id);
-          setCookie(S+'pid',tgData.player_id);
-          if(tgData.profile){
-            applyProfile(tgData.profile);
-            fetchModeBests(tgData.player_id);
-          } else {
-            const u=tgData.telegram_user;
-            lbNickname=u?.username||u?.first_name||'Player';
-            localStorage.setItem(S+'Nick',lbNickname);
-            profileLoaded=true;
-            upsertProfile();
-          }
-          applyTheme();
-          applyLang();
-          refreshMenuUI();
-          loading.style.display='none';
-          tg.ready();
-          showScreen('menuScreen');
-          trackEvent('visit',null,null);
-          setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); },60*1000);
-          document.addEventListener('visibilitychange',()=>{
-            if(document.visibilityState==='visible') trackEvent('visit',null,null);
-            if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
-          });
-          window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
-          return;
+      const tgData=await tgResp.json();
+      console.log('[TG] auth status:',tgResp.status,'ok:',tgData.ok,'player:',tgData.player_id);
+      if(tgData.ok&&tgData.player_id){
+        localStorage.setItem(S+'pid',tgData.player_id);
+        setCookie(S+'pid',tgData.player_id);
+        if(tgData.profile){
+          applyProfile(tgData.profile);
+          fetchModeBests(tgData.player_id);
+        } else {
+          const u=tgData.telegram_user;
+          lbNickname=u?.username||u?.first_name||'Player';
+          localStorage.setItem(S+'Nick',lbNickname);
+          profileLoaded=true;
+          upsertProfile();
         }
+        applyTheme();
+        applyLang();
+        refreshMenuUI();
+        loading.style.display='none';
+        tg.ready();
+        showScreen('menuScreen');
+        trackEvent('visit',null,null);
+        setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); },60*1000);
+        document.addEventListener('visibilitychange',()=>{
+          if(document.visibilityState==='visible') trackEvent('visit',null,null);
+          if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
+        });
+        window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
+        return;
+      } else {
+        console.warn('[TG] auth rejected:',tgData.error||'unknown');
       }
     }catch(e){ console.warn('[TG] auth failed:',e); }
     tg.ready();
