@@ -2472,20 +2472,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
-  // DEBUG OVERLAY — remove after fix
-  (()=>{
-    const dbg=document.createElement('div');
-    dbg.id='tg-debug';
-    dbg.style.cssText='position:fixed;bottom:60px;left:10px;right:10px;background:rgba(0,0,0,.85);color:#0f0;font-size:11px;font-family:monospace;padding:8px;border-radius:6px;z-index:99999;word-break:break-all;';
-    dbg.innerHTML='<b style="color:#ff0">v4</b> TG SDK: '+(window.Telegram?'✅':'❌')+
-      '<br>WebApp: '+(tg?'✅':'❌')+
-      '<br>initData: '+(tg?.initData?'✅ (len='+tg.initData.length+')':'❌ empty')+
-      '<br>platform: '+(tg?.platform||'n/a')+
-      '<br>version: '+(tg?.version||'n/a');
-    window._tgDbgEl=dbg;
-    document.body.appendChild(dbg);
-    setTimeout(()=>dbg.remove(),20000);
-  })();
   if(tg?.initData){
     try{ tg.expand(); }catch(_){}
     // ── Viewport / safe area ──
@@ -2528,7 +2514,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
       clearTimeout(_tgAt);
       const tgData=await tgResp.json();
       console.log('[TG] auth status:',tgResp.status,'ok:',tgData.ok,'player:',tgData.player_id);
-      if(window._tgDbgEl) window._tgDbgEl.innerHTML+='<br>auth: '+tgResp.status+(tgData.error?'<br>err: '+tgData.error:'')+(tgData.step?'<br>step: '+tgData.step:'')+(tgData.code?'<br>code: '+tgData.code:'');
       if(tgData.ok&&tgData.player_id){
         // ── Save canonical player_id (same across ALL devices with same TG account) ──
         localStorage.setItem(S+'pid',tgData.player_id);
