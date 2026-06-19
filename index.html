@@ -2532,6 +2532,19 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         tg.ready();
         showScreen('menuScreen');
         trackEvent('visit',null,null);
+        // ── Process referral if this player was invited ──
+        const refCode=localStorage.getItem('snake2_ref');
+        if(refCode&&!localStorage.getItem('snake2_ref_done')){
+          fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/process-referral',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({new_player_id:tgData.player_id,ref_code:refCode})
+          }).then(r=>r.json()).then(d=>{
+            if(d.ok){
+              console.log('[TG] referral processed, referrer:',d.referrer_nick,'+'+d.bonus,'coins');
+              localStorage.setItem('snake2_ref_done','1');
+            }
+          }).catch(()=>{});
+        }
         setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); },60*1000);
         document.addEventListener('visibilitychange',()=>{
           if(document.visibilityState==='visible') trackEvent('visit',null,null);
