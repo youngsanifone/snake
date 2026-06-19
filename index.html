@@ -2627,7 +2627,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const anonNames=['Аноним','Anonym','Anonymous'];
     if(!anonNames.includes(name)){
       try{
-        const r=await fetch(`${SB_URL}/rest/v1/players?nick=eq.${encodeURIComponent(name)}&select=*&order=updated_at.desc&limit=1`,{headers:SB_HEADERS});
+        const r=await fetch(`${SB_URL}/rest/v1/players_public?nick=eq.${encodeURIComponent(name)}&select=*&order=updated_at.desc&limit=1`,{headers:SB_HEADERS});
         if(r.ok){
           const rows=await r.json();
           const p=rows[0];
@@ -2686,7 +2686,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const pid=getPlayerId();
     const _ac=new AbortController();
     setTimeout(()=>_ac.abort(),6000); // 6s timeout — don't wait forever
-    const r=await fetch(`${SB_URL}/rest/v1/players?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS,signal:_ac.signal});
+    const r=await fetch(`${SB_URL}/rest/v1/players_public?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS,signal:_ac.signal});
     if(!r.ok) throw new Error('fetch error');
     const rows=await r.json();
     if(rows.length>0){
@@ -4225,7 +4225,7 @@ function stopMusic(){
 
     try{
       // Check if nick taken by another player
-      const r=await fetch(`${SB_URL}/rest/v1/players?nick=eq.${encodeURIComponent(newNick)}&select=player_id&limit=1`,{headers:SB_HEADERS});
+      const r=await fetch(`${SB_URL}/rest/v1/players_public?nick=eq.${encodeURIComponent(newNick)}&select=player_id&limit=1`,{headers:SB_HEADERS});
       if(r.ok){
         const rows=await r.json();
         if(rows.length&&rows[0].player_id!==getPlayerId()){
