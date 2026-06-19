@@ -2910,7 +2910,7 @@ function updateDiffBtns(){
   });
 }
 function openSettings(){ updateDiffBtns(); updateSoundToggles(); updateLangBtns(); showScreen('settingsScreen'); }
-document.getElementById('btnSettings').addEventListener('click',openSettings);
+document.getElementById('btnSettings').addEventListener('click',()=>openSettings());
 document.getElementById('btnSettings').addEventListener('touchstart',e=>{e.preventDefault();openSettings();},{passive:false});
 document.getElementById('btnBackSettings').addEventListener('click',()=>showScreen('menuScreen'));
 document.getElementById('btnBackSettings').addEventListener('touchstart',e=>{e.preventDefault();showScreen('menuScreen');},{passive:false});
@@ -4302,12 +4302,13 @@ function stopMusic(){
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSave();}});
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
 
-  // Update nick display when settings opens
+  // Update nick display and button visibility when settings opens
   const origOpenSettings=openSettings;
   openSettings=function(){
     const d=document.getElementById('settNickDisplay');
     if(d) d.textContent=lbNickname||T().anon||'—';
     origOpenSettings();
+    updateNickBtnVisibility();
   };
 })();
 </script>
