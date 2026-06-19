@@ -3747,6 +3747,13 @@ function buildShareText(){
 }
 async function shareScore(){
   const text=buildShareText();
+  // Telegram Mini App — native share dialog
+  const _tg=window.Telegram?.WebApp;
+  if(_tg?.initData){
+    const url='https://t.me/snakegameone_bot';
+    _tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text));
+    return;
+  }
   if(navigator.share){
     try{ await navigator.share({title:T().shareTitle,text}); return; }catch(_){}
   }
