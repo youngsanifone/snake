@@ -3843,13 +3843,14 @@ async function shareScore(){
   if(_tg?.initData){
     // Add referral param so friends open the game with this player's ref
     const pid=localStorage.getItem(S+'pid');
-    // Use web URL (not t.me Mini App link) — otherwise Telegram opens the game instead of share dialog
+    // openLink opens in system browser → browser redirects to Telegram share dialog
+    // IMPORTANT: url param must be a plain web URL, NOT a t.me link —
+    // if it's t.me, Telegram navigates to the Mini App instead of showing share dialog
     const webUrl='https://youngsanifone.github.io/snake/';
-    // Append referral Mini App link to the share text so recipient can still click into the game
     const pid=localStorage.getItem(S+'pid');
-    const refSuffix=pid?'\n\nhttps://t.me/snakegameone_bot/snake?startapp=ref_'+pid.replace(/-/g,'').slice(0,16):'';
+    const refSuffix=pid?'\n🎮 https://t.me/snakegameone_bot/snake?startapp=ref_'+pid.replace(/-/g,'').slice(0,16):'';
     const shareText=text+refSuffix;
-    _tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(webUrl)+'&text='+encodeURIComponent(shareText));
+    _tg.openLink('https://t.me/share/url?url='+encodeURIComponent(webUrl)+'&text='+encodeURIComponent(shareText));
     return;
   }
   if(navigator.share){
