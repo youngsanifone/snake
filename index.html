@@ -2065,6 +2065,12 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='menuScreen') fetchGlobalStats();
+  // Telegram BackButton
+  const _tg=window.Telegram?.WebApp;
+  if(_tg?.initData){
+    if(id==='menuScreen'||id==='loadingScreen'||id==='welcomeScreen') _tg.BackButton.hide();
+    else _tg.BackButton.show();
+  }
 }
 // ── SKINS GRID (shop) ────────────────────────────────────────────────
 function buildSkinRow(){
@@ -2442,6 +2448,19 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   const tg=window.Telegram?.WebApp;
   if(tg?.initData){
     tg.expand();
+    // Apply Telegram theme
+    if(tg.colorScheme==='light') document.documentElement.setAttribute('data-theme','light');
+    tg.setHeaderColor('#0f172a');
+    tg.setBackgroundColor('#0f172a');
+    // BackButton — show when not on menuScreen
+    tg.BackButton.onClick(()=>{
+      const active=document.querySelector('.screen.active');
+      if(active&&active.id!=='menuScreen'&&active.id!=='loadingScreen'){
+        showScreen('menuScreen');
+        tg.BackButton.hide();
+        tg.HapticFeedback?.impactOccurred('soft');
+      }
+    });
     console.log('[TG] initData len:',tg.initData.length,'user:',tg.initDataUnsafe?.user?.username||tg.initDataUnsafe?.user?.first_name);
     try{
       const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
@@ -3177,6 +3196,7 @@ function loop(ts){
     score+=pts; levelScore++; totalFood++;
     if(score>best){best=score;bestHud.textContent=best;}
     coins+=1; // 1 coin per food
+    window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');
     totalLen+=LEN_PER_FOOD;
     scoreEl.textContent=score;
     updateProg();
@@ -3229,6 +3249,7 @@ function loop(ts){
       combo++;comboTimer=COMBO_WINDOW; // gold also counts for combo
       score+=pts; levelScore++; totalFood++;
       if(score>best){best=score;bestHud.textContent=best;}
+      window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium');
       coins+=2; // gold food = 2 coins
       totalLen+=LEN_PER_FOOD*pts;
       scoreEl.textContent=score;
@@ -3521,7 +3542,8 @@ function endGame(){
   if(score>(bestByMode[gameMode]||0)){bestByMode[gameMode]=score;}
   comboHudEl.style.display='none';
   gamesPlayed++;questTrack('play_games',1);pauseMusic();playDie();saveAll();
-  if(navigator.vibrate) navigator.vibrate([180]); // haptic on death (mobile)
+  if(navigator.vibrate) navigator.vibrate([180]);
+  window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('error');
   trackEvent('game_over',score,gameMode); // global statistics
   ctx.fillStyle='rgba(239,68,68,0.22)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
