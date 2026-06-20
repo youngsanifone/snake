@@ -2669,13 +2669,22 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   const ANON_NAMES=['Аноним','Anonym','Anonymous'];
   const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
 
-  // Visit — on EVERY game open (otherwise player won't appear in the "online" panel for up to 5 minutes)
-  trackEvent('visit',null,null);
-  // Heartbeat — ping every 60 sec while tab is open (real-time online status in admin panel)
-  setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); }, 60*1000);
+  // Heartbeat — update last_seen in players every 90 sec (for online status in admin)
+  // Does NOT write to player_events — avoids DB bloat
+  function heartbeat(){
+    const pid=getPlayerId();
+    if(!pid) return;
+    fetch(SB_URL+'/rest/v1/players?player_id=eq.'+encodeURIComponent(pid),{
+      method:'PATCH',
+      headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+      body:JSON.stringify({last_seen:new Date().toISOString()})
+    }).catch(()=>{});
+  }
+  heartbeat(); // on open
+  setInterval(()=>{ if(document.visibilityState==='visible') heartbeat(); }, 90*1000);
   // Also when returning to the tab
   document.addEventListener('visibilitychange',()=>{
-    if(document.visibilityState==='visible') trackEvent('visit',null,null);
+    if(document.visibilityState==='visible') heartbeat();
     // Tab hidden — save everything (keepalive delivers request even after tab closes)
     if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
   });
