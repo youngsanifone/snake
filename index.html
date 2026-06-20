@@ -719,10 +719,6 @@
     border-radius:14px;color:#fff;font-size:0.9rem;font-weight:800;letter-spacing:2px;
     cursor:pointer;touch-action:manipulation;pointer-events:all;
   }
-  #welcSkip{
-    background:none;border:none;color:var(--text3);font-size:0.7rem;
-    text-decoration:underline;cursor:pointer;touch-action:manipulation;pointer-events:all;
-  }
   /* Desktop: hide dpad if mouse */
   @media (hover:hover) and (pointer:fine){
     .dpad,.kb-hint{display:none;}
@@ -1163,12 +1159,12 @@ const TRANSLATIONS={
     appTitle:'Had',loading:'Načítavam...',anon:'Anonym',
     welcSub:'Привет! Введи своё имя для таблицы рекордов 🌍',
     welcPlaceholder:'Tvoja prezývka...',
-    welcBtn:'▶ &nbsp;HRAŤ!',welcSkip:'hrať bez mena',
+    welcBtn:'▶ &nbsp;HRAŤ!',
     menuStatBest:'Rekord',menuStatLvl:'Max. úr.',menuStatCoins:'🪙 Mincí',
     btnPlay:'▶ &nbsp;HRAŤ',
     contBtnPrefix:'⏩ Pokračovať (Úr. ',
     navRecords:'Rekordy',navAch:'Ocenenia',navQuests:'Úlohy',navShop:'Obchod',navSettings:'Nastavenia',
-    shopTitle:'🪙 Obchod',shopSkinLabel:'VÝBER SKINU',
+    shopTitle:'🪙 Obchod',
     achTitle:'🏅 Ocenenia',achNotifTitle:'Ocenenie!',
     modeTitle:'Výber režimu',modeSub:'Ako chceš hrať?',
     modeClassicTitle:'Klasika',modeClassicDesc:'Уровни, растущая скорость, бесконечно',
@@ -1178,8 +1174,7 @@ const TRANSLATIONS={
     lvlLabel:'Úroveň',hudScore:'Skóre:',hudRecord:'Rekord:',
     pauseTitle:'⏸ PAUZA',pauseResume:'▶ Pokračovať',
     pauseRestart:'↺ Začať úroveň znova',pauseMenu:'⌂ Hlavné menu',
-    goRetryMore:'↺ Hrať znova',goRetryCurPrefix:'↺ Pokračovať od úr. ',
-    goShare:'📤 Zdieľať',goRetry:'↺ Znova od úr. 1',goMenu:'⌂ Hlavné menu',
+    goShare:'📤 Zdieľať',goReplay:'↺ Začať znova',goMenu:'⌂ Hlavné menu',goFoodLbl:'Jedlo',
     questTitle:'📋 Úlohy',questBack:'← Späť',questReset:'Reset o polnoci',
     questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
     settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',
@@ -1253,12 +1248,12 @@ const TRANSLATIONS={
     appTitle:'Змейка',loading:'Загрузка...',anon:'Аноним',
     welcSub:'Привет! Введи своё имя для таблицы рекордов 🌍',
     welcPlaceholder:'Твой ник...',
-    welcBtn:'▶ &nbsp;ПОЕХАЛИ!',welcSkip:'играть без имени',
+    welcBtn:'▶ &nbsp;ПОЕХАЛИ!',
     menuStatBest:'Рекорд',menuStatLvl:'Ур. макс',menuStatCoins:'🪙 Монет',
     btnPlay:'▶ &nbsp;ИГРАТЬ',
     contBtnPrefix:'⏩ Продолжить (Ур. ',
     navRecords:'Рекорды',navAch:'Ачивки',navQuests:'Квесты',navShop:'Магазин',navSettings:'Настройки',
-    shopTitle:'🪙 Магазин',shopSkinLabel:'ВЫБОР СКИНА',
+    shopTitle:'🪙 Магазин',
     achTitle:'🏅 Достижения',achNotifTitle:'Достижение!',
     modeTitle:'Выбор режима',modeSub:'Как хочешь играть?',
     modeClassicTitle:'Классика',modeClassicDesc:'Уровни, растущая скорость, бесконечно',
@@ -1268,8 +1263,7 @@ const TRANSLATIONS={
     lvlLabel:'Уровень',hudScore:'Счёт:',hudRecord:'Рекорд:',
     pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продолжить',
     pauseRestart:'↺ Начать уровень заново',pauseMenu:'⌂ Главное меню',
-    goRetryMore:'↺ Сыграть ещё',goRetryCurPrefix:'↺ Продолжить с ур. ',
-    goShare:'📤 Поделиться',goRetry:'↺ Заново с ур. 1',goMenu:'⌂ Главное меню',
+    goShare:'📤 Поделиться',goReplay:'↺ Начать заново',goMenu:'⌂ Главное меню',goFoodLbl:'Еда',
     questTitle:'📋 Квесты',questBack:'← Назад',questReset:'Сброс в полночь',
     questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
     settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',
@@ -1343,12 +1337,12 @@ const TRANSLATIONS={
     appTitle:'Snake',loading:'Loading...',anon:'Anonymous',
     welcSub:'Hello! Enter your name for the leaderboard 🌍',
     welcPlaceholder:'Your nickname...',
-    welcBtn:'▶ &nbsp;PLAY!',welcSkip:'play without name',
+    welcBtn:'▶ &nbsp;PLAY!',
     menuStatBest:'Best',menuStatLvl:'Max Lvl',menuStatCoins:'🪙 Coins',
     btnPlay:'▶ &nbsp;PLAY',
     contBtnPrefix:'⏩ Continue (Lvl ',
     navRecords:'Records',navAch:'Achiev.',navQuests:'Quests',navShop:'Shop',navSettings:'Settings',
-    shopTitle:'🪙 Shop',shopSkinLabel:'CHOOSE SKIN',
+    shopTitle:'🪙 Shop',
     achTitle:'🏅 Achievements',achNotifTitle:'Achievement!',
     modeTitle:'Select Mode',modeSub:'How do you want to play?',
     modeClassicTitle:'Classic',modeClassicDesc:'Levels, increasing speed, endless',
@@ -1358,8 +1352,7 @@ const TRANSLATIONS={
     lvlLabel:'Level',hudScore:'Score:',hudRecord:'Best:',
     pauseTitle:'⏸ PAUSE',pauseResume:'▶ Resume',
     pauseRestart:'↺ Restart level',pauseMenu:'⌂ Main menu',
-    goRetryMore:'↺ Play again',goRetryCurPrefix:'↺ Continue from lvl ',
-    goShare:'📤 Share',goRetry:'↺ Restart from lvl 1',goMenu:'⌂ Main menu',
+    goShare:'📤 Share',goReplay:'↺ Play again',goMenu:'⌂ Main menu',goFoodLbl:'Food',
     questTitle:'📋 Quests',questBack:'← Back',questReset:'Resets at midnight',
     questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
     settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',
@@ -1443,7 +1436,6 @@ function applyLang(){
   const welcSubEl=document.querySelector('.welc-sub');if(welcSubEl)welcSubEl.textContent=L.welcSub;
   const welcInpEl=document.getElementById('welcInput');if(welcInpEl)welcInpEl.placeholder=L.welcPlaceholder;
   const welcBtnEl=document.getElementById('welcBtn');if(welcBtnEl)welcBtnEl.innerHTML=L.welcBtn;
-  const welcSkipEl=document.getElementById('welcSkip');if(welcSkipEl)welcSkipEl.textContent=L.welcSkip;
   document.querySelectorAll('.menu-title').forEach(el=>el.textContent=L.appTitle);
   const msblbls=document.querySelectorAll('.msb-lbl');
   if(msblbls[0])msblbls[0].textContent=L.menuStatBest;
@@ -1455,7 +1447,6 @@ function applyLang(){
     const el=document.getElementById(id);if(el){const lb=el.querySelector('.mnav-label');if(lb)lb.textContent=L[k];}
   });
   const shopT=document.querySelector('#shopScreen .rec-title');if(shopT)shopT.textContent=L.shopTitle;
-  const shopSkinLbl=document.getElementById('shopSkinLabel');if(shopSkinLbl)shopSkinLbl.textContent=L.shopSkinLabel;
   const shopBk=document.getElementById('shopBack');if(shopBk)shopBk.textContent=L.shopBack;
   const achHT=document.getElementById('achHeaderTitle');if(achHT)achHT.textContent=L.achTitle;
   const anTitleEl=document.getElementById('anTitle');if(anTitleEl)anTitleEl.textContent=L.achNotifTitle;
@@ -1482,8 +1473,9 @@ function applyLang(){
   const pmRs=document.getElementById('pmRestart');if(pmRs)pmRs.textContent=L.pauseRestart;
   const pmM=document.getElementById('pmMenu');if(pmM)pmM.textContent=L.pauseMenu;
   const goSh=document.getElementById('goShare');if(goSh)goSh.textContent=L.goShare;
-  const goRt=document.getElementById('goRetry');if(goRt)goRt.textContent=L.goRetry;
+  const goRp=document.getElementById('goReplay');if(goRp)goRp.textContent=L.goReplay;
   const goMn=document.getElementById('goMenu');if(goMn)goMn.textContent=L.goMenu;
+  const goFdLbl=document.getElementById('goLevelLbl');if(goFdLbl)goFdLbl.textContent=L.goFoodLbl;
   const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
   const questBk=document.getElementById('questBack');if(questBk)questBk.textContent=L.questBack;
   const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
@@ -1610,7 +1602,7 @@ const S='snake2_';
 // ?reset=1 — clears localStorage (dev only, not via Telegram startapp for safety)
 if(new URLSearchParams(location.search).get('reset')==='1'){if(confirm('Сбросить весь локальный прогресс?')){localStorage.clear();history.replaceState(null,'',location.pathname);}}
 // Telegram startapp=ref_XXXX — save referrer for later bonus processing
-(()=>{const sp=window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';if(sp.startsWith('ref_')&&!localStorage.getItem('snake2_ref_done')){localStorage.setItem('snake2_ref',sp.slice(4));console.log('[TG] referral from:',sp.slice(4));}})();
+(()=>{const sp=window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';if(sp.startsWith('ref_')&&!localStorage.getItem('snake2_ref_done')){localStorage.setItem('snake2_ref',sp.slice(4));}})();
 currentLang=localStorage.getItem(S+'Lang')||'ru';
 // ── VARIABLES (defaults; populated from Supabase on startup) ──────────
 let theme      = 'dark';
@@ -2050,7 +2042,6 @@ async function submitToLeaderboard(name,score,level,mode){
       showToast('⚠️ '+T().lbSubmitError,'#f87171');
       return false;
     }
-    console.log('✅ lb submitted!');
     showToast(T().lbSubmitOk,'#818cf8');
     // If records screen is open on the Online tab — refresh
     const rs=document.getElementById('recordsScreen');
@@ -2510,7 +2501,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         }
       });
     }catch(_){}
-    console.log('[TG] initData len:',tg.initData.length,'user:',tg.initDataUnsafe?.user?.username||tg.initDataUnsafe?.user?.first_name);
     try{
       // 10s timeout on telegram-auth — cross-device sync is critical, give it more time
       const _tgAc=new AbortController();
@@ -2523,7 +2513,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
       });
       clearTimeout(_tgAt);
       const tgData=await tgResp.json();
-      console.log('[TG] auth status:',tgResp.status,'ok:',tgData.ok);
       if(tgData.ok&&tgData.player_id){
         // ── Save canonical player_id (same across ALL devices with same TG account) ──
         localStorage.setItem(S+'pid',tgData.player_id);
@@ -2572,7 +2561,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
             try{ tg.ready(); }catch(_){}
             showScreen('menuScreen');
           }
-          console.log('[TG] auth completed after timeout — nick:',lbNickname,'anon:',isAnon);
         } else {
           loading.style.display='none';
           try{ tg.ready(); }catch(_){}
@@ -2587,7 +2575,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
             body:JSON.stringify({new_player_id:tgData.player_id,ref_code:refCode})
           }).then(r=>r.json()).then(d=>{
             if(d.ok){
-              console.log('[TG] referral processed, referrer:',d.referrer_nick,'+'+d.bonus,'coins');
               localStorage.setItem('snake2_ref_done','1');
             }
           }).catch(()=>{});
@@ -2601,7 +2588,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     if(tg.CloudStorage){
       tg.CloudStorage.getItem('pid',(err,val)=>{
         if(!err&&val&&!localStorage.getItem(S+'pid')){
-          console.log('[TG] restored pid from CloudStorage:',val.slice(0,8));
           localStorage.setItem(S+'pid',val);
           setCookie(S+'pid',val);
         }
@@ -3374,7 +3360,7 @@ function loop(ts){
       updateProg();
       spawnParticles(goldFood.x,goldFood.y,'#facc15');
       spawnParticles(goldFood.x,goldFood.y,'#fb923c');
-      spawnFloatText(goldFood.x, goldFood.y-GFR-4, '+3 ⭐', '#facc15');
+      spawnFloatText(goldFood.x, goldFood.y-GFR-4, `+${pts} ⭐`, '#facc15');
       playGoldEat();
       unlockAch('gold_eater');
       questTrack('eat_gold',1);
@@ -3411,16 +3397,18 @@ function loop(ts){
   animId=requestAnimationFrame(loop);
 }
 // ── Skin trail particle effects ───────────────────────────────────
+// Keyed by emoji (stable) — skin .name gets localized, so keying by name
+// would break trail effects in non-Russian languages.
 const SKIN_FX_MAP={
-  'Зелёный':'sparkle','Синий':'bubble','Красный':'ember','Джунгли':'leaf',
-  'Золотой':'star','Сакура':'sakura','Молния':'spark','Фиолетовый':'magic',
-  'Розовый':'heart','Тёмный':'snow','Океан':'bubble','Ночной':'star',
-  'Огонь':'fire','Алмаз':'crystal'
+  '🟢':'sparkle','🔵':'bubble','🔴':'ember','🌿':'leaf',
+  '🌟':'star','🌸':'sakura','⚡':'spark','🟣':'magic',
+  '🌈':'heart','🖤':'snow','🌊':'bubble','🌙':'star',
+  '🔥':'fire','💎':'crystal'
 };
 function spawnSkinTrailFx(){
   if(!path||path.length<2) return;
   const sk=skin();
-  const fx=SKIN_FX_MAP[sk.name]||'sparkle';
+  const fx=SKIN_FX_MAP[sk.emoji]||'sparkle';
   const pidx=1+Math.floor(Math.random()*Math.min(path.length-1,18));
   const pos=path[pidx];
   switch(fx){
@@ -3683,7 +3671,7 @@ function endGame(){
     const goLevelEl=document.getElementById('goLevel');
     const goLevelLbl=document.getElementById('goLevelLbl');
     goLevelEl.textContent=totalFood||0;
-    if(goLevelLbl) goLevelLbl.textContent='Еда';
+    if(goLevelLbl) goLevelLbl.textContent=T().goFoodLbl;
     const coinsEarned=coins-coinsAtGameStart;
     goCoins.textContent=(coinsEarned>0?coinsEarned:0);
     document.getElementById('goCoinsBadge').style.display=coinsEarned>0?'':'none';
