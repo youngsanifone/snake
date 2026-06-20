@@ -1574,7 +1574,7 @@ function trackEvent(event,score,mode){
 // Load and display global statistics
 async function fetchGlobalStats(){
   try{
-    const r=await fetch(SB_URL+'/rest/v1/rpc/get_global_stats',{method:'POST',headers:SB_HEADERS,body:'{}'});
+    const r=await fetch(SB_URL+'/rest/v1/rpc/get_global_stats',{method:'POST',headers:SB_HEADERS,body:'{}',signal:AbortSignal.timeout?.(5000)});
     if(!r.ok) return;
     const d=await r.json();
     const p=d.total_players||0;
@@ -2037,12 +2037,12 @@ function showToast(msg,color='#4ade80',duration=3000){
 }
 
 async function submitToLeaderboard(name,score,level,mode){
-  console.log('🎮 lb submit:', name, score, level, mode);
   try{
     const r=await fetch(`${SB_URL}/rest/v1/game_results`,{
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({name,score,level,mode,player_id:getPlayerId()})
+      body:JSON.stringify({name,score,level,mode,player_id:getPlayerId()}),
+      signal:AbortSignal.timeout?.(8000)
     });
     if(!r.ok){
       const txt=await r.text();
@@ -2523,7 +2523,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
       });
       clearTimeout(_tgAt);
       const tgData=await tgResp.json();
-      console.log('[TG] auth status:',tgResp.status,'ok:',tgData.ok,'player:',tgData.player_id);
+      console.log('[TG] auth status:',tgResp.status,'ok:',tgData.ok);
       if(tgData.ok&&tgData.player_id){
         // ── Save canonical player_id (same across ALL devices with same TG account) ──
         localStorage.setItem(S+'pid',tgData.player_id);
@@ -3669,7 +3669,7 @@ function endGame(){
   }
   if(navigator.vibrate) navigator.vibrate([180]);
   window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('error');
-  trackEvent('game_over',score,gameMode); // global statistics
+  // game_over event written by fn_game_result_event DB trigger on leaderboard insert
   ctx.fillStyle='rgba(239,68,68,0.22)';ctx.fillRect(0,0,W,H);
   setTimeout(()=>{
     if(gameMode==='time')          goMsg.textContent = isNewRecord ? T().goMsgNewRecord : T().goMsgTimeUp;
@@ -4237,7 +4237,8 @@ function stopMusic(){
       // Check if nick taken — use RPC (doesn't expose other players' UUIDs)
       const r=await fetch(`${SB_URL}/rest/v1/rpc/check_nick_available`,{
         method:'POST',headers:SB_HEADERS,
-        body:JSON.stringify({p_nick:newNick,p_player_id:getPlayerId()})
+        body:JSON.stringify({p_nick:newNick,p_player_id:getPlayerId()}),
+        signal:AbortSignal.timeout?.(5000)
       });
       if(r.ok){
         const res=await r.json();
@@ -4260,7 +4261,8 @@ function stopMusic(){
       const renameRes=await fetch(`${SB_URL}/rest/v1/rpc/rename_player`,{
         method:'POST',
         headers:SB_HEADERS,
-        body:JSON.stringify({p_player_id:pid, p_new_nick:newNick})
+        body:JSON.stringify({p_player_id:pid, p_new_nick:newNick}),
+        signal:AbortSignal.timeout?.(8000)
       });
       const renameJson=await renameRes.json().catch(()=>({}));
       if(renameJson && renameJson.ok===false){
