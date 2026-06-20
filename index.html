@@ -1161,7 +1161,6 @@ const TRANSLATIONS={
     welcBtn:'▶ &nbsp;HRAŤ!',
     menuStatBest:'Rekord',menuStatLvl:'Max. úr.',menuStatCoins:'🪙 Mincí',
     btnPlay:'▶ &nbsp;HRAŤ',
-    contBtnPrefix:'⏩ Pokračovať (Úr. ',
     navRecords:'Rekordy',navAch:'Ocenenia',navQuests:'Úlohy',navShop:'Obchod',navSettings:'Nastavenia',
     shopTitle:'🪙 Obchod',
     achTitle:'🏅 Ocenenia',achNotifTitle:'Ocenenie!',
@@ -1250,7 +1249,6 @@ const TRANSLATIONS={
     welcBtn:'▶ &nbsp;ПОЕХАЛИ!',
     menuStatBest:'Рекорд',menuStatLvl:'Ур. макс',menuStatCoins:'🪙 Монет',
     btnPlay:'▶ &nbsp;ИГРАТЬ',
-    contBtnPrefix:'⏩ Продолжить (Ур. ',
     navRecords:'Рекорды',navAch:'Ачивки',navQuests:'Квесты',navShop:'Магазин',navSettings:'Настройки',
     shopTitle:'🪙 Магазин',
     achTitle:'🏅 Достижения',achNotifTitle:'Достижение!',
@@ -1339,7 +1337,6 @@ const TRANSLATIONS={
     welcBtn:'▶ &nbsp;PLAY!',
     menuStatBest:'Best',menuStatLvl:'Max Lvl',menuStatCoins:'🪙 Coins',
     btnPlay:'▶ &nbsp;PLAY',
-    contBtnPrefix:'⏩ Continue (Lvl ',
     navRecords:'Records',navAch:'Achiev.',navQuests:'Quests',navShop:'Shop',navSettings:'Settings',
     shopTitle:'🪙 Shop',
     achTitle:'🏅 Achievements',achNotifTitle:'Achievement!',
@@ -1784,18 +1781,35 @@ let unlockedAch=new Set(); // populated from Supabase in initGame()
 let survivalTime=0; // tracks elapsed time in survival mode
 
 function saveAch(){localStorage.setItem(S+'Ach',JSON.stringify([...unlockedAch]));upsertProfile();}
+// Notification queue — achievements and quest completions share one banner.
+// Without a queue, simultaneous unlocks (e.g. eating gold food can fire an
+// achievement plus a quest at once) overwrite each other's text and the first
+// timeout hides the banner early.
+let _notifQueue=[], _notifShowing=false;
+function showNotif(icon,title,sub){
+  _notifQueue.push({icon,title,sub});
+  if(!_notifShowing) _drainNotif();
+}
+function _drainNotif(){
+  const n=_notifQueue.shift();
+  if(!n){_notifShowing=false;return;}
+  _notifShowing=true;
+  document.getElementById('anIcon').textContent=n.icon;
+  document.getElementById('anTitle').textContent=n.title;
+  document.getElementById('anSub').textContent=n.sub;
+  const notif=document.getElementById('achNotif');
+  notif.classList.add('show');
+  setTimeout(()=>{
+    notif.classList.remove('show');
+    setTimeout(_drainNotif,400); // wait out the 0.3s fade before the next one
+  },2600);
+}
 function unlockAch(id){
   if(unlockedAch.has(id)) return;
   unlockedAch.add(id);saveAch();
   const a=ACHIEVEMENTS.find(x=>x.id===id);
   if(!a) return;
-  // show notification
-  document.getElementById('anIcon').textContent=a.icon;
-  document.getElementById('anTitle').textContent=a.name;
-  document.getElementById('anSub').textContent=a.desc;
-  const notif=document.getElementById('achNotif');
-  notif.classList.add('show');
-  setTimeout(()=>notif.classList.remove('show'),3000);
+  showNotif(a.icon,a.name,a.desc);
 }
 let achFilter='all';
 function buildAchScreen(){
@@ -1895,13 +1909,8 @@ function questTrack(type,value){
   if(changed){saveQuests();updateQuestBadge();}
 }
 function showQuestComplete(q){
-  document.getElementById('anIcon').textContent=q.icon;
-  document.getElementById('anTitle').textContent=T().questDone;
   const _pq=QUEST_POOL.find(p=>p.type===q.type)||{title:q.title,make:()=>q.desc};
-  document.getElementById('anSub').textContent=_pq.title+': '+_pq.make(q.goal);
-  const notif=document.getElementById('achNotif');
-  notif.classList.add('show');
-  setTimeout(()=>notif.classList.remove('show'),3000);
+  showNotif(q.icon,T().questDone,_pq.title+': '+_pq.make(q.goal));
 }
 function claimQuest(i){
   const q=questData.quests[i];
