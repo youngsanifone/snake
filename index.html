@@ -1031,9 +1031,8 @@
         <div class="go-coins-row" id="goCoinsBadge">🪙 +<span id="goCoins">0</span> монет</div>
         <div class="go-sub" id="goSub"></div>
         <div class="go-btns">
-          <button class="go-btn primary" id="goReplay">▶ Начать заново</button>
+          <button class="go-btn primary" id="goMenu">⌂ Главное меню</button>
           <button class="go-btn share" id="goShare">📤 Поделиться</button>
-          <button class="go-btn sec" id="goMenu">⌂ Главное меню</button>
         </div>
       </div>
     </div>
@@ -3859,11 +3858,9 @@ pmRestart.addEventListener('click',()=>{stopMusic();beginLevel(currentLevel);});
 pmRestart.addEventListener('touchstart',e=>{e.preventDefault();stopMusic();beginLevel(currentLevel);},{passive:false});
 pmMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();if(score>0)submitToLeaderboard(lbNickname||T().anon,score,currentLevel,gameMode);pauseMenu.style.display='none';refreshMenuUI();showScreen('menuScreen');});
 pmMenu.addEventListener('touchstart',e=>{e.preventDefault();pmMenu.click();},{passive:false});
-goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
+goMenu.addEventListener('click',()=>{running=false;cancelAnimationFrame(animId);gameOverlay.classList.remove('visible');gameOverlay.style.display='none';stopMusic();saveAll();refreshMenuUI();showScreen('menuScreen');});
 goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{passive:false});
-const goReplay=document.getElementById('goReplay');
-goReplay.addEventListener('click',()=>{gameOverlay.classList.remove('visible');gameOverlay.style.display='none';stopMusic();beginLevel(currentLevel);});
-goReplay.addEventListener('touchstart',e=>{e.preventDefault();goReplay.click();},{passive:false});
+// goReplay removed — game over goes to main menu only
 
 // ── Save score on tab close (keepalive — survives page unload) ──
 // Only on pagehide (not visibilitychange — that fires on simple tab-switch mid-game)
