@@ -2686,7 +2686,8 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     fetch(SB_URL+'/rest/v1/players?player_id=eq.'+encodeURIComponent(pid),{
       method:'PATCH',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({last_seen:new Date().toISOString(), is_online:online})
+      body:JSON.stringify({last_seen:new Date().toISOString(), is_online:online}),
+      keepalive:true  // survives page unload — critical for offline signal
     }).catch(()=>{});
   }
 
