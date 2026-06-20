@@ -1172,7 +1172,7 @@ const TRANSLATIONS={
     lvlLabel:'Úroveň',hudScore:'Skóre:',hudRecord:'Rekord:',
     pauseTitle:'⏸ PAUZA',pauseResume:'▶ Pokračovať',
     pauseRestart:'↺ Začať úroveň znova',pauseMenu:'⌂ Hlavné menu',
-    goShare:'📤 Zdieľať',goReplay:'↺ Začať znova',goMenu:'⌂ Hlavné menu',goFoodLbl:'Jedlo',
+    goShare:'📤 Zdieľať',goMenu:'⌂ Hlavné menu',goFoodLbl:'Jedlo',
     questTitle:'📋 Úlohy',questBack:'← Späť',questReset:'Reset o polnoci',
     questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
     settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',
@@ -1193,6 +1193,10 @@ const TRANSLATIONS={
     restoreFound:(nick,best,lvl,coins)=>`Našiel sa profil «${nick}»: rekord ${best}, úroveň ${lvl}, 🪙 ${coins}. Obnoviť tento postup?`,
     nickTaken:(n)=>`Prezývka «${n}» je už obsadená. Zvoľ inú.`,
     nickCooldown:'Prezývku možno meniť len raz za hodinu.',
+    nmTitle:'✏️ Zmeniť prezývku',nickModalPlaceholder:'Nová prezývka...',
+    nickCancel:'Zrušiť',nickSave:'💾 Uložiť',
+    nickChecking:'⏳ Kontrolujeme...',nickSaving:'💾 Ukladáme...',
+    nickUpdatedFmt:(n)=>`✅ Prezývka zmenená: ${n}`,
     achCounterFmt:(u,t)=>`${u}/${t} otvorených`,
     achEmptyUnlocked:'Zatiaľ žiadne otvorené ocenenia',
     achEmptyLocked:'Všetky ocenenia sú už otvorené!',
@@ -1260,7 +1264,7 @@ const TRANSLATIONS={
     lvlLabel:'Уровень',hudScore:'Счёт:',hudRecord:'Рекорд:',
     pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продолжить',
     pauseRestart:'↺ Начать уровень заново',pauseMenu:'⌂ Главное меню',
-    goShare:'📤 Поделиться',goReplay:'↺ Начать заново',goMenu:'⌂ Главное меню',goFoodLbl:'Еда',
+    goShare:'📤 Поделиться',goMenu:'⌂ Главное меню',goFoodLbl:'Еда',
     questTitle:'📋 Квесты',questBack:'← Назад',questReset:'Сброс в полночь',
     questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
     settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',
@@ -1281,6 +1285,10 @@ const TRANSLATIONS={
     restoreFound:(nick,best,lvl,coins)=>`Найден профиль «${nick}»: рекорд ${best}, уровень ${lvl}, 🪙 ${coins}. Восстановить этот прогресс?`,
     nickTaken:(n)=>`Ник «${n}» уже занят. Введи другой ник.`,
     nickCooldown:'Менять ник можно раз в час. Попробуй позже.',
+    nmTitle:'✏️ Сменить ник',nickModalPlaceholder:'Новый ник...',
+    nickCancel:'Отмена',nickSave:'💾 Сохранить',
+    nickChecking:'⏳ Проверяем...',nickSaving:'💾 Сохраняем...',
+    nickUpdatedFmt:(n)=>`✅ Ник обновлён: ${n}`,
     achCounterFmt:(u,t)=>`${u}/${t} открыто`,
     achEmptyUnlocked:'Пока нет открытых достижений',
     achEmptyLocked:'Все достижения уже открыты!',
@@ -1348,7 +1356,7 @@ const TRANSLATIONS={
     lvlLabel:'Level',hudScore:'Score:',hudRecord:'Best:',
     pauseTitle:'⏸ PAUSE',pauseResume:'▶ Resume',
     pauseRestart:'↺ Restart level',pauseMenu:'⌂ Main menu',
-    goShare:'📤 Share',goReplay:'↺ Play again',goMenu:'⌂ Main menu',goFoodLbl:'Food',
+    goShare:'📤 Share',goMenu:'⌂ Main menu',goFoodLbl:'Food',
     questTitle:'📋 Quests',questBack:'← Back',questReset:'Resets at midnight',
     questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
     settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',
@@ -1369,6 +1377,10 @@ const TRANSLATIONS={
     restoreFound:(nick,best,lvl,coins)=>`Found profile "${nick}": best ${best}, level ${lvl}, 🪙 ${coins}. Restore this progress?`,
     nickTaken:(n)=>`Nickname "${n}" is already taken. Pick another one.`,
     nickCooldown:'You can only change your nickname once per hour.',
+    nmTitle:'✏️ Change nickname',nickModalPlaceholder:'New nickname...',
+    nickCancel:'Cancel',nickSave:'💾 Save',
+    nickChecking:'⏳ Checking...',nickSaving:'💾 Saving...',
+    nickUpdatedFmt:(n)=>`✅ Nickname updated: ${n}`,
     achCounterFmt:(u,t)=>`${u}/${t} unlocked`,
     achEmptyUnlocked:'No achievements unlocked yet',
     achEmptyLocked:'All achievements unlocked!',
@@ -1469,7 +1481,6 @@ function applyLang(){
   const pmRs=document.getElementById('pmRestart');if(pmRs)pmRs.textContent=L.pauseRestart;
   const pmM=document.getElementById('pmMenu');if(pmM)pmM.textContent=L.pauseMenu;
   const goSh=document.getElementById('goShare');if(goSh)goSh.textContent=L.goShare;
-  const goRp=document.getElementById('goReplay');if(goRp)goRp.textContent=L.goReplay;
   const goMn=document.getElementById('goMenu');if(goMn)goMn.textContent=L.goMenu;
   const goFdLbl=document.getElementById('goLevelLbl');if(goFdLbl)goFdLbl.textContent=L.goFoodLbl;
   const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
@@ -1492,6 +1503,11 @@ function applyLang(){
     else if(b.dataset.diff==='hard')b.textContent=L.diffHard;
   });
   const btnBkSett=document.getElementById('btnBackSettings');if(btnBkSett)btnBkSett.textContent=L.btnBack;
+  // Nickname-change modal labels
+  const nmT=document.getElementById('nmTitle');if(nmT)nmT.textContent=L.nmTitle;
+  const nmInp=document.getElementById('nickInput');if(nmInp)nmInp.placeholder=L.nickModalPlaceholder;
+  const nmCancel=document.getElementById('nickCancelBtn');if(nmCancel)nmCancel.textContent=L.nickCancel;
+  const nmSave=document.getElementById('nickSaveBtn');if(nmSave)nmSave.textContent=L.nickSave;
   // lang-btn flags are static (🇷🇺/🇸🇰/🇬🇧), no text update needed
   const recT=document.querySelector('#recordsScreen .rec-title');if(recT)recT.textContent=L.recTitle;
   const tabMyEl=document.getElementById('tabMy');if(tabMyEl)tabMyEl.textContent=L.tabMy;
@@ -3738,6 +3754,15 @@ function launchGoConfetti(){
   draw();
 }
 // ── DEBUG PANEL ───────────────────────────────────────────────────
+// Gated so it can't be opened by regular players (the score-tap and ` key
+// were reachable by anyone and could write cheated coins/skins/levels to the
+// cloud profile and pollute the leaderboard). Enable for development via
+// ?debug=1 in the URL, or a Telegram deep link with startapp=debug — the flag
+// is then remembered in localStorage. Clear localStorage to turn it off.
+const _qsDebug=new URLSearchParams(location.search).get('debug')==='1';
+const _tgDebug=window.Telegram?.WebApp?.initDataUnsafe?.start_param==='debug';
+if(_qsDebug||_tgDebug) localStorage.setItem('snake2_debug','1');
+const DEBUG_ENABLED=_qsDebug||_tgDebug||localStorage.getItem('snake2_debug')==='1';
 const debugPanel=document.getElementById('debugPanel');
 const dbgBackdrop=document.getElementById('dbgBackdrop');
 let dbgTapCount=0,dbgTapTimer=null,dbgPausedByPanel=false;
@@ -3749,6 +3774,7 @@ document.getElementById('score').addEventListener('click',()=>{
   if(dbgTapCount>=5){dbgTapCount=0;dbgOpen();}
 });
 function dbgOpen(){
+  if(!DEBUG_ENABLED) return; // production: debug panel is locked
   // Auto-pause if game is running
   if(running&&!paused){
     paused=true;dbgPausedByPanel=true;
@@ -4226,7 +4252,7 @@ function stopMusic(){
 
     saveBtn.disabled=true;
     cancelBtn.disabled=true;
-    if(statusEl) statusEl.textContent='⏳ Проверяем...';
+    if(statusEl) statusEl.textContent=T().nickChecking;
 
     try{
       // Check if nick taken — use RPC (doesn't expose other players' UUIDs)
@@ -4247,7 +4273,7 @@ function stopMusic(){
       }
     }catch(e){}
 
-    if(statusEl) statusEl.textContent='💾 Сохраняем...';
+    if(statusEl) statusEl.textContent=T().nickSaving;
 
     // Update players.nick + all game_results.name via SECURITY DEFINER RPC (bypasses RLS)
     // Apply locally ONLY after server confirms success
@@ -4286,7 +4312,7 @@ function stopMusic(){
     refreshMenuUI();
 
     if(statusEl) statusEl.textContent='';
-    showToast('✅ Ник обновлён: '+newNick,'#818cf8',2500);
+    showToast(T().nickUpdatedFmt(newNick),'#818cf8',2500);
     closeModal();
     saveBtn.disabled=false; cancelBtn.disabled=false;
   }
