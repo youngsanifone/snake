@@ -2569,7 +2569,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
           try{ tg.ready(); }catch(_){}
           showScreen('menuScreen');
         }
-        trackEvent('visit',null,null);
+        heartbeat();
         // ── Process referral if this player was invited ──
         const refCode=localStorage.getItem('snake2_ref');
         if(refCode&&!localStorage.getItem('snake2_ref_done')){
@@ -2583,11 +2583,6 @@ function buildShopPreview_compat(){ buildShopPreview(); }
             }
           }).catch(()=>{});
         }
-        setInterval(()=>{ if(document.visibilityState==='visible') trackEvent('visit',null,null); },60*1000);
-        document.addEventListener('visibilitychange',()=>{
-          if(document.visibilityState==='visible') trackEvent('visit',null,null);
-          if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
-        });
         window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
         return;
       } else {
