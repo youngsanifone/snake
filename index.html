@@ -4228,11 +4228,14 @@ function stopMusic(){
     if(statusEl) statusEl.textContent='⏳ Проверяем...';
 
     try{
-      // Check if nick taken by another player
-      const r=await fetch(`${SB_URL}/rest/v1/players_public?nick=eq.${encodeURIComponent(newNick)}&select=player_id&limit=1`,{headers:SB_HEADERS});
+      // Check if nick taken — use RPC (doesn't expose other players' UUIDs)
+      const r=await fetch(`${SB_URL}/rest/v1/rpc/check_nick_available`,{
+        method:'POST',headers:SB_HEADERS,
+        body:JSON.stringify({p_nick:newNick,p_player_id:getPlayerId()})
+      });
       if(r.ok){
-        const rows=await r.json();
-        if(rows.length&&rows[0].player_id!==getPlayerId()){
+        const res=await r.json();
+        if(res&&res.available===false){
           inp.classList.add('err');
           errEl.textContent=T().nickTaken?T().nickTaken(newNick):`Ник "${newNick}" уже занят`;
           if(statusEl) statusEl.textContent='';
