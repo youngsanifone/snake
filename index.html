@@ -2630,10 +2630,12 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const anonNames=['Аноним','Anonym','Anonymous'];
     if(!anonNames.includes(name)){
       try{
-        const r=await fetch(`${SB_URL}/rest/v1/players_public?nick=eq.${encodeURIComponent(name)}&select=*&order=updated_at.desc&limit=1`,{headers:SB_HEADERS});
+        const r=await fetch(`${SB_URL}/rest/v1/rpc/restore_player_by_nick`,{
+          method:'POST',headers:{...SB_HEADERS,'Content-Type':'application/json'},
+          body:JSON.stringify({p_nick:name}),signal:AbortSignal.timeout?.(5000)
+        });
         if(r.ok){
-          const rows=await r.json();
-          const p=rows[0];
+          const p=await r.json();
           if(p&&p.player_id!==getPlayerId()){
             // Nick already exists: either restore this profile or ask for a different nick
             if(confirm(T().restoreFound(p.nick,p.best||0,p.best_level||1,p.coins||0))){
@@ -2689,12 +2691,15 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     const pid=getPlayerId();
     const _ac=new AbortController();
     setTimeout(()=>_ac.abort(),6000); // 6s timeout — don't wait forever
-    const r=await fetch(`${SB_URL}/rest/v1/players_public?player_id=eq.${encodeURIComponent(pid)}&select=*&limit=1`,{headers:SB_HEADERS,signal:_ac.signal});
+    const r=await fetch(`${SB_URL}/rest/v1/rpc/get_my_profile`,{
+      method:'POST',headers:{...SB_HEADERS,'Content-Type':'application/json'},
+      body:JSON.stringify({p_player_id:pid}),signal:_ac.signal
+    });
     if(!r.ok) throw new Error('fetch error');
-    const rows=await r.json();
-    if(rows.length>0){
+    const profileData=await r.json();
+    if(profileData){
       // Profile found — apply data from Supabase
-      applyProfile(rows[0]);
+      applyProfile(profileData);
       fetchModeBests(pid);
       currentLang = localStorage.getItem(S+'Lang')||'ru';
       applyTheme();
