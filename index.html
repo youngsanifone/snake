@@ -1565,6 +1565,21 @@ function getPlayerId(){
   setCookie(S+'pid',pid);
   return pid;
 }
+// Secret per-player write token (Variant B ownership). Required by the
+// save_profile / submit_score RPCs so only the owner can write this player's
+// data. For Telegram users telegram-auth returns the canonical token (bound to
+// the verified telegram_id); for web users the local token is claimed on first
+// write. Never sent in any readable column.
+function getWriteToken(){
+  let t=localStorage.getItem(S+'wtok')||getCookie(S+'wtok');
+  if(!t){
+    const rnd=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2);
+    t=rnd()+'-'+rnd();
+  }
+  localStorage.setItem(S+'wtok',t);
+  setCookie(S+'wtok',t);
+  return t;
+}
 // Send event to Supabase (fire-and-forget)
 function trackEvent(event,score,mode){
   const pid=getPlayerId();
@@ -1661,24 +1676,29 @@ function upsertProfile(){
   // Guard: don't overwrite cloud with zeros until profile is loaded/created
   if(!profileLoaded) return;
   const pid=getPlayerId();
-  // keepalive:true removed — Safari strips Authorization header on cross-origin requests → 401
-  return fetch(SB_URL+'/rest/v1/players',{
+  // Token-gated write: server verifies ownership before applying.
+  return fetch(SB_URL+'/rest/v1/rpc/save_profile',{
     method:'POST',
-    headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates,return=minimal'},
+    headers:{...SB_HEADERS,'Prefer':'return=minimal'},
     body:JSON.stringify({
-      player_id:pid,
-      nick:lbNickname||T().anon,
-      coins,best,
-      best_level:bestLevel,
-      games_played:gamesPlayed,
-      saved_level:savedLevel,
-      skin_idx:skinIdx,
-      bought_skins:[...boughtSkins],
-      achievements:[...unlockedAch],
-      quests:questData||[],
-      difficulty,music_on:musicOn,sfx_on:sfxOn,theme,lang:currentLang,
-      updated_at:new Date().toISOString(),
-      last_seen:new Date().toISOString()
+      p_player_id:pid,
+      p_token:getWriteToken(),
+      p_nick:lbNickname||T().anon,
+      p_coins:coins,
+      p_best:best,
+      p_best_level:bestLevel,
+      p_games_played:gamesPlayed,
+      p_saved_level:savedLevel,
+      p_skin_idx:skinIdx,
+      p_bought_skins:[...boughtSkins],
+      p_achievements:[...unlockedAch],
+      p_quests:questData||[],
+      p_difficulty:difficulty,
+      p_music_on:musicOn,
+      p_sfx_on:sfxOn,
+      p_theme:theme,
+      p_lang:currentLang,
+      p_last_seen:new Date().toISOString()
     })
   }).catch(()=>{});
 }
@@ -2054,15 +2074,18 @@ function showToast(msg,color='#4ade80',duration=3000){
 
 async function submitToLeaderboard(name,score,level,mode){
   try{
-    const r=await fetch(`${SB_URL}/rest/v1/game_results`,{
+    // Token-gated; server derives the displayed name from the player's stored
+    // nick (no client-supplied names → no leaderboard name injection).
+    const r=await fetch(`${SB_URL}/rest/v1/rpc/submit_score`,{
       method:'POST',
-      headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({name,score,level,mode,player_id:getPlayerId()}),
+      headers:SB_HEADERS,
+      body:JSON.stringify({p_player_id:getPlayerId(),p_token:getWriteToken(),p_score:score,p_level:level,p_mode:mode}),
       signal:AbortSignal.timeout?.(8000)
     });
-    if(!r.ok){
-      const txt=await r.text();
-      console.error('lb submit failed',r.status,txt);
+    let okBody=true;
+    if(r.ok){ try{const d=await r.json(); okBody=!d||d.ok!==false;}catch(_){okBody=true;} }
+    if(!r.ok||!okBody){
+      console.error('lb submit failed',r.status);
       showToast('⚠️ '+T().lbSubmitError,'#f87171');
       return false;
     }
@@ -2532,7 +2555,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
       const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({init_data:tg.initData}),
+        body:JSON.stringify({init_data:tg.initData, write_token:getWriteToken()}),
         signal:_tgAc.signal
       });
       clearTimeout(_tgAt);
@@ -2541,6 +2564,11 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         // ── Save canonical player_id (same across ALL devices with same TG account) ──
         localStorage.setItem(S+'pid',tgData.player_id);
         setCookie(S+'pid',tgData.player_id);
+        // ── Adopt the canonical write token (bound to this Telegram identity) ──
+        if(tgData.write_token){
+          localStorage.setItem(S+'wtok',tgData.write_token);
+          setCookie(S+'wtok',tgData.write_token);
+        }
         if(tg.CloudStorage){
           tg.CloudStorage.setItem('pid',tgData.player_id,()=>{});
         }
@@ -2695,10 +2723,10 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   function heartbeat(online=true){
     const pid=getPlayerId();
     if(!pid) return;
-    fetch(SB_URL+'/rest/v1/players?player_id=eq.'+encodeURIComponent(pid),{
-      method:'PATCH',
+    fetch(SB_URL+'/rest/v1/rpc/save_profile',{
+      method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({last_seen:new Date().toISOString(), is_online:online}),
+      body:JSON.stringify({p_player_id:pid, p_token:getWriteToken(), p_last_seen:new Date().toISOString(), p_is_online:online}),
       keepalive:true  // survives page unload — critical for offline signal
     }).catch(()=>{});
   }
@@ -3908,10 +3936,10 @@ let _exitSubmitted=false;
 function _submitOnExit(){
   if(!running||score<=0||_exitSubmitted) return;
   _exitSubmitted=true;
-  fetch(`${SB_URL}/rest/v1/game_results`,{
+  fetch(`${SB_URL}/rest/v1/rpc/submit_score`,{
     method:'POST',
     headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-    body:JSON.stringify({name:lbNickname||T().anon,score,level:currentLevel,mode:gameMode,player_id:getPlayerId()}),
+    body:JSON.stringify({p_player_id:getPlayerId(),p_token:getWriteToken(),p_score:score,p_level:currentLevel,p_mode:gameMode}),
     keepalive:true
   }).catch(()=>{});
 }
