@@ -2472,13 +2472,13 @@ function buildShopPreview_compat(){ buildShopPreview(); }
   },13000);
 
   // ── COMMON SETUP (runs for ALL users — TG and non-TG) ─────────────
-  heartbeat(); // initial last_seen update
-  setInterval(()=>{ if(document.visibilityState==='visible') heartbeat(); }, 90*1000);
+  heartbeat(true); // initial presence: online
+  setInterval(()=>{ if(document.visibilityState==='visible') heartbeat(true); }, 30*1000);
   document.addEventListener('visibilitychange',()=>{
-    if(document.visibilityState==='visible') heartbeat();
-    if(document.visibilityState==='hidden'&&profileLoaded) saveAll();
+    if(document.visibilityState==='visible') heartbeat(true);
+    if(document.visibilityState==='hidden'){ heartbeat(false); if(profileLoaded) saveAll(); }
   });
-  window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
+  window.addEventListener('pagehide',()=>{ heartbeat(false); if(profileLoaded) saveAll(); });
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
@@ -2680,13 +2680,13 @@ function buildShopPreview_compat(){ buildShopPreview(); }
 
   // Heartbeat — runs for ALL users (TG and non-TG), set up here in outer scope
   // Does NOT write to player_events — avoids DB bloat
-  function heartbeat(){
+  function heartbeat(online=true){
     const pid=getPlayerId();
     if(!pid) return;
     fetch(SB_URL+'/rest/v1/players?player_id=eq.'+encodeURIComponent(pid),{
       method:'PATCH',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({last_seen:new Date().toISOString()})
+      body:JSON.stringify({last_seen:new Date().toISOString(), is_online:online})
     }).catch(()=>{});
   }
 
