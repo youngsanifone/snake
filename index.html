@@ -3908,7 +3908,11 @@ function applyDir(nd){
   const ref=dirQueue.length?dirQueue[dirQueue.length-1]:nextDir;
   if(nd.x===-ref.x&&nd.y===-ref.y) return; // no 180° reversal
   if(nd.x===ref.x&&nd.y===ref.y) return;   // same as pending — ignore duplicate
-  if(dirQueue.length<2) dirQueue.push(nd);  // buffer up to 2 quick turns
+  if(dirQueue.length<2){
+    dirQueue.push(nd);  // buffer up to 2 quick turns
+    // Subtle tactile tick on each accepted turn — makes steering feel responsive.
+    try{ window.Telegram?.WebApp?.HapticFeedback?.selectionChanged?.(); }catch(_){}
+  }
 }
 // Pause buttons
 pmResume.addEventListener('click',togglePause);
@@ -4035,7 +4039,7 @@ canvas.addEventListener('touchmove',e=>{
   e.preventDefault();
   const t=e.touches[0]; if(!t) return;
   const dx=t.clientX-tx, dy=t.clientY-ty;
-  const TH=20; // distance per turn within a continuous swipe
+  const TH=16; // distance per turn within a continuous swipe
   if(Math.abs(dx)<TH&&Math.abs(dy)<TH) return;
   applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
   tx=t.clientX; ty=t.clientY; _swiped=true;
