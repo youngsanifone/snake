@@ -1190,7 +1190,6 @@ const TRANSLATIONS={
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopNotEnough:'Nedostatok mincí',
     tapToStart:'Šípka / swipe — štart!',
-    restoreFound:(nick,best,lvl,coins)=>`Našiel sa profil «${nick}»: rekord ${best}, úroveň ${lvl}, 🪙 ${coins}. Obnoviť tento postup?`,
     nickTaken:(n)=>`Prezývka «${n}» je už obsadená. Zvoľ inú.`,
     nickCooldown:'Prezývku možno meniť len raz za hodinu.',
     nmTitle:'✏️ Zmeniť prezývku',nickModalPlaceholder:'Nová prezývka...',
@@ -1282,7 +1281,6 @@ const TRANSLATIONS={
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopNotEnough:'Не хватает монет',
     tapToStart:'Стрелка / свайп — старт!',
-    restoreFound:(nick,best,lvl,coins)=>`Найден профиль «${nick}»: рекорд ${best}, уровень ${lvl}, 🪙 ${coins}. Восстановить этот прогресс?`,
     nickTaken:(n)=>`Ник «${n}» уже занят. Введи другой ник.`,
     nickCooldown:'Менять ник можно раз в час. Попробуй позже.',
     nmTitle:'✏️ Сменить ник',nickModalPlaceholder:'Новый ник...',
@@ -1374,7 +1372,6 @@ const TRANSLATIONS={
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopNotEnough:'Not enough coins',
     tapToStart:'Arrow / swipe to start!',
-    restoreFound:(nick,best,lvl,coins)=>`Found profile "${nick}": best ${best}, level ${lvl}, 🪙 ${coins}. Restore this progress?`,
     nickTaken:(n)=>`Nickname "${n}" is already taken. Pick another one.`,
     nickCooldown:'You can only change your nickname once per hour.',
     nmTitle:'✏️ Change nickname',nickModalPlaceholder:'New nickname...',
@@ -2669,38 +2666,28 @@ function buildShopPreview_compat(){ buildShopPreview(); }
     }
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
-    // If a player with this nick already exists in the cloud — offer to restore progress
-    // (helps when switching browser/device or clearing storage)
+    // Nick uniqueness: reject a nick already used by a different player.
+    // Profile "restore by nick" was removed on purpose — under the write-token
+    // model it would let anyone adopt another player's unclaimed profile.
+    // Telegram users restore securely via telegram-auth (bound to telegram_id).
     const anonNames=['Аноним','Anonym','Anonymous'];
     if(!anonNames.includes(name)){
       try{
-        const r=await fetch(`${SB_URL}/rest/v1/rpc/restore_player_by_nick`,{
-          method:'POST',headers:{...SB_HEADERS,'Content-Type':'application/json'},
-          body:JSON.stringify({p_nick:name}),signal:AbortSignal.timeout?.(5000)
+        const r=await fetch(`${SB_URL}/rest/v1/rpc/check_nick_available`,{
+          method:'POST',headers:SB_HEADERS,
+          body:JSON.stringify({p_nick:name,p_player_id:getPlayerId()}),
+          signal:AbortSignal.timeout?.(5000)
         });
         if(r.ok){
-          const p=await r.json();
-          if(p&&p.player_id!==getPlayerId()){
-            // Nick already exists: either restore this profile or ask for a different nick
-            if(confirm(T().restoreFound(p.nick,p.best||0,p.best_level||1,p.coins||0))){
-              localStorage.setItem(S+'pid',p.player_id);
-              setCookie(S+'pid',p.player_id);
-              applyProfile(p);
-              fetchModeBests(p.player_id);
-              applyLang();
-              showScreen('menuScreen');
-              refreshMenuUI();
-              return;
-            } else {
-              // Reset nick — otherwise player would be stuck with someone else's nick and no profile
-              lbNickname='';
-              localStorage.removeItem(S+'Nick');
-              alert(T().nickTaken(name));
-              welcInp.style.borderColor='#ef4444';
-              setTimeout(()=>welcInp.style.borderColor='',600);
-              welcInp.select();welcInp.focus();
-              return; // don't create a duplicate
-            }
+          const d=await r.json();
+          if(d&&d.available===false){
+            lbNickname='';
+            localStorage.removeItem(S+'Nick');
+            alert(T().nickTaken(name));
+            welcInp.style.borderColor='#ef4444';
+            setTimeout(()=>welcInp.style.borderColor='',600);
+            welcInp.select();welcInp.focus();
+            return; // don't create a duplicate nick
           }
         }
       }catch(e){}
