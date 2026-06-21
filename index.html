@@ -4302,7 +4302,7 @@ function stopMusic(){
       const renameRes=await fetch(`${SB_URL}/rest/v1/rpc/rename_player`,{
         method:'POST',
         headers:SB_HEADERS,
-        body:JSON.stringify({p_player_id:pid, p_new_nick:newNick}),
+        body:JSON.stringify({p_player_id:pid, p_new_nick:newNick, p_token:getWriteToken()}),
         signal:AbortSignal.timeout?.(8000)
       });
       const renameJson=await renameRes.json().catch(()=>({}));
