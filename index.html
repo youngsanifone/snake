@@ -1179,10 +1179,10 @@ const TRANSLATIONS={
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
     settingsSound:'🔊 Zvuk',settingsChangeNick:'✏️ Zmeniť',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
-    settingsTheme:'🎨 Téma',themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
+    themeLight:'☀️ Svetlá',themeDark:'🌙 Tmavá',
     settingsLang:'🌐 Jazyk',langBtn:'🇬🇧 EN',
     soundOn:'zap.',soundOff:'vyp.',
-    btnReset:'🗑 Resetovať postup',btnBack:'← Späť',
+    btnBack:'← Späť',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
     recBest:'Najlepšie skóre',recLvl:'Max. úroveň',recGames:'Hier odohratých',
     lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',lbSubmitError:'Nepodarilo sa odoslať skóre',lbSubmitOk:'✅ Skóre odoslané!',
@@ -1205,20 +1205,18 @@ const TRANSLATIONS={
     levelUpSub:(n)=>`Úroveň ${n}`,
     unlockSkin:(e,name)=>`🔓 Odomknutý skin ${e} ${name}!`,
     lvlGoalFmt:(n)=>`Zjedz ${n} jedál`,
-    hudTimeSuffix:'s',
     hudModeSurvival:'💀 PREŽITIE',hudModeTime:'⏱ ČAS',hudModeLvl:(n)=>`Úr. ${n}`,
     shieldHud:'ŠTÍT',mirrorHud:'ZRK',
     floatShield:'🛡 ŠTÍT!',floatTurbo:'⚡ TURBO!',floatFreeze:'❄ STOP!',floatBomb:'💣 BOOM!',floatBlock:'🛡 BLOK!',
-    floatBarFull:'⚡ BAR PLNÝ',floatAllSkins:'🔓 VŠETKY SKINY!',
-    floatGoldFood:'⭐ ZLATÉ JEDLO',floatInvOn:'♾ NEZRANITEĽNOSŤ ZAP',floatInvOff:'♾ VYP',
-    floatAllAch:'🏅 VŠETKY OCENENIA!',floatBought:'🪙 Kúpené!',
+    floatAllSkins:'🔓 VŠETKY SKINY!',
+    floatInvOn:'♾ NEZRANITEĽNOSŤ ZAP',floatInvOff:'♾ VYP',
+    floatBought:'🪙 Kúpené!',
     goMsgNewRecord:'🏆 Nový rekord!',goMsgTimeUp:'⏱ Čas vypršal!',
     goMsgSurvived:'💀 Prežil!',goMsgGameOver:'💀 Koniec hry',
     goModeLbl:{time:'⏱ Čas',survival:'💀 Prežitie',mirror:'🪞 Zrkadlo'},
     goModeLblClassic:(n)=>`Úroveň: ${n}`,
     goSubFmt:(score,mode)=>`Skóre: ${score} · ${mode}`,
     pauseInfoFmt:(lvl,score)=>`Úroveň ${lvl} · Skóre: ${score}`,
-    resetConfirm:'Resetovať celý postup? Mince, rekordy, ocenenia budú vymazané. Prezývka zostane.',
     shareTitle:'🐍 Had',
     shareFmt:(emoji,score,mode,best)=>`${emoji} Nazbieral som ${score} bodov v Hadovi (${mode})!\nNajlepší výsledok: ${best} 🏆\nSkús poraziť môj rekord!`,
     shareModes:{classic:(n)=>`úroveň ${n}`,time:'režim Čas',survival:'režim Prežitie',mirror:'režim Zrkadlo'},
@@ -1270,10 +1268,10 @@ const TRANSLATIONS={
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsSound:'🔊 Звук',settingsChangeNick:'✏️ Изменить',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
-    settingsTheme:'🎨 Тема',themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
+    themeLight:'☀️ Светлая',themeDark:'🌙 Тёмная',
     settingsLang:'🌐 Язык',langBtn:'🇸🇰 SK',
     soundOn:'вкл',soundOff:'выкл',
-    btnReset:'🗑 Сбросить прогресс',btnBack:'← Назад',
+    btnBack:'← Назад',
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
     recBest:'Лучший счёт',recLvl:'Макс. уровень',recGames:'Игр сыграно',
     lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',lbSubmitError:'Не удалось отправить счёт',lbSubmitOk:'✅ Счёт отправлен!',
@@ -1296,20 +1294,18 @@ const TRANSLATIONS={
     levelUpSub:(n)=>`Уровень ${n}`,
     unlockSkin:(e,name)=>`🔓 Разблокирован скин ${e} ${name}!`,
     lvlGoalFmt:(n)=>`Съешь ${n} еды`,
-    hudTimeSuffix:'с',
     hudModeSurvival:'💀 ВЫЖИВАНИЕ',hudModeTime:'⏱ ВРЕМЯ',hudModeLvl:(n)=>`Ур. ${n}`,
     shieldHud:'ЩИТ',mirrorHud:'ЗЕРК',
     floatShield:'🛡 ЩИТ!',floatTurbo:'⚡ ТУРБО!',floatFreeze:'❄ СТОП!',floatBomb:'💣 БАБАХ!',floatBlock:'🛡 БЛОК!',
-    floatBarFull:'⚡ БАР ЗАПОЛНЕН',floatAllSkins:'🔓 ВСЕ СКИНЫ!',
-    floatGoldFood:'⭐ ЗОЛОТАЯ ЕДА',floatInvOn:'♾ НЕУЯЗВИМОСТЬ ВКЛ',floatInvOff:'♾ ВЫКЛ',
-    floatAllAch:'🏅 ВСЕ АЧИВКИ!',floatBought:'🪙 Куплено!',
+    floatAllSkins:'🔓 ВСЕ СКИНЫ!',
+    floatInvOn:'♾ НЕУЯЗВИМОСТЬ ВКЛ',floatInvOff:'♾ ВЫКЛ',
+    floatBought:'🪙 Куплено!',
     goMsgNewRecord:'🏆 Новый рекорд!',goMsgTimeUp:'⏱ Время вышло!',
     goMsgSurvived:'💀 Выжил!',goMsgGameOver:'💀 Конец игры',
     goModeLbl:{time:'⏱ Время',survival:'💀 Выживание',mirror:'🪞 Зеркало'},
     goModeLblClassic:(n)=>`Уровень: ${n}`,
     goSubFmt:(score,mode)=>`Счёт: ${score} · ${mode}`,
     pauseInfoFmt:(lvl,score)=>`Уровень ${lvl} · Счёт: ${score}`,
-    resetConfirm:'Сбросить весь прогресс? Монеты, рекорды, ачивки будут удалены. Ник останется.',
     shareTitle:'🐍 Змейка',
     shareFmt:(emoji,score,mode,best)=>`${emoji} Набрал ${score} очков в Змейке (${mode})!\nЛучший результат: ${best} 🏆\nПобей мой рекорд! 🐍`,
     shareModes:{classic:(n)=>`уровень ${n}`,time:'режим Время',survival:'режим Выживание',mirror:'режим Зеркало'},
@@ -1361,10 +1357,10 @@ const TRANSLATIONS={
     diffEasy:'😌 Easy',diffNormal:'😐 Normal',diffHard:'😤 Hardcore',
     settingsSound:'🔊 Sound',settingsChangeNick:'✏️ Change',
     settingsMusic:'🎵 Music',settingsSfx:'🔊 Sound effects',
-    settingsTheme:'🎨 Theme',themeLight:'☀️ Light',themeDark:'🌙 Dark',
+    themeLight:'☀️ Light',themeDark:'🌙 Dark',
     settingsLang:'🌐 Language',langBtn:'🇷🇺 RU',
     soundOn:'on',soundOff:'off',
-    btnReset:'🗑 Reset progress',btnBack:'← Back',
+    btnBack:'← Back',
     recTitle:'🏆 Records',tabMy:'👤 My',tabOnline:'🌍 Online',
     recBest:'Best score',recLvl:'Max level',recGames:'Games played',
     lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',lbSubmitError:'Failed to submit score',lbSubmitOk:'✅ Score submitted!',
@@ -1387,20 +1383,18 @@ const TRANSLATIONS={
     levelUpSub:(n)=>`Level ${n}`,
     unlockSkin:(e,name)=>`🔓 Unlocked skin ${e} ${name}!`,
     lvlGoalFmt:(n)=>`Eat ${n} food`,
-    hudTimeSuffix:'s',
     hudModeSurvival:'💀 SURVIVAL',hudModeTime:'⏱ TIME',hudModeLvl:(n)=>`Lvl ${n}`,
     shieldHud:'SHIELD',mirrorHud:'MIRR',
     floatShield:'🛡 SHIELD!',floatTurbo:'⚡ TURBO!',floatFreeze:'❄ STOP!',floatBomb:'💣 BOOM!',floatBlock:'🛡 BLOCK!',
-    floatBarFull:'⚡ BAR FULL',floatAllSkins:'🔓 ALL SKINS!',
-    floatGoldFood:'⭐ GOLDEN FOOD',floatInvOn:'♾ INVINCIBILITY ON',floatInvOff:'♾ OFF',
-    floatAllAch:'🏅 ALL ACHIEVEMENTS!',floatBought:'🪙 Bought!',
+    floatAllSkins:'🔓 ALL SKINS!',
+    floatInvOn:'♾ INVINCIBILITY ON',floatInvOff:'♾ OFF',
+    floatBought:'🪙 Bought!',
     goMsgNewRecord:'🏆 New record!',goMsgTimeUp:'⏱ Time\'s up!',
     goMsgSurvived:'💀 Survived!',goMsgGameOver:'💀 Game over',
     goModeLbl:{time:'⏱ Time',survival:'💀 Survival',mirror:'🪞 Mirror'},
     goModeLblClassic:(n)=>`Level: ${n}`,
     goSubFmt:(score,mode)=>`Score: ${score} · ${mode}`,
     pauseInfoFmt:(lvl,score)=>`Level ${lvl} · Score: ${score}`,
-    resetConfirm:'Reset all progress? Coins, records, achievements will be deleted. Nickname stays.',
     shareTitle:'🐍 Snake',
     shareFmt:(emoji,score,mode,best)=>`${emoji} Scored ${score} points in Snake (${mode})!\nBest: ${best} 🏆\nBeat my record! 🐍`,
     shareModes:{classic:(n)=>`level ${n}`,time:'Time mode',survival:'Survival mode',mirror:'Mirror mode'},
@@ -1533,14 +1527,6 @@ function applyLang(){
   updateSoundToggles();
   applyTheme();
 }
-function toggleLang(){
-  currentLang=currentLang==='ru'?'sk':currentLang==='sk'?'en':'ru';
-  localStorage.setItem(S+'Lang',currentLang);
-  applyLang();
-  buildAchScreen();
-  buildQuestScreen();
-  buildShopScreen();
-}
 
 
 // ── GLOBAL STATISTICS ─────────────────────────────────────────────
@@ -1578,15 +1564,6 @@ function getWriteToken(){
   return t;
 }
 // Send event to Supabase (fire-and-forget)
-function trackEvent(event,score,mode){
-  const pid=getPlayerId();
-  fetch(SB_URL+'/rest/v1/player_events',{
-    method:'POST',
-    headers:SB_HEADERS,
-    body:JSON.stringify({player_id:pid,event,score:score??0,mode:mode||'classic'})
-  }).catch(()=>{});
-}
-// Visit — called from initGame() after S is declared
 // Load and display global statistics
 async function fetchGlobalStats(){
   try{
@@ -1785,15 +1762,6 @@ function applyLocalCache(){
   if(lbNickname) profileLoaded=true;
 }
 // Clear everything (on reset)
-function clearLocalData(){
-  const pid=localStorage.getItem(S+'pid');
-  Object.keys(localStorage).forEach(k=>{if(k.startsWith(S))localStorage.removeItem(k);});
-  if(pid) localStorage.setItem(S+'pid',pid);
-  lbNickname='';coins=0;best=0;bestLevel=1;gamesPlayed=0;
-  savedLevel=1;skinIdx=0;boughtSkins=new Set();
-  unlockedAch=new Set();questData=null;
-  difficulty='normal';musicOn=true;sfxOn=true;theme='dark';
-}
 // ── ACHIEVEMENTS ──────────────────────────────────────────────────
 const ACHIEVEMENTS=[
   {id:'first_bite',   icon:'🍎', name:'Первый укус',      desc:'Съешь первую еду'},
@@ -2489,8 +2457,6 @@ function buildShopPreview(){
     btn.ontouchstart=e=>{e.preventDefault();action();};
   }
 }
-
-function buildShopPreview_compat(){ buildShopPreview(); }
 // ── GAME INITIALIZATION (async — loads profile from Supabase) ─────
 (async function initGame(){
   const loading=document.getElementById('loadingScreen');
@@ -4133,12 +4099,7 @@ function playDie(){
     });
   }catch(e){}
 }
-// ── MUSIC ───────────────────────────────────────────────────────────
-// Procedural music only via Web Audio API (Only Today.mp3 removed)
-const mp3Music=null, mp3Failed=true;
-function initMp3(){}
-
-// ── PROCEDURAL MUSIC (fallback) ────────────────────────────────────
+// ── PROCEDURAL MUSIC (Web Audio API) ───────────────────────────────
 
 const BPM = 125;
 const T16 = (60 / BPM) / 4; // duration of one 1/16 note in seconds
