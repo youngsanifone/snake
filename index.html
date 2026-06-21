@@ -3065,6 +3065,7 @@ const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('
 const btnPause=document.getElementById('btnPause');
 bestHud.textContent=best;
 let path,dir,nextDir,food,obstacles,particles=[],floatTexts=[],skinTrailFx=[];
+let dirQueue=[]; // buffered turns (max 2) so quick successive inputs aren't dropped
 let score,totalLen,levelScore,totalFood;
 let running=false,paused=false,animId=null,lastTs=0;
 let _levelTransition=false; // true during level transition (carry over score)
@@ -3237,7 +3238,7 @@ function startGame(){
   }
   path=[];
   for(let i=0;i<BASE_LEN;i++) path.push({x:W/2-i,y:H/2});
-  dir={x:1,y:0};nextDir={x:1,y:0};
+  dir={x:1,y:0};nextDir={x:1,y:0};dirQueue=[];
   // Level transition: carry accumulated score. New game: reset everything.
   if(_levelTransition){
     score=_carryScore;
@@ -3298,6 +3299,8 @@ function loop(ts){
   // speed: boost +60%, freeze -50%, otherwise base speed
   const spdMult = freezeActive>0 ? 0.5 : speedBoost>0 ? 1.6 : 1.0;
   const spd=levelData.speed*dt/16*spdMult;
+  // Consume one buffered turn per step → crisp, ordered response to quick inputs
+  if(dirQueue.length) nextDir=dirQueue.shift();
   dir=nextDir;
   // Compute raw (unclamped) position for accurate collision detection
   const rawX=path[0].x+dir.x*spd, rawY=path[0].y+dir.y*spd;
@@ -3900,11 +3903,12 @@ function applyDir(nd){
   awaitingStart=false; // first input — go!
   // Mirror mode — invert horizontal axis
   if(gameMode==='mirror') nd={x:-nd.x, y:nd.y};
-  // Guard against 180° reversal: check both nextDir and the actually applied dir
-  // (two quick inputs in one frame would otherwise reverse the snake into itself)
-  if(nd.x===-nextDir.x&&nd.y===-nextDir.y) return;
-  if(dir&&nd.x===-dir.x&&nd.y===-dir.y) return;
-  nextDir=nd;
+  // Validate against the last *intended* direction (end of queue, else nextDir)
+  // so buffered turns chain correctly and never reverse the snake into itself.
+  const ref=dirQueue.length?dirQueue[dirQueue.length-1]:nextDir;
+  if(nd.x===-ref.x&&nd.y===-ref.y) return; // no 180° reversal
+  if(nd.x===ref.x&&nd.y===ref.y) return;   // same as pending — ignore duplicate
+  if(dirQueue.length<2) dirQueue.push(nd);  // buffer up to 2 quick turns
 }
 // Pause buttons
 pmResume.addEventListener('click',togglePause);
@@ -4023,12 +4027,24 @@ document.addEventListener('touchend',function(e){
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
 // Swipe controls
-let tx=0,ty=0;
-canvas.addEventListener('touchstart',e=>{e.preventDefault();tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:false});
+let tx=0,ty=0,_swiped=false;
+canvas.addEventListener('touchstart',e=>{e.preventDefault();tx=e.touches[0].clientX;ty=e.touches[0].clientY;_swiped=false;},{passive:false});
+// Continuous steering: register a turn mid-gesture and re-anchor, so the player
+// can draw a path with one finger without lifting between turns.
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const t=e.touches[0]; if(!t) return;
+  const dx=t.clientX-tx, dy=t.clientY-ty;
+  const TH=20; // distance per turn within a continuous swipe
+  if(Math.abs(dx)<TH&&Math.abs(dy)<TH) return;
+  applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
+  tx=t.clientX; ty=t.clientY; _swiped=true;
+},{passive:false});
 canvas.addEventListener('touchend',e=>{
   e.preventDefault();
+  if(_swiped) return; // already steered during the move
   const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
-  if(Math.abs(dx)<12&&Math.abs(dy)<12) return;
+  if(Math.abs(dx)<12&&Math.abs(dy)<12) return; // quick flick
   applyDir(Math.abs(dx)>Math.abs(dy)?{x:dx>0?1:-1,y:0}:{x:0,y:dy>0?1:-1});
 },{passive:false});
 document.body.addEventListener('touchmove',e=>{
