@@ -556,10 +556,6 @@
     touch-action:manipulation;transition:background 0.1s,transform 0.08s;}
   .dpad-btn:active{background:var(--border);transform:scale(0.9);}
   .dpad-empty{background:transparent;border:none;}
-  .pause-btn-top{background:var(--panel);border:1.5px solid var(--border2);border-radius:20px;color:#facc15;
-    font-size:0.82rem;font-weight:700;padding:6px 16px;cursor:pointer;
-    touch-action:manipulation;transition:background 0.1s;margin-bottom:6px;letter-spacing:0.5px;}
-  .pause-btn-top:active{background:var(--border2);}
   .kb-hint{font-size:0.6rem;color:var(--text3);letter-spacing:1px;}
   /* RECORDS / SETTINGS — shared container */
   .rec-title{font-size:1.3rem;font-weight:900;letter-spacing:2px;margin-bottom:10px;
@@ -1037,7 +1033,6 @@
       </div>
     </div>
   </div>
-  <button class="pause-btn-top" id="btnPause">⏸ Пауза</button>
   <div class="dpad">
     <div class="dpad-empty"></div>
     <button class="dpad-btn" id="btnUp">▲</button>
@@ -3028,7 +3023,6 @@ const goBest=document.getElementById('goBest');
 const comboHudEl=document.getElementById('comboHud'),comboValEl=document.getElementById('comboVal');
 const scoreEl=document.getElementById('score'),bestHud=document.getElementById('bestHud');
 const hudLvl=document.getElementById('hudLvl'),progBar=document.getElementById('progBar');
-const btnPause=document.getElementById('btnPause');
 bestHud.textContent=best;
 let path,dir,nextDir,food,obstacles,particles=[],floatTexts=[],skinTrailFx=[];
 let dirQueue=[]; // buffered turns (max 2) so quick successive inputs aren't dropped
@@ -3229,7 +3223,7 @@ function startGame(){
   spawnObstacles();spawnFood();
   gameOverlay.style.display='none';
   pauseMenu.style.display='none';
-  paused=false;btnPause.textContent='⏸';
+  paused=false;
   awaitingStart=true; // waiting for first swipe/arrow key — snake is stationary
   running=true;lastTs=0;
   playMusic();
@@ -3854,13 +3848,12 @@ document.addEventListener('keydown',e=>{if(e.code==='Backquote') dbgOpen();});
 function togglePause(){
   if(!running) return;
   if(paused){
-    paused=false;pauseMenu.style.display='none';btnPause.textContent='⏸';
+    paused=false;pauseMenu.style.display='none';
     lastTs=0;playMusic();animId=requestAnimationFrame(loop);
   } else {
     paused=true;
     pmInfo.textContent=T().pauseInfoFmt(currentLevel,score);
     pauseMenu.style.display='flex';
-    btnPause.textContent='▶';
     pauseMusic();
   }
 }
@@ -3982,8 +3975,6 @@ function bindDir(id,nd){
 }
 bindDir('btnUp',{x:0,y:-1});bindDir('btnDown',{x:0,y:1});
 bindDir('btnLeft',{x:-1,y:0});bindDir('btnRight',{x:1,y:0});
-btnPause.addEventListener('touchstart',e=>{e.preventDefault();togglePause();},{passive:false});
-btnPause.addEventListener('click',togglePause);
 // Prevent double-tap zoom on entire page
 let _lastTap=0;
 document.addEventListener('touchend',function(e){
