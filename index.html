@@ -2621,7 +2621,7 @@ function buildShopPreview_compat(){ buildShopPreview(); }
         if(refCode&&!localStorage.getItem('snake2_ref_done')){
           fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/process-referral',{
             method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({new_player_id:tgData.player_id,ref_code:refCode})
+            body:JSON.stringify({new_player_id:tgData.player_id,ref_code:refCode,new_token:getWriteToken()})
           }).then(r=>r.json()).then(d=>{
             if(d.ok){
               localStorage.setItem('snake2_ref_done','1');
@@ -3697,7 +3697,7 @@ function endGame(){
     const _pid=localStorage.getItem(S+'pid');
     if(_pid) fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/notify-beaten',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({winner_id:_pid,winner_nick:lbNickname||'Игрок',new_score:score})
+      body:JSON.stringify({winner_id:_pid,winner_nick:lbNickname||'Игрок',new_score:score,winner_token:getWriteToken()})
     }).catch(()=>{});
   }
   if(navigator.vibrate) navigator.vibrate([180]);
