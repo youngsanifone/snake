@@ -2469,12 +2469,13 @@ function buildShopPreview(){
 
   // ── COMMON SETUP (runs for ALL users — TG and non-TG) ─────────────
   // ── PRESENCE / HEARTBEAT ────────────────────────────────────────────
-  // Client ONLY ever reports is_online=true. Going offline is handled
-  // server-side: a pg_cron job flips is_online=false once last_seen is
-  // older than ~3 min. We never send is_online=false here, because the
-  // Telegram Mini App lifecycle (pagehide/visibilitychange/beforeunload)
-  // is unreliable — it fires on minimize but often NOT on close/swipe,
-  // which used to leave players stuck online or falsely offline.
+  // While visible: heartbeat every 30s reports is_online=true + fresh last_seen.
+  // On minimize/close: we report is_online=false IMMEDIATELY so the panel can
+  // drop the player within 1-2s (it has a Realtime UPDATE subscription on
+  // `players` + 10s polling). The Mini App lifecycle is not 100% reliable, so
+  // two safety nets remain server-side: (1) pg_cron flips is_online=false once
+  // last_seen is stale, and (2) the panel only counts is_online=true AND
+  // last_seen ≤ 75s. Thus even a missed event self-heals in ~80s.
   let _hbTimer=null;
   function startHeartbeat(){
     if(_hbTimer) return;          // already running
@@ -2487,16 +2488,17 @@ function buildShopPreview(){
   startHeartbeat();
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){
-      // Hidden/minimized — only pause the heartbeat. Do NOT mark offline;
-      // the cron job cleans up players who never come back.
+      // Hidden/minimized/closed → go offline instantly. Stop heartbeat first so
+      // a queued tick can't race the offline ping back to is_online=true.
       stopHeartbeat();
+      setOnline(false);
     }else{
-      // Foreground again — resume heartbeat and refresh presence immediately.
+      // Foreground again → resume heartbeat (its immediate tick re-marks online).
       startHeartbeat();
     }
   });
-  // Persist progress on exit only — this does NOT touch is_online.
-  window.addEventListener('pagehide',()=>{ if(profileLoaded) saveAll(); });
+  // Tab/app close → mark offline (keepalive lets it land) + persist progress.
+  window.addEventListener('pagehide',()=>{ setOnline(false); if(profileLoaded) saveAll(); });
 
   // ── TELEGRAM MINI APP AUTH ──────────────────────────────────────────
   const tg=window.Telegram?.WebApp;
@@ -2688,20 +2690,21 @@ function buildShopPreview(){
   const ANON_NAMES=['Аноним','Anonym','Anonymous'];
   const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
 
-  // Heartbeat — runs for ALL users (TG and non-TG), set up here in outer scope.
-  // Always reports is_online=true + fresh last_seen. Never sends false:
-  // offline is decided server-side by the stale-cleanup cron job.
+  // Presence writer — runs for ALL users (TG and non-TG), outer scope.
+  // setOnline(state) flips is_online + refreshes last_seen via save_profile.
+  // keepalive:true so the offline ping survives page unload (pagehide/close).
   // Does NOT write to player_events — avoids DB bloat.
-  function heartbeat(){
+  function setOnline(state){
     const pid=getPlayerId();
     if(!pid) return;
     fetch(SB_URL+'/rest/v1/rpc/save_profile',{
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body:JSON.stringify({p_player_id:pid, p_token:getWriteToken(), p_last_seen:new Date().toISOString(), p_is_online:true}),
+      body:JSON.stringify({p_player_id:pid, p_token:getWriteToken(), p_last_seen:new Date().toISOString(), p_is_online:state}),
       keepalive:true
     }).catch(()=>{});
   }
+  function heartbeat(){ setOnline(true); }
 
   try{
     const pid=getPlayerId();
