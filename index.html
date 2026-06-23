@@ -1104,6 +1104,8 @@
       <div class="sett-label" id="settLangLbl">🌐 Язык</div>
       <div class="diff-row">
         <button class="diff-btn lang-btn" data-lang="ru">🇷🇺 RU</button>
+        <button class="diff-btn lang-btn" data-lang="uk">🇺🇦 UK</button>
+        <button class="diff-btn lang-btn" data-lang="pl">🇵🇱 PL</button>
         <button class="diff-btn lang-btn" data-lang="sk">🇸🇰 SK</button>
         <button class="diff-btn lang-btn" data-lang="en">🇬🇧 EN</button>
       </div>
@@ -1414,6 +1416,184 @@ const TRANSLATIONS={
       (n)=>`Eat ${n} golden food`,
       (n)=>`Pick up ${n===1?'1 bonus':`${n} bonuses`}`,
       (n)=>`Get combo ×${n}`,
+    ],
+  },
+  uk:{
+    appTitle:'Змійка',loading:'Завантаження...',anon:'Анонім',
+    welcSub:'Привіт! Введи своє ім\'я для таблиці рекордів 🌍',
+    welcPlaceholder:'Твій нік...',
+    welcBtn:'▶ &nbsp;ПОЇХАЛИ!',
+    menuStatBest:'Рекорд',menuStatLvl:'Макс. рів.',menuStatCoins:'🪙 Монет',
+    btnPlay:'▶ &nbsp;ГРАТИ',
+    navRecords:'Рекорди',navAch:'Ачівки',navQuests:'Квести',navShop:'Магазин',navSettings:'Налаштування',
+    shopTitle:'🪙 Магазин',
+    achTitle:'🏅 Досягнення',achNotifTitle:'Досягнення!',
+    modeTitle:'Вибір режиму',modeSub:'Як хочеш грати?',
+    modeClassicTitle:'Класика',modeClassicDesc:'Рівні, зростаюча швидкість, нескінченно',
+    modeTimeTitle:'Час',modeTimeDesc:'60 секунд — набери максимум очок',
+    modeSurvivalTitle:'Виживання',modeSurvivalDesc:'Максимум перешкод, постійна швидкість',
+    modeMirrorTitle:'Дзеркало',modeMirrorDesc:'Ліво = право, право = ліво. Спробуй!',
+    lvlLabel:'Рівень',hudScore:'Рахунок:',hudRecord:'Рекорд:',
+    pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продовжити',
+    pauseRestart:'↺ Почати рівень спочатку',pauseMenu:'⌂ Головне меню',
+    goShare:'📤 Поділитися',goMenu:'⌂ Головне меню',goFoodLbl:'Їжа',
+    questTitle:'📋 Квести',questBack:'← Назад',questReset:'Скидання опівночі',
+    questClaim:'Забрати',questClaimed:'✓ Отримано',questDone:'Квест виконано!',
+    settingsTitle:'⚙️ Налаштування',settingsNick:'👤 Нік',settingsDiff:'Складність',
+    diffEasy:'😌 Легка',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
+    settingsSound:'🔊 Звук',settingsChangeNick:'✏️ Змінити',
+    settingsMusic:'🎵 Музика',settingsSfx:'🔊 Звукові ефекти',
+    themeLight:'☀️ Світла',themeDark:'🌙 Темна',
+    settingsLang:'🌐 Мова',langBtn:'🇬🇧 EN',
+    soundOn:'увім',soundOff:'вим',
+    btnBack:'← Назад',
+    recTitle:'🏆 Рекорди',tabMy:'👤 Мої',tabOnline:'🌍 Онлайн',
+    recBest:'Найкращий рахунок',recLvl:'Макс. рівень',recGames:'Зіграно ігор',
+    lbLoading:'Завантаження...',lbEmpty:'Поки нікого — будь першим!',lbError:'Помилка завантаження 😞',lbSubmitError:'Не вдалося надіслати рахунок',lbSubmitOk:'✅ Рахунок надіслано!',
+    shopBack:'← Назад',achBack:'← Назад',achTabAll:'Усі',achTabUnlocked:'✅ Відкриті',achTabLocked:'🔒 Закриті',
+    shopEquipped:'Одягнено',shopEquip:'Одягнути',shopBought:'Куплено',
+    shopNotEnough:'Не вистачає монет',
+    tapToStart:'Стрілка / свайп — старт!',
+    nickTaken:(n)=>`Нік «${n}» вже зайнятий. Введи інший.`,
+    nickCooldown:'Змінювати нік можна раз на годину. Спробуй пізніше.',
+    nmTitle:'✏️ Змінити нік',nickModalPlaceholder:'Новий нік...',
+    nickCancel:'Скасувати',nickSave:'💾 Зберегти',
+    nickChecking:'⏳ Перевіряємо...',nickSaving:'💾 Зберігаємо...',
+    nickUpdatedFmt:(n)=>`✅ Нік оновлено: ${n}`,
+    achCounterFmt:(u,t)=>`${u}/${t} відкрито`,
+    achEmptyUnlocked:'Поки немає відкритих досягнень',
+    achEmptyLocked:'Усі досягнення вже відкриті!',
+    shopCoinsFmt:(n)=>`🪙 ${n} монет`,
+    shopLevelFmt:(n)=>`Рівень ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} монет`,
+    skinLvlFmt:(n)=>`Рів.${n}`,
+    levelUpSub:(n)=>`Рівень ${n}`,
+    unlockSkin:(e,name)=>`🔓 Розблоковано скін ${e} ${name}!`,
+    lvlGoalFmt:(n)=>`З\'їж ${n} їжі`,
+    hudModeSurvival:'💀 ВИЖИВАННЯ',hudModeTime:'⏱ ЧАС',hudModeLvl:(n)=>`Рів. ${n}`,
+    shieldHud:'ЩИТ',mirrorHud:'ДЗЕРК',
+    floatShield:'🛡 ЩИТ!',floatTurbo:'⚡ ТУРБО!',floatFreeze:'❄ СТОП!',floatBomb:'💣 БАБАХ!',floatBlock:'🛡 БЛОК!',
+    floatAllSkins:'🔓 УСІ СКІНИ!',
+    floatInvOn:'♾ НЕВРАЗЛИВІСТЬ УВІМ',floatInvOff:'♾ ВИМ',
+    floatBought:'🪙 Куплено!',
+    goMsgNewRecord:'🏆 Новий рекорд!',goMsgTimeUp:'⏱ Час вийшов!',
+    goMsgSurvived:'💀 Вижив!',goMsgGameOver:'💀 Кінець гри',
+    goModeLbl:{time:'⏱ Час',survival:'💀 Виживання',mirror:'🪞 Дзеркало'},
+    goModeLblClassic:(n)=>`Рівень: ${n}`,
+    goSubFmt:(score,mode)=>`Рахунок: ${score} · ${mode}`,
+    pauseInfoFmt:(lvl,score)=>`Рівень ${lvl} · Рахунок: ${score}`,
+    shareTitle:'🐍 Змійка',
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Набрав ${score} очок у Змійці (${mode})!\nНайкращий результат: ${best} 🏆\nПобий мій рекорд! 🐍`,
+    shareModes:{classic:(n)=>`рівень ${n}`,time:'режим Час',survival:'режим Виживання',mirror:'режим Дзеркало'},
+    shareCopied:'✓ Скопійовано!',shareError:'✗ Помилка',
+    globalPlayers:(n)=>`🌍 ${n.toLocaleString('uk')} ${n%10===1&&n%100!==11?'гравець':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'гравці':'гравців')}`,
+    globalGames:(n)=>`🎮 ${n.toLocaleString('uk')} ${n%10===1&&n%100!==11?'гра':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'ігри':'ігор')}`,
+    questResetFmt:(h,m)=>`🕐 Скидання через ${h}год ${m}хв`,
+    dbgFillBar:'⚡ Заповнити бар',dbgNextLvl:'⏭ Наст. рівень',
+    dbgShield:'🛡 Щит',dbgTurbo:'⚡ Турбо',dbgFreeze:'❄ Заморозка',
+    dbgBomb:'💣 Бомба',dbgGold:'⭐ Золото',dbgInv:'♾ Інв.',
+    dbgAllSkins:'🔓 Усі скіни',dbgAllAch:'🏅 Усі ачівки',dbgResetAll:'🗑 Скинути все',
+    kbHint:'↑↓←→ / WASD · SPACE — пауза',
+    skinNames:['Зелений','Синій','Червоний','Джунглі','Золотий','Сакура','Блискавка','Фіолетовий','Рожевий','Темний','Океан','Нічний','Вогонь','Діамант'],
+    achNames:['Перший укус','Десятка','Комбо-майстер','Золотошукач','Під захистом','Підривник','Спідстер','Заморозка','Рівень 5','Рівень 10','Той, що вижив','Чемпіон часу','Дзеркальник'],
+    achDescs:['З\'їж першу їжу','З\'їж 10 їжі за одну гру','Зроби комбо ×3 (5+ поспіль)','З\'їж золоту їжу','Підбери щит-предмет','Використай бомбу','Використай прискорення','Використай заморозку','Досягни 5-го рівня','Досягни 10-го рівня','Протримайся 30 сек у Виживанні','Набери 20+ очок за 60 сек','З\'їж 5 їжі в режимі Дзеркало'],
+    questTitles:['Ненажера','Бомбардир','Гравець','Скелелаз','Золотошукач','Колекціонер','Комбо'],
+    questMakes:[
+      (n)=>`З\'їж ${n} їжі за день`,
+      (n)=>`Набери ${n} очок за день`,
+      (n)=>`Зіграй ${n} ${n===1?'раз':(n>=2&&n<=4?'рази':'разів')}`,
+      (n)=>`Досягни рівня ${n}`,
+      (n)=>`З\'їж ${n} золотої їжі`,
+      (n)=>`Підбери ${n} ${n===1?'бонус':(n>=2&&n<=4?'бонуси':'бонусів')}`,
+      (n)=>`Набери комбо ×${n}`,
+    ],
+  },
+  pl:{
+    appTitle:'Wąż',loading:'Ładowanie...',anon:'Anonim',
+    welcSub:'Cześć! Wpisz swoje imię do rankingu 🌍',
+    welcPlaceholder:'Twój nick...',
+    welcBtn:'▶ &nbsp;GRAJ!',
+    menuStatBest:'Rekord',menuStatLvl:'Maks. poz.',menuStatCoins:'🪙 Monet',
+    btnPlay:'▶ &nbsp;GRAJ',
+    navRecords:'Rekordy',navAch:'Osiągnięcia',navQuests:'Zadania',navShop:'Sklep',navSettings:'Ustawienia',
+    shopTitle:'🪙 Sklep',
+    achTitle:'🏅 Osiągnięcia',achNotifTitle:'Osiągnięcie!',
+    modeTitle:'Wybór trybu',modeSub:'Jak chcesz grać?',
+    modeClassicTitle:'Klasyka',modeClassicDesc:'Poziomy, rosnąca prędkość, bez końca',
+    modeTimeTitle:'Czas',modeTimeDesc:'60 sekund — zdobądź jak najwięcej punktów',
+    modeSurvivalTitle:'Przetrwanie',modeSurvivalDesc:'Maksimum przeszkód, stała prędkość',
+    modeMirrorTitle:'Lustro',modeMirrorDesc:'Lewo = prawo, prawo = lewo. Spróbuj!',
+    lvlLabel:'Poziom',hudScore:'Wynik:',hudRecord:'Rekord:',
+    pauseTitle:'⏸ PAUZA',pauseResume:'▶ Wznów',
+    pauseRestart:'↺ Restart poziomu',pauseMenu:'⌂ Menu główne',
+    goShare:'📤 Udostępnij',goMenu:'⌂ Menu główne',goFoodLbl:'Jedzenie',
+    questTitle:'📋 Zadania',questBack:'← Wstecz',questReset:'Reset o północy',
+    questClaim:'Odbierz',questClaimed:'✓ Odebrano',questDone:'Zadanie ukończone!',
+    settingsTitle:'⚙️ Ustawienia',settingsNick:'👤 Nick',settingsDiff:'Trudność',
+    diffEasy:'😌 Łatwy',diffNormal:'😐 Normalny',diffHard:'😤 Hardcore',
+    settingsSound:'🔊 Dźwięk',settingsChangeNick:'✏️ Zmień',
+    settingsMusic:'🎵 Muzyka',settingsSfx:'🔊 Efekty dźwiękowe',
+    themeLight:'☀️ Jasny',themeDark:'🌙 Ciemny',
+    settingsLang:'🌐 Język',langBtn:'🇬🇧 EN',
+    soundOn:'wł',soundOff:'wył',
+    btnBack:'← Wstecz',
+    recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
+    recBest:'Najlepszy wynik',recLvl:'Maks. poziom',recGames:'Rozegrane gry',
+    lbLoading:'Ładowanie...',lbEmpty:'Jeszcze nikogo — bądź pierwszy!',lbError:'Błąd ładowania 😞',lbSubmitError:'Nie udało się wysłać wyniku',lbSubmitOk:'✅ Wynik wysłany!',
+    shopBack:'← Wstecz',achBack:'← Wstecz',achTabAll:'Wszystkie',achTabUnlocked:'✅ Odblokowane',achTabLocked:'🔒 Zablokowane',
+    shopEquipped:'Założony',shopEquip:'Załóż',shopBought:'Kupiono',
+    shopNotEnough:'Za mało monet',
+    tapToStart:'Strzałka / swipe — start!',
+    nickTaken:(n)=>`Nick „${n}" jest już zajęty. Wybierz inny.`,
+    nickCooldown:'Nick można zmieniać raz na godzinę. Spróbuj później.',
+    nmTitle:'✏️ Zmień nick',nickModalPlaceholder:'Nowy nick...',
+    nickCancel:'Anuluj',nickSave:'💾 Zapisz',
+    nickChecking:'⏳ Sprawdzamy...',nickSaving:'💾 Zapisujemy...',
+    nickUpdatedFmt:(n)=>`✅ Nick zmieniony: ${n}`,
+    achCounterFmt:(u,t)=>`${u}/${t} odblokowanych`,
+    achEmptyUnlocked:'Brak odblokowanych osiągnięć',
+    achEmptyLocked:'Wszystkie osiągnięcia odblokowane!',
+    shopCoinsFmt:(n)=>`🪙 ${n} monet`,
+    shopLevelFmt:(n)=>`Poziom ${n}`,shopCoinPriceFmt:(n)=>`🪙 ${n} monet`,
+    skinLvlFmt:(n)=>`Poz.${n}`,
+    levelUpSub:(n)=>`Poziom ${n}`,
+    unlockSkin:(e,name)=>`🔓 Odblokowano skin ${e} ${name}!`,
+    lvlGoalFmt:(n)=>`Zjedz ${n} jedzenia`,
+    hudModeSurvival:'💀 PRZETRWANIE',hudModeTime:'⏱ CZAS',hudModeLvl:(n)=>`Poz. ${n}`,
+    shieldHud:'TARCZA',mirrorHud:'LUSTRO',
+    floatShield:'🛡 TARCZA!',floatTurbo:'⚡ TURBO!',floatFreeze:'❄ STOP!',floatBomb:'💣 BUM!',floatBlock:'🛡 BLOK!',
+    floatAllSkins:'🔓 WSZYSTKIE SKINY!',
+    floatInvOn:'♾ NIEŚMIERTELNOŚĆ WŁ',floatInvOff:'♾ WYŁ',
+    floatBought:'🪙 Kupiono!',
+    goMsgNewRecord:'🏆 Nowy rekord!',goMsgTimeUp:'⏱ Czas minął!',
+    goMsgSurvived:'💀 Przetrwałeś!',goMsgGameOver:'💀 Koniec gry',
+    goModeLbl:{time:'⏱ Czas',survival:'💀 Przetrwanie',mirror:'🪞 Lustro'},
+    goModeLblClassic:(n)=>`Poziom: ${n}`,
+    goSubFmt:(score,mode)=>`Wynik: ${score} · ${mode}`,
+    pauseInfoFmt:(lvl,score)=>`Poziom ${lvl} · Wynik: ${score}`,
+    shareTitle:'🐍 Wąż',
+    shareFmt:(emoji,score,mode,best)=>`${emoji} Zdobyłem ${score} punktów w Wężu (${mode})!\nNajlepszy wynik: ${best} 🏆\nPobij mój rekord! 🐍`,
+    shareModes:{classic:(n)=>`poziom ${n}`,time:'tryb Czas',survival:'tryb Przetrwanie',mirror:'tryb Lustro'},
+    shareCopied:'✓ Skopiowano!',shareError:'✗ Błąd',
+    globalPlayers:(n)=>`🌍 ${n.toLocaleString('pl')} ${n===1?'gracz':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'gracze':'graczy')}`,
+    globalGames:(n)=>`🎮 ${n.toLocaleString('pl')} ${n===1?'gra':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'gry':'gier')}`,
+    questResetFmt:(h,m)=>`🕐 Reset za ${h}g ${m}m`,
+    dbgFillBar:'⚡ Wypełnij pasek',dbgNextLvl:'⏭ Nast. poziom',
+    dbgShield:'🛡 Tarcza',dbgTurbo:'⚡ Turbo',dbgFreeze:'❄ Mróz',
+    dbgBomb:'💣 Bomba',dbgGold:'⭐ Złoto',dbgInv:'♾ Niez.',
+    dbgAllSkins:'🔓 Wszystkie skiny',dbgAllAch:'🏅 Wszystkie osiągn.',dbgResetAll:'🗑 Zresetuj wszystko',
+    kbHint:'↑↓←→ / WASD · SPACE — pauza',
+    skinNames:['Zielony','Niebieski','Czerwony','Dżungla','Złoty','Sakura','Błyskawica','Fioletowy','Różowy','Ciemny','Ocean','Nocny','Ogień','Diament'],
+    achNames:['Pierwszy kęs','Dziesiątka','Mistrz combo','Poszukiwacz złota','Pod ochroną','Burzyciel','Szybki','Mrożenie','Poziom 5','Poziom 10','Ocalały','Mistrz czasu','Lustrzany'],
+    achDescs:['Zjedz pierwsze jedzenie','Zjedz 10 jedzenia w jednej grze','Zrób combo ×3 (5+ z rzędu)','Zjedz złote jedzenie','Podnieś tarczę','Użyj bomby','Użyj przyspieszenia','Użyj mrożenia','Osiągnij poziom 5','Osiągnij poziom 10','Przetrwaj 30 sek w Przetrwaniu','Zdobądź 20+ pkt w 60 sek','Zjedz 5 jedzenia w trybie Lustro'],
+    questTitles:['Żarłok','Strzelec','Gracz','Wspinacz','Poszukiwacz złota','Kolekcjoner','Combo'],
+    questMakes:[
+      (n)=>`Zjedz ${n} jedzenia dziś`,
+      (n)=>`Zdobądź ${n} punktów dziś`,
+      (n)=>`Zagraj ${n} ${n===1?'raz':'razy'}`,
+      (n)=>`Osiągnij poziom ${n}`,
+      (n)=>`Zjedz ${n} złotego jedzenia`,
+      (n)=>`Zbierz ${n} ${n===1?'bonus':(n<=4?'bonusy':'bonusów')}`,
+      (n)=>`Zdobądź combo ×${n}`,
     ],
   }
 };
@@ -2462,7 +2642,7 @@ function buildShopPreview(){
     loading.style.display='none';
     applyLocalCache(); applyTheme(); applyLang(); refreshMenuUI();
     const welcInp2=document.getElementById('welcInput');
-    const anon2=!lbNickname||['Аноним','Anonym','Anonymous'].includes(lbNickname);
+    const anon2=!lbNickname||['Аноним','Anonym','Anonymous','Анонім','Anonim'].includes(lbNickname);
     showScreen(anon2?'welcomeScreen':'menuScreen');
     if(anon2) setTimeout(()=>welcInp2?.focus(),300);
   },13000);
@@ -2590,7 +2770,7 @@ function buildShopPreview(){
         if(loading.style.display==='none'){
           // Safety timeout already fired — user sees welcomeScreen or menuScreen
           // If we got a valid non-anon nick, navigate to menu now
-          const isAnon=!lbNickname||['Аноним','Anonym','Anonymous','Player'].includes(lbNickname)||lbNickname.startsWith('Игрок');
+          const isAnon=!lbNickname||['Аноним','Anonym','Anonymous','Player','Анонім','Anonim'].includes(lbNickname)||lbNickname.startsWith('Игрок');
           if(!isAnon){
             try{ tg.ready(); }catch(_){}
             showScreen('menuScreen');
@@ -2655,7 +2835,7 @@ function buildShopPreview(){
     // Profile "restore by nick" was removed on purpose — under the write-token
     // model it would let anyone adopt another player's unclaimed profile.
     // Telegram users restore securely via telegram-auth (bound to telegram_id).
-    const anonNames=['Аноним','Anonym','Anonymous'];
+    const anonNames=['Аноним','Anonym','Anonymous','Анонім','Anonim'];
     if(!anonNames.includes(name)){
       try{
         const r=await fetch(`${SB_URL}/rest/v1/rpc/check_nick_available`,{
@@ -2687,7 +2867,7 @@ function buildShopPreview(){
   welcBtn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(welcInp.value);},{passive:false});
   welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
   // Anonymous user from older versions — ask them to set a name (progress is preserved)
-  const ANON_NAMES=['Аноним','Anonym','Anonymous'];
+  const ANON_NAMES=['Аноним','Anonym','Anonymous','Анонім','Anonim'];
   const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
 
   // Presence writer — runs for ALL users (TG and non-TG), outer scope.
