@@ -3129,7 +3129,7 @@ function updateLangBtns(){
   });
 }
 document.querySelectorAll('.lang-btn').forEach(b=>{
-  const set=()=>{ currentLang=b.dataset.lang; localStorage.setItem(S+'Lang',currentLang); applyLang(); buildAchScreen(); buildQuestScreen(); buildShopScreen(); updateLangBtns(); };
+  const set=()=>{ currentLang=b.dataset.lang; localStorage.setItem(S+'Lang',currentLang); applyLang(); buildAchScreen(); buildQuestScreen(); buildShopScreen(); updateLangBtns(); if(typeof saveAll==='function') saveAll(); };
   b.addEventListener('click',set);
   b.addEventListener('touchstart',e=>{e.preventDefault();set();},{passive:false});
 });
