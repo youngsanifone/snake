@@ -2665,7 +2665,12 @@ function buildShopPreview(){
   function stopHeartbeat(){
     if(_hbTimer){ clearInterval(_hbTimer); _hbTimer=null; }
   }
-  startHeartbeat();
+  // Telegram users: defer presence until telegram-auth resolves the canonical
+  // player_id. Starting it now would write under a throwaway anonymous id and
+  // spawn a duplicate "Аноним" row (and pre-claim localStorage pid, which broke
+  // the CloudStorage identity fallback). Web users have no auth step → start now.
+  const isTG = !!(window.Telegram?.WebApp?.initData);
+  if(!isTG) startHeartbeat();
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){
       // Hidden/minimized/closed → go offline instantly. Stop heartbeat first so
@@ -2710,8 +2715,10 @@ function buildShopPreview(){
         }
       });
     }catch(_){}
-    try{
-      // 10s timeout on telegram-auth — cross-device sync is critical, give it more time
+    // Retry auth a few times — a transient failure used to drop the user onto a
+    // throwaway anonymous player_id (duplicate "Аноним" rows + lost progress).
+    for(let _attempt=0; _attempt<3; _attempt++){
+     try{
       const _tgAc=new AbortController();
       const _tgAt=setTimeout(()=>_tgAc.abort(),10000);
       const tgResp=await fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/telegram-auth',{
@@ -2780,7 +2787,7 @@ function buildShopPreview(){
           try{ tg.ready(); }catch(_){}
           showScreen('menuScreen');
         }
-        heartbeat(); // extra call right after auth to update last_seen immediately
+        startHeartbeat(); // start presence now — canonical TG player_id is set
         // ── Process referral if this player was invited ──
         const refCode=localStorage.getItem('snake2_ref');
         if(refCode&&!localStorage.getItem('snake2_ref_done')){
@@ -2796,18 +2803,22 @@ function buildShopPreview(){
         return;
       } else {
         console.warn('[TG] auth rejected:',tgData.error||'unknown');
+        break; // a server rejection (not a network blip) won't fix on retry
       }
-    }catch(e){ console.warn('[TG] auth failed:',e); }
-    // ── Cloud Storage fallback: restore player_id if auth failed ──
+     }catch(e){ console.warn('[TG] auth attempt',_attempt+1,'failed:',e); await new Promise(r=>setTimeout(r,800*(_attempt+1))); }
+    }
+    // Auth did not succeed — restore the canonical player_id from Telegram
+    // CloudStorage so a returning TG user keeps their identity instead of
+    // becoming a fresh anonymous player. (localStorage pid is still empty here
+    // because presence was deferred, so this restore now actually applies.)
     if(tg.CloudStorage){
-      tg.CloudStorage.getItem('pid',(err,val)=>{
-        if(!err&&val&&!localStorage.getItem(S+'pid')){
-          localStorage.setItem(S+'pid',val);
-          setCookie(S+'pid',val);
-        }
+      await new Promise(res=>{
+        try{ tg.CloudStorage.getItem('pid',(err,val)=>{ if(!err&&val&&!localStorage.getItem(S+'pid')){ localStorage.setItem(S+'pid',val); setCookie(S+'pid',val); } res(); }); }
+        catch(_){ res(); }
       });
     }
-    tg.ready();
+    startHeartbeat(); // pid finalized (canonical if restored) — safe to start presence
+    try{ tg.ready(); }catch(_){}
   }
   // ── END TELEGRAM AUTH ──────────────────────────────────────────────
 
