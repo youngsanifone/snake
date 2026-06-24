@@ -2839,48 +2839,76 @@ function buildShopPreview(){
     cloudEnabled=true;
   }
 
-  // ── TELEGRAM LOGIN WIDGET (web only, outside the Mini App) ───────────
-  // Lets web visitors authenticate with Telegram so every saved account is a
-  // verified identity — no anonymous DB rows. Requires the bot domain to be set
-  // in @BotFather (/setdomain → youngsanifone.github.io) for the widget to work.
+  // ── TELEGRAM LOGIN (web only) — OAuth2 / OpenID Connect ─────────────
+  // Web visitors sign in with their Telegram account via Telegram's OAuth2 flow
+  // (Authorization Code + PKCE). The code is exchanged for an id_token server-
+  // side (telegram-auth), so every saved account is verified — no anon rows.
+  const OIDC_CLIENT_ID='8898886159';
+  const OIDC_REDIRECT='https://youngsanifone.github.io/snake/';
+  const _b64url=(buf)=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  async function startOidcLogin(){
+    try{
+      const verifier=_b64url(crypto.getRandomValues(new Uint8Array(48)));
+      const challenge=_b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier)));
+      const state=_b64url(crypto.getRandomValues(new Uint8Array(16)));
+      sessionStorage.setItem('oidc_verifier',verifier);
+      sessionStorage.setItem('oidc_state',state);
+      const u=new URL('https://oauth.telegram.org/auth');
+      u.searchParams.set('client_id',OIDC_CLIENT_ID);
+      u.searchParams.set('redirect_uri',OIDC_REDIRECT);
+      u.searchParams.set('response_type','code');
+      u.searchParams.set('scope','openid profile');
+      u.searchParams.set('state',state);
+      u.searchParams.set('code_challenge',challenge);
+      u.searchParams.set('code_challenge_method','S256');
+      location.href=u.toString();
+    }catch(e){ alert('Login init error'); }
+  }
+  async function activateSession(d){
+    cloudEnabled=true;
+    localStorage.setItem(S+'pid',d.player_id); setCookie(S+'pid',d.player_id);
+    if(d.write_token){ localStorage.setItem(S+'wtok',d.write_token); setCookie(S+'wtok',d.write_token); }
+    localStorage.setItem(S+'tgLinked','1');
+    if(d.profile){ applyProfile(d.profile); fetchModeBests(d.player_id); }
+    else { lbNickname=(d.telegram_user&&(d.telegram_user.username||d.telegram_user.first_name))||'Player'; localStorage.setItem(S+'Nick',lbNickname); profileLoaded=true; upsertProfile(); }
+    applyTheme(); applyLang(); refreshMenuUI(); startHeartbeat(); showScreen('menuScreen');
+  }
+  async function handleOidcRedirect(){
+    const sp=new URLSearchParams(location.search);
+    const code=sp.get('code');
+    if(!code) return false;
+    const st=sp.get('state');
+    history.replaceState(null,'',location.pathname); // strip code/state from URL
+    if(!st || st!==sessionStorage.getItem('oidc_state')) return false;
+    try{
+      const r=await fetch(SB_URL+'/functions/v1/telegram-auth',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({oauth_code:code, code_verifier:sessionStorage.getItem('oidc_verifier'), redirect_uri:OIDC_REDIRECT, write_token:getWriteToken()})
+      });
+      const d=await r.json();
+      sessionStorage.removeItem('oidc_state'); sessionStorage.removeItem('oidc_verifier');
+      if(d&&d.ok&&d.player_id){ loading.style.display='none'; await activateSession(d); return true; }
+      alert('Telegram login failed: '+((d&&d.error)||'unknown'));
+    }catch(e){ alert('Telegram login error'); }
+    return false;
+  }
   function injectTgLogin(){
     const wrap=document.getElementById('tgLoginWrap');
     if(!wrap || wrap.dataset.done) return;
     wrap.dataset.done='1';
-    // Telegram deprecated the classic Login Widget (oauth.telegram.org/auth).
-    // For a Telegram-first game the robust path is to open the Mini App, where
-    // initData auth already gives a verified account (no anonymous rows).
     const labels={ru:'✈️ Войти через Telegram',en:'✈️ Sign in with Telegram',uk:'✈️ Увійти через Telegram',pl:'✈️ Zaloguj przez Telegram',sk:'✈️ Prihlásiť cez Telegram'};
-    const a=document.createElement('a');
-    a.href='https://t.me/snakegameone_bot/snake';
-    a.target='_blank'; a.rel='noopener';
-    a.textContent=labels[currentLang]||labels.en;
-    a.style.cssText='display:inline-block;background:#229ED9;color:#fff;font-weight:700;padding:11px 20px;border-radius:11px;text-decoration:none;font-size:0.92rem;box-shadow:0 4px 16px rgba(34,158,217,.38)';
-    wrap.appendChild(a);
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.textContent=labels[currentLang]||labels.en;
+    btn.style.cssText='display:inline-block;background:#229ED9;color:#fff;font-weight:700;padding:11px 20px;border-radius:11px;border:none;cursor:pointer;font-size:0.92rem;box-shadow:0 4px 16px rgba(34,158,217,.38)';
+    btn.onclick=startOidcLogin;
+    wrap.appendChild(btn);
   }
-  window.onTelegramAuth=async function(user){
-    try{
-      const r=await fetch(SB_URL+'/functions/v1/telegram-auth',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({login_data:user, write_token:getWriteToken()})
-      });
-      const d=await r.json();
-      if(d&&d.ok&&d.player_id){
-        cloudEnabled=true;
-        localStorage.setItem(S+'pid',d.player_id); setCookie(S+'pid',d.player_id);
-        if(d.write_token){ localStorage.setItem(S+'wtok',d.write_token); setCookie(S+'wtok',d.write_token); }
-        localStorage.setItem(S+'tgLinked','1');
-        if(d.profile){ applyProfile(d.profile); fetchModeBests(d.player_id); }
-        else { lbNickname=user.username||user.first_name||'Player'; localStorage.setItem(S+'Nick',lbNickname); profileLoaded=true; upsertProfile(); }
-        applyTheme(); applyLang(); refreshMenuUI();
-        startHeartbeat();
-        showScreen('menuScreen');
-      } else {
-        alert('Telegram login failed: '+((d&&d.error)||'unknown'));
-      }
-    }catch(e){ alert('Telegram login error'); }
-  };
-  if(!isTG && !cloudEnabled) injectTgLogin();
+  // Web: handle the OAuth redirect (returning with ?code) before the guest flow.
+  if(!isTG){
+    if(await handleOidcRedirect()) return;
+    if(!cloudEnabled) injectTgLogin();
+  }
 
   // Attach welcome screen event handlers here (needed in both code paths)
   const welcInp=document.getElementById('welcInput');
