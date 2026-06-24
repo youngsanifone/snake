@@ -804,6 +804,7 @@
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
     <div class="menu-title">Змейка</div>
     <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
+    <div id="tgLoginWrap" style="display:flex;justify-content:center;margin:4px 0 2px;min-height:1px"></div>
     <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
   </div>
@@ -1822,6 +1823,8 @@ function saveAll(){
 }
 // Build profile object and send to Supabase
 function upsertProfile(){
+  // Guests (not authenticated) play locally only — never write to the cloud.
+  if(!cloudEnabled) return;
   // Guard: don't overwrite cloud with zeros until profile is loaded/created
   if(!profileLoaded) return;
   const pid=getPlayerId();
@@ -2152,6 +2155,10 @@ loadQuests();
 // ── LEADERBOARD ────────────────────────────────────────────────────
 let lbNickname = ''; // populated from Supabase in initGame()
 let profileLoaded = false; // true after profile is loaded/created — don't touch the cloud before that
+// Cloud writes (presence, profile, scores) are allowed ONLY for authenticated
+// players: Telegram Mini App, Telegram Login on web, or a returning logged-in
+// user. Guests play locally and never create anonymous DB rows.
+let cloudEnabled = false;
 let lbMode = 'all'; // 'all' | 'classic' | 'time' | 'survival' | 'mirror'
 
 function setLbMode(mode){
@@ -2213,6 +2220,8 @@ function showToast(msg,color='#4ade80',duration=3000){
 }
 
 async function submitToLeaderboard(name,score,level,mode){
+  // Guests aren't on the global leaderboard — they must log in with Telegram.
+  if(!cloudEnabled) return false;
   try{
     // Token-gated; server derives the displayed name from the player's stored
     // nick (no client-supplied names → no leaderboard name injection).
@@ -2730,6 +2739,7 @@ function buildShopPreview(){
       clearTimeout(_tgAt);
       const tgData=await tgResp.json();
       if(tgData.ok&&tgData.player_id){
+        cloudEnabled=true; // Telegram-verified → cloud writes allowed
         // ── Save canonical player_id (same across ALL devices with same TG account) ──
         localStorage.setItem(S+'pid',tgData.player_id);
         setCookie(S+'pid',tgData.player_id);
@@ -2822,6 +2832,54 @@ function buildShopPreview(){
   }
   // ── END TELEGRAM AUTH ──────────────────────────────────────────────
 
+  // Returning web user who logged in with Telegram before → keep cloud enabled
+  // (no need to re-login every visit; their pid/token are canonical).
+  if(!cloudEnabled && localStorage.getItem(S+'tgLinked')==='1'
+     && localStorage.getItem(S+'pid') && localStorage.getItem(S+'wtok')){
+    cloudEnabled=true;
+  }
+
+  // ── TELEGRAM LOGIN WIDGET (web only, outside the Mini App) ───────────
+  // Lets web visitors authenticate with Telegram so every saved account is a
+  // verified identity — no anonymous DB rows. Requires the bot domain to be set
+  // in @BotFather (/setdomain → youngsanifone.github.io) for the widget to work.
+  function injectTgLogin(){
+    const wrap=document.getElementById('tgLoginWrap');
+    if(!wrap || wrap.dataset.done) return;
+    wrap.dataset.done='1';
+    const s=document.createElement('script');
+    s.async=true; s.src='https://telegram.org/js/telegram-widget.js?22';
+    s.setAttribute('data-telegram-login','snakegameone_bot');
+    s.setAttribute('data-size','large');
+    s.setAttribute('data-userpic','false');
+    s.setAttribute('data-request-access','write');
+    s.setAttribute('data-onauth','onTelegramAuth(user)');
+    wrap.appendChild(s);
+  }
+  window.onTelegramAuth=async function(user){
+    try{
+      const r=await fetch(SB_URL+'/functions/v1/telegram-auth',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({login_data:user, write_token:getWriteToken()})
+      });
+      const d=await r.json();
+      if(d&&d.ok&&d.player_id){
+        cloudEnabled=true;
+        localStorage.setItem(S+'pid',d.player_id); setCookie(S+'pid',d.player_id);
+        if(d.write_token){ localStorage.setItem(S+'wtok',d.write_token); setCookie(S+'wtok',d.write_token); }
+        localStorage.setItem(S+'tgLinked','1');
+        if(d.profile){ applyProfile(d.profile); fetchModeBests(d.player_id); }
+        else { lbNickname=user.username||user.first_name||'Player'; localStorage.setItem(S+'Nick',lbNickname); profileLoaded=true; upsertProfile(); }
+        applyTheme(); applyLang(); refreshMenuUI();
+        startHeartbeat();
+        showScreen('menuScreen');
+      } else {
+        alert('Telegram login failed: '+((d&&d.error)||'unknown'));
+      }
+    }catch(e){ alert('Telegram login error'); }
+  };
+  if(!isTG && !cloudEnabled) injectTgLogin();
+
   // Attach welcome screen event handlers here (needed in both code paths)
   const welcInp=document.getElementById('welcInput');
   const welcBtn=document.getElementById('welcBtn');
@@ -2842,6 +2900,14 @@ function buildShopPreview(){
     }
     lbNickname=name;
     localStorage.setItem(S+'Nick',name);
+    // Guest (not logged in): play locally only — no cloud write, no uniqueness
+    // check, no leaderboard. They can log in with Telegram anytime to compete.
+    if(!cloudEnabled){
+      profileLoaded=true;
+      showScreen('menuScreen');
+      refreshMenuUI();
+      return;
+    }
     // Nick uniqueness: reject a nick already used by a different player.
     // Profile "restore by nick" was removed on purpose — under the write-token
     // model it would let anyone adopt another player's unclaimed profile.
@@ -2886,6 +2952,7 @@ function buildShopPreview(){
   // keepalive:true so the offline ping survives page unload (pagehide/close).
   // Does NOT write to player_events — avoids DB bloat.
   function setOnline(state){
+    if(!cloudEnabled) return;   // guests: no presence writes
     const pid=getPlayerId();
     if(!pid) return;
     fetch(SB_URL+'/rest/v1/rpc/save_profile',{
@@ -4106,7 +4173,7 @@ goMenu.addEventListener('touchstart',e=>{e.preventDefault();goMenu.click();},{pa
 // Only on pagehide (not visibilitychange — that fires on simple tab-switch mid-game)
 let _exitSubmitted=false;
 function _submitOnExit(){
-  if(!running||score<=0||_exitSubmitted) return;
+  if(!cloudEnabled||!running||score<=0||_exitSubmitted) return;
   _exitSubmitted=true;
   fetch(`${SB_URL}/rest/v1/rpc/submit_score`,{
     method:'POST',
