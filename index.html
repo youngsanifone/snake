@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Змейка">
+<meta name="apple-mobile-web-app-title" content="Snake">
 <meta name="theme-color" content="#0a0a0f">
-<title>Змейка</title>
+<title>Snake</title>
 <!-- Telegram Mini App SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <!-- Google Analytics -->
@@ -782,38 +782,38 @@
 <!-- NICK CHANGE MODAL -->
 <div id="nickModal">
   <div id="nickModalBox">
-    <div class="nm-title" id="nmTitle">✏️ Сменить ник</div>
-    <input id="nickInput" type="text" maxlength="16" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Новый ник...">
+    <div class="nm-title" id="nmTitle">✏️ Change nickname</div>
+    <input id="nickInput" type="text" maxlength="16" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="New nickname...">
     <div class="nm-error" id="nickError"></div>
     <div class="nm-status" id="nickStatus"></div>
     <div class="nm-btns">
-      <button class="nm-btn cancel" id="nickCancelBtn">Отмена</button>
-      <button class="nm-btn save" id="nickSaveBtn">💾 Сохранить</button>
+      <button class="nm-btn cancel" id="nickCancelBtn">Cancel</button>
+      <button class="nm-btn save" id="nickSaveBtn">💾 Save</button>
     </div>
   </div>
 </div>
 <!-- LOADING SCREEN -->
 <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-size:3rem;animation:wiggle 0.6s ease-in-out infinite;">🐍</div>
-  <div style="font-size:0.8rem;color:var(--text3);">Загрузка...</div>
+  <div style="font-size:0.8rem;color:var(--text3);">Loading...</div>
 </div>
 <div id="unlockNotif"></div>
 <!-- WELCOME SCREEN (first launch) -->
 <div class="screen" id="welcomeScreen">
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
-    <div class="menu-title">Змейка</div>
-    <div class="welc-sub">Привет! Введи своё имя для таблицы рекордов 🌍</div>
+    <div class="menu-title">Snake</div>
+    <div class="welc-sub">Hello! Enter your name for the leaderboard 🌍</div>
     <div id="tgLoginWrap" style="display:flex;justify-content:center;margin:4px 0 2px;min-height:1px"></div>
-    <input id="welcInput" type="text" maxlength="16" placeholder="Твой ник..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <button id="welcBtn">▶ &nbsp;ПОЕХАЛИ!</button>
+    <input id="welcInput" type="text" maxlength="16" placeholder="Your nickname..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="welcBtn">▶ &nbsp;PLAY!</button>
   </div>
 </div>
 <!-- MENU -->
 <div class="screen" id="menuScreen">
   <canvas id="menuBg"></canvas>
   <div class="menu-snake">🐍</div>
-  <div class="menu-title">Змейка</div>
+  <div class="menu-title">Snake</div>
   <!-- Statový panel -->
   <div class="menu-stats-bar">
     <div class="msb-item">
@@ -823,17 +823,17 @@
         <span class="mb-cell"><span class="mb-mode">⏱</span><span id="mBestT">0</span></span>
         <span class="mb-cell"><span class="mb-mode">🪞</span><span id="mBestM">0</span></span>
       </div>
-      <div class="msb-lbl" id="msbRecLbl">Рекорды</div>
+      <div class="msb-lbl" id="msbRecLbl">Records</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" id="menuLevel">1</div>
-      <div class="msb-lbl">Ур. макс</div>
+      <div class="msb-lbl">Max Lvl</div>
     </div>
     <div class="msb-sep"></div>
     <div class="msb-item">
       <div class="msb-val" style="color:#facc15;" id="menuCoins">0</div>
-      <div class="msb-lbl">🪙 Монет</div>
+      <div class="msb-lbl">🪙 Coins</div>
     </div>
   </div>
   <!-- Global statistics -->
@@ -843,193 +843,193 @@
     <span id="gStatGames">🎮 ...</span>
   </div>
   <!-- Main button -->
-  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;ИГРАТЬ</button>
+  <button class="menu-play-btn" id="btnPlay">▶ &nbsp;PLAY</button>
   <!-- Horizontal navigation bar -->
   <div class="menu-nav-bar">
     <button class="mnav-btn clr-yellow" id="btnRecords">
       <div class="mnav-icon">🏆</div>
-      <div class="mnav-label">Рекорды</div>
+      <div class="mnav-label">Records</div>
     </button>
     <button class="mnav-btn clr-purple" id="btnAch">
       <div class="mnav-icon">🏅</div>
-      <div class="mnav-label">Ачивки</div>
+      <div class="mnav-label">Achiev.</div>
     </button>
     <button class="mnav-btn clr-blue" id="btnQuests">
       <div class="mnav-icon">📋</div>
-      <div class="mnav-label">Квесты</div>
+      <div class="mnav-label">Quests</div>
     </button>
     <button class="mnav-btn clr-orange" id="btnShop">
       <div class="mnav-icon">🪙</div>
-      <div class="mnav-label">Магазин</div>
+      <div class="mnav-label">Shop</div>
     </button>
     <button class="mnav-btn" id="btnSettings">
       <div class="mnav-icon">⚙️</div>
-      <div class="mnav-label">Настройки</div>
+      <div class="mnav-label">Settings</div>
     </button>
   </div>
 </div>
 <!-- SHOP -->
 <div class="screen" id="shopScreen">
-  <div class="rec-title">🛒 Магазин</div>
-  <div class="shop-coins" id="shopCoins">🪙 0 монет</div>
+  <div class="rec-title">🪙 Shop</div>
+  <div class="shop-coins" id="shopCoins">🪙 0 coins</div>
   <canvas id="skinPreviewCanvas" width="300" height="180"></canvas>
   <div class="shop-skin-name" id="shopSkinName">—</div>
   <div class="shop-skin-status" id="shopSkinStatus"></div>
   <div class="skin-dot-row" id="shopSkinRow"></div>
-  <button class="shop-action-btn equipped" id="shopActionBtn" disabled>✓ Надет</button>
-  <button class="shop-back" id="shopBack">← Назад</button>
+  <button class="shop-action-btn equipped" id="shopActionBtn" disabled>✓ Equipped</button>
+  <button class="shop-back" id="shopBack">← Back</button>
   <div class="shop-preview-card" id="shopPreviewCard" style="display:none;"></div>
 </div>
 <!-- ACHIEVEMENT NOTIFICATION -->
 <div id="achNotif">
   <div class="an-icon" id="anIcon">🏅</div>
   <div class="an-text">
-    <div class="an-title" id="anTitle">Достижение!</div>
+    <div class="an-title" id="anTitle">Achievement!</div>
     <div class="an-sub" id="anSub">Popis</div>
   </div>
 </div>
 <!-- ACHIEVEMENTS SCREEN -->
 <div class="screen" id="achScreen">
-  <div class="rec-title" id="achHeaderTitle">🏅 Достижения</div>
-  <div class="ach-cnt" id="achCounter">0/0 открыто</div>
+  <div class="rec-title" id="achHeaderTitle">🏅 Achievements</div>
+  <div class="ach-cnt" id="achCounter">0/0 unlocked</div>
   <div class="ach-tabs" id="achTabs">
-    <button class="ach-tab active" id="achTabAll" data-filter="all">Все</button>
-    <button class="ach-tab" id="achTabUnlocked" data-filter="unlocked">✅ Открытые</button>
-    <button class="ach-tab" id="achTabLocked" data-filter="locked">🔒 Закрытые</button>
+    <button class="ach-tab active" id="achTabAll" data-filter="all">All</button>
+    <button class="ach-tab" id="achTabUnlocked" data-filter="unlocked">✅ Unlocked</button>
+    <button class="ach-tab" id="achTabLocked" data-filter="locked">🔒 Locked</button>
   </div>
   <div class="ach-scroll" id="achGrid"></div>
-  <button class="ach-back" id="achBack">← Назад</button>
+  <button class="ach-back" id="achBack">← Back</button>
 </div>
 <!-- MODE SELECTION -->
 <div class="screen" id="modeScreen">
-  <div class="mode-title">Выбор режима</div>
-  <div class="mode-sub">Как хочешь играть?</div>
+  <div class="mode-title">Select Mode</div>
+  <div class="mode-sub">How do you want to play?</div>
   <div class="mode-cards">
     <button class="mode-card" id="modeClassic">
       <div class="mode-card-icon">🐍</div>
       <div>
-        <div class="mode-card-title">Классика</div>
-        <div class="mode-card-desc">Уровни, растущая скорость, бесконечно</div>
+        <div class="mode-card-title">Classic</div>
+        <div class="mode-card-desc">Levels, increasing speed, endless</div>
       </div>
     </button>
     <button class="mode-card" id="modeTime">
       <div class="mode-card-icon">⏱</div>
       <div>
-        <div class="mode-card-title">Время</div>
-        <div class="mode-card-desc">60 секунд — набери максимум очков</div>
+        <div class="mode-card-title">Time</div>
+        <div class="mode-card-desc">60 seconds — score as many points as possible</div>
       </div>
     </button>
     <button class="mode-card" id="modeSurvival">
       <div class="mode-card-icon">💀</div>
       <div>
-        <div class="mode-card-title">Выживание</div>
-        <div class="mode-card-desc">Максимум препятствий, постоянная скорость</div>
+        <div class="mode-card-title">Survival</div>
+        <div class="mode-card-desc">Maximum obstacles, constant speed</div>
       </div>
     </button>
     <button class="mode-card" id="modeMirror">
       <div class="mode-card-icon">🪞</div>
       <div>
-        <div class="mode-card-title">Зеркало</div>
-        <div class="mode-card-desc">Лево = право, право = лево. Попробуй!</div>
+        <div class="mode-card-title">Mirror</div>
+        <div class="mode-card-desc">Left = right, right = left. Try it!</div>
       </div>
     </button>
   </div>
-  <button class="mode-back" id="modeBack">← Назад</button>
+  <button class="mode-back" id="modeBack">← Back</button>
 </div>
 <!-- LEVEL SCREEN -->
 <div class="screen" id="levelScreen">
-  <div class="lvl-label">Уровень</div>
+  <div class="lvl-label">Level</div>
   <div class="lvl-num" id="lvlNum">1</div>
-  <div class="lvl-goal" id="lvlGoal">Съешь 5 еды</div>
+  <div class="lvl-goal" id="lvlGoal">Eat 5 food</div>
 </div>
 <!-- GAME -->
 <div class="screen" id="gameScreen">
   <div class="hud">
-    <div>Счёт: <span id="score">0</span></div>
+    <div>Score: <span id="score">0</span></div>
     <div id="comboHud">🔥 x<span id="comboVal">2</span></div>
-    <div class="lvl-badge" id="hudLvl">Ур. 1</div>
+    <div class="lvl-badge" id="hudLvl">Lvl 1</div>
     <div id="hudTimerWrap" style="display:none;"><span class="hud-timer" id="hudTimer">60</span></div>
-    <div>Рекорд: <span id="bestHud">0</span></div>
+    <div>Best: <span id="bestHud">0</span></div>
   </div>
   <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
   <div class="wrap">
     <canvas id="c" width="560" height="560"></canvas>
     <div id="pauseMenu">
-      <div class="pm-title">⏸ ПАУЗА</div>
+      <div class="pm-title">⏸ PAUSE</div>
       <div class="pm-info" id="pmInfo"></div>
-      <button class="pm-btn resume" id="pmResume">▶ Продолжить</button>
-      <button class="pm-btn secondary" id="pmRestart">↺ Начать уровень заново</button>
-      <button class="pm-btn secondary" id="pmMenu">⌂ Главное меню</button>
+      <button class="pm-btn resume" id="pmResume">▶ Resume</button>
+      <button class="pm-btn secondary" id="pmRestart">↺ Restart level</button>
+      <button class="pm-btn secondary" id="pmMenu">⌂ Main menu</button>
     </div>
     <div id="levelUpOverlay">
       <div class="lu-text">LEVEL UP!</div>
-      <div class="lu-sub" id="luSub">Уровень 2</div>
+      <div class="lu-sub" id="luSub">Level 2</div>
     </div>
     <button id="dbgTab" onclick="dbgOpen()" style="display:none;"></button>
     <div id="dbgBackdrop" onclick="dbgClose()"></div>
     <div id="debugPanel">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <div class="dbg-title">🛠 DEBUG</div>
-        <div class="dbg-stats" id="dbgStats">Ур.— · 🪙—</div>
+        <div class="dbg-stats" id="dbgStats">Lvl— · 🪙—</div>
         <button class="dbg-btn red" style="padding:3px 10px;font-size:0.9rem;margin-left:8px;flex-shrink:0;" onclick="dbgClose()">✕</button>
       </div>
       <div id="dbgGameWarn" style="display:none;font-size:0.65rem;color:#fb923c;text-align:center;padding:4px 8px;background:#431407;border-radius:6px;">
-        ⚠ Игра не запущена — бонусы и уровни сработают после старта
+        ⚠ Game not started — bonuses and levels apply after start
       </div>
-      <div class="dbg-section">— бонусы (в игре) —</div>
+      <div class="dbg-section">— bonuses (in game) —</div>
       <div class="dbg-grid3">
-        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Щит</button>
-        <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Турбо</button>
-        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Стоп</button>
-        <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Бомба</button>
-        <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Золото</button>
-        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Инв.</button>
+        <button class="dbg-btn" onclick="dbgBonus('shield')">🛡 Shield</button>
+        <button class="dbg-btn" onclick="dbgBonus('speed')">⚡ Turbo</button>
+        <button class="dbg-btn" onclick="dbgBonus('freeze')">❄ Stop</button>
+        <button class="dbg-btn" onclick="dbgBonus('bomb')">💣 Bomb</button>
+        <button class="dbg-btn yellow" onclick="dbgGoldFood()">⭐ Gold</button>
+        <button class="dbg-btn purple" id="dbgInvBtn" onclick="dbgToggleInv()">♾ Inv.</button>
       </div>
-      <div class="dbg-section">— уровень (в игре) —</div>
+      <div class="dbg-section">— level (in game) —</div>
       <div class="dbg-grid2">
-        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Заполнить бар</button>
-        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ След. уровень</button>
+        <button class="dbg-btn green" onclick="dbgFillBar()">⚡ Fill bar</button>
+        <button class="dbg-btn green" onclick="dbgNextLevel()">⏭ Next level</button>
       </div>
       <div class="dbg-grid5">
-        <button class="dbg-btn" onclick="dbgSetLevel(1)">Ур.1</button>
-        <button class="dbg-btn" onclick="dbgSetLevel(5)">Ур.5</button>
-        <button class="dbg-btn" onclick="dbgSetLevel(10)">Ур.10</button>
-        <button class="dbg-btn" onclick="dbgSetLevel(15)">Ур.15</button>
-        <button class="dbg-btn" onclick="dbgSetLevel(20)">Ур.20</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(1)">Lvl1</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(5)">Lvl5</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(10)">Lvl10</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(15)">Lvl15</button>
+        <button class="dbg-btn" onclick="dbgSetLevel(20)">Lvl20</button>
       </div>
-      <div class="dbg-section">— ресурсы (всегда) —</div>
+      <div class="dbg-section">— resources (always) —</div>
       <div class="dbg-grid2">
         <button class="dbg-btn yellow" onclick="dbgCoins(100)">🪙 +100</button>
         <button class="dbg-btn yellow" onclick="dbgCoins(500)">🪙 +500</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 Все скины</button>
-        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 Все ачивки</button>
-        <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Сбросить всё</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAll()">🔓 All skins</button>
+        <button class="dbg-btn green" onclick="dbgUnlockAllAch()">🏅 All achiev.</button>
+        <button class="dbg-btn red" onclick="dbgResetAll()" style="grid-column:span 2;">🗑 Reset all</button>
       </div>
     </div>
     <div id="gameOverlay">
       <canvas id="goConfettiCanvas"></canvas>
       <div id="goInner">
         <div class="go-msg" id="goMsg"></div>
-        <div class="go-new-record" id="goNewRecord">✦ НОВЫЙ РЕКОРД ✦</div>
+        <div class="go-new-record" id="goNewRecord">✦ NEW RECORD ✦</div>
         <div class="go-record-row">
           <div class="go-stat">
             <span class="go-stat-val" id="goScore">0</span>
-            <span class="go-stat-lbl" id="goScoreLbl">Очков</span>
+            <span class="go-stat-lbl" id="goScoreLbl">Score</span>
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goLevel">0</span>
-            <span class="go-stat-lbl" id="goLevelLbl">Еда</span>
+            <span class="go-stat-lbl" id="goLevelLbl">Food</span>
           </div>
           <div class="go-stat">
             <span class="go-stat-val" id="goBest">0</span>
-            <span class="go-stat-lbl" id="goBestLbl">Рекорд</span>
+            <span class="go-stat-lbl" id="goBestLbl">Best</span>
           </div>
         </div>
-        <div class="go-coins-row" id="goCoinsBadge">🪙 +<span id="goCoins">0</span> монет</div>
+        <div class="go-coins-row" id="goCoinsBadge">🪙 +<span id="goCoins">0</span> coins</div>
         <div class="go-sub" id="goSub"></div>
         <div class="go-btns">
-          <button class="go-btn primary" id="goMenu">⌂ Главное меню</button>
-          <button class="go-btn share" id="goShare">📤 Поделиться</button>
+          <button class="go-btn primary" id="goMenu">⌂ Main menu</button>
+          <button class="go-btn share" id="goShare">📤 Share</button>
         </div>
       </div>
     </div>
@@ -1045,18 +1045,18 @@
     <button class="dpad-btn" id="btnDown">▼</button>
     <div class="dpad-empty"></div>
   </div>
-  <div class="kb-hint">↑↓←→ / WASD · SPACE — пауза</div>
+  <div class="kb-hint">↑↓←→ / WASD · SPACE — pause</div>
 </div>
 <!-- QUESTS -->
 <div class="screen" id="questScreen">
-  <div class="rec-title">📋 Квесты</div>
+  <div class="rec-title">📋 Quests</div>
   <div class="quest-grid" id="questGrid"></div>
-  <div class="quest-reset" id="questReset">Сброс в полночь</div>
-  <button class="shop-back" id="questBack">← Назад</button>
+  <div class="quest-reset" id="questReset">Resets at midnight</div>
+  <button class="shop-back" id="questBack">← Back</button>
 </div>
 <!-- SETTINGS -->
 <div class="screen" id="settingsScreen">
-  <div class="rec-title">⚙️ Настройки</div>
+  <div class="rec-title">⚙️ Settings</div>
   <div class="rec-list">
     <!-- Telegram Profile (shown only in Telegram) -->
     <div class="sett-card" id="tgProfileCard" style="display:none">
@@ -1064,45 +1064,45 @@
         <img id="tgAvatar" src="" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #6366f1;display:none">
         <div style="flex:1">
           <div style="font-weight:700;font-size:.95rem" id="tgProfileName">—</div>
-          <div style="font-size:.75rem;color:var(--muted)">Telegram аккаунт</div>
+          <div style="font-size:.75rem;color:var(--muted)" id="tgAccLbl">Telegram account</div>
         </div>
         <span style="font-size:1.2rem">✈️</span>
       </div>
     </div>
     <!-- Nickname -->
     <div class="sett-card">
-      <div class="sett-label" id="settNickLbl">👤 Никнейм</div>
+      <div class="sett-label" id="settNickLbl">👤 Nickname</div>
       <div class="sett-row">
         <span class="sett-nick-val" id="settNickDisplay">—</span>
-        <button class="sett-toggle" id="btnChangeNick">✏️ Изменить</button>
-        <span id="tgNickHint" style="display:none;font-size:.72rem;color:#2da7e0;margin-left:4px">✈️ из Telegram</span>
+        <button class="sett-toggle" id="btnChangeNick">✏️ Change</button>
+        <span id="tgNickHint" style="display:none;font-size:.72rem;color:#2da7e0;margin-left:4px">✈️ from Telegram</span>
       </div>
     </div>
     <!-- Difficulty -->
     <div class="sett-card">
-      <div class="sett-label" id="settDiffLbl">🎯 Сложность</div>
+      <div class="sett-label" id="settDiffLbl">🎯 Difficulty</div>
       <div class="diff-row">
-        <button class="diff-btn" data-diff="easy">😌 Лёгкая</button>
-        <button class="diff-btn" data-diff="normal">😐 Нормал</button>
-        <button class="diff-btn" data-diff="hard">😤 Хард</button>
+        <button class="diff-btn" data-diff="easy">😌 Easy</button>
+        <button class="diff-btn" data-diff="normal">😐 Normal</button>
+        <button class="diff-btn" data-diff="hard">😤 Hardcore</button>
       </div>
     </div>
     <!-- Sound -->
     <div class="sett-card">
-      <div class="sett-label" id="settSoundLbl">🔊 Звук</div>
+      <div class="sett-label" id="settSoundLbl">🔊 Sound</div>
       <div class="sett-row">
-        <span class="rl">🎵 Музыка</span>
-        <button class="sett-toggle" id="btnMusicToggle">вкл</button>
+        <span class="rl">🎵 Music</span>
+        <button class="sett-toggle" id="btnMusicToggle">on</button>
       </div>
       <div class="sett-row">
-        <span class="rl">🔈 Эффекты</span>
-        <button class="sett-toggle" id="btnSfxToggle">вкл</button>
+        <span class="rl">🔈 Sound effects</span>
+        <button class="sett-toggle" id="btnSfxToggle">on</button>
       </div>
     </div>
     <!-- Theme: dark-only (light theme incompatible with aurora canvas design) -->
     <!-- Language -->
     <div class="sett-card">
-      <div class="sett-label" id="settLangLbl">🌐 Язык</div>
+      <div class="sett-label" id="settLangLbl">🌐 Language</div>
       <div class="diff-row">
         <button class="diff-btn lang-btn" data-lang="ru">🇷🇺 RU</button>
         <button class="diff-btn lang-btn" data-lang="uk">🇺🇦 UK</button>
@@ -1112,21 +1112,21 @@
       </div>
     </div>
   </div>
-  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Назад</button>
+  <button class="menu-btn" style="margin-top:8px;" id="btnBackSettings">← Back</button>
 </div>
 <!-- RECORDS + LEADERBOARD -->
 <div class="screen" id="recordsScreen">
-  <div class="rec-title">🏆 Рекорды</div>
+  <div class="rec-title">🏆 Records</div>
   <div class="lb-tabs">
-    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 Мои</button>
+    <button class="lb-tab active" id="tabMy" onclick="switchLbTab('my')">👤 My</button>
     <button class="lb-tab" id="tabOnline" onclick="switchLbTab('online')">🌍 Online</button>
   </div>
   <!-- Moje rekordy -->
   <div id="panelMy">
     <div class="rec-list">
-      <div class="rec-row"><span class="rl">Лучший счёт</span><span class="rv" id="rBest">0</span></div>
-      <div class="rec-row"><span class="rl">Макс. уровень</span><span class="rv" id="rLvl">1</span></div>
-      <div class="rec-row"><span class="rl">Игр сыграно</span><span class="rv" id="rGames">0</span></div>
+      <div class="rec-row"><span class="rl">Best score</span><span class="rv" id="rBest">0</span></div>
+      <div class="rec-row"><span class="rl">Max level</span><span class="rv" id="rLvl">1</span></div>
+      <div class="rec-row"><span class="rl">Games played</span><span class="rv" id="rGames">0</span></div>
     </div>
   </div>
   <!-- Online leaderboard -->
@@ -1138,9 +1138,9 @@
       <button class="lb-mode-tab"        id="lbm-survival" onclick="setLbMode('survival')">💀</button>
       <button class="lb-mode-tab"        id="lbm-mirror"   onclick="setLbMode('mirror')">🪞</button>
     </div>
-    <div class="lb-list" id="lbList"><div class="lb-loading">Загрузка...</div></div>
+    <div class="lb-list" id="lbList"><div class="lb-loading">Loading...</div></div>
   </div>
-  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Назад</button>
+  <button class="menu-btn" style="margin-top:16px;" id="btnBackMenu">← Back</button>
 </div>
 <script>
 const W=560,H=560,R=9,FR=9,BASE_LEN=100,LEN_PER_FOOD=35;
@@ -1150,7 +1150,22 @@ const SB_KEY='sb_publishable_Y-X3KCJrmrS8Wo4ZVhOXjA_L_c37IIH';
 const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
 
 // ── JAZYK / LANGUAGE ─────────────────────────────────────────────────
-let currentLang='ru';
+const SUPPORTED_LANGS=['en','ru','uk','pl','sk'];
+// Auto-detect a new user's UI language: Telegram account language first (Mini App),
+// then the browser/device languages (web). Falls back to English.
+function detectLang(){
+  let codes=[];
+  const tg=window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code;
+  if(tg)codes.push(tg);
+  if(Array.isArray(navigator.languages))codes=codes.concat(navigator.languages);
+  if(navigator.language)codes.push(navigator.language);
+  for(const c of codes){
+    const two=(c||'').slice(0,2).toLowerCase();
+    if(SUPPORTED_LANGS.includes(two))return two;
+  }
+  return 'en';
+}
+let currentLang='en';
 const TRANSLATIONS={
   sk:{
     appTitle:'Had',loading:'Načítavam...',anon:'Anonym',
@@ -1170,10 +1185,10 @@ const TRANSLATIONS={
     lvlLabel:'Úroveň',hudScore:'Skóre:',hudRecord:'Rekord:',
     pauseTitle:'⏸ PAUZA',pauseResume:'▶ Pokračovať',
     pauseRestart:'↺ Začať úroveň znova',pauseMenu:'⌂ Hlavné menu',
-    goShare:'📤 Zdieľať',goMenu:'⌂ Hlavné menu',goFoodLbl:'Jedlo',
+    goShare:'📤 Zdieľať',goMenu:'⌂ Hlavné menu',goFoodLbl:'Jedlo',goScoreLbl:'Body',goBestLbl:'Rekord',
     questTitle:'📋 Úlohy',questBack:'← Späť',questReset:'Reset o polnoci',
     questClaim:'Prevziať',questClaimed:'✓ Získané',questDone:'Úloha splnená!',
-    settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',
+    settingsTitle:'⚙️ Nastavenia',settingsNick:'👤 Prezývka',settingsDiff:'Obtiažnosť',settingsTgAcc:'Telegram účet',settingsTgFrom:'✈️ z Telegramu',
     diffEasy:'😌 Ľahká',diffNormal:'😐 Normál',diffHard:'😤 Hardcore',
     settingsSound:'🔊 Zvuk',settingsChangeNick:'✏️ Zmeniť',
     settingsMusic:'🎵 Hudba',settingsSfx:'🔊 Zvukové efekty',
@@ -1259,10 +1274,10 @@ const TRANSLATIONS={
     lvlLabel:'Уровень',hudScore:'Счёт:',hudRecord:'Рекорд:',
     pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продолжить',
     pauseRestart:'↺ Начать уровень заново',pauseMenu:'⌂ Главное меню',
-    goShare:'📤 Поделиться',goMenu:'⌂ Главное меню',goFoodLbl:'Еда',
+    goShare:'📤 Поделиться',goMenu:'⌂ Главное меню',goFoodLbl:'Еда',goScoreLbl:'Очков',goBestLbl:'Рекорд',
     questTitle:'📋 Квесты',questBack:'← Назад',questReset:'Сброс в полночь',
     questClaim:'Забрать',questClaimed:'✓ Получено',questDone:'Квест выполнен!',
-    settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',
+    settingsTitle:'⚙️ Настройки',settingsNick:'👤 Никнейм',settingsDiff:'Сложность',settingsTgAcc:'Telegram аккаунт',settingsTgFrom:'✈️ из Telegram',
     diffEasy:'😌 Лёгкая',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsSound:'🔊 Звук',settingsChangeNick:'✏️ Изменить',
     settingsMusic:'🎵 Музыка',settingsSfx:'🔊 Звуковые эффекты',
@@ -1348,10 +1363,10 @@ const TRANSLATIONS={
     lvlLabel:'Level',hudScore:'Score:',hudRecord:'Best:',
     pauseTitle:'⏸ PAUSE',pauseResume:'▶ Resume',
     pauseRestart:'↺ Restart level',pauseMenu:'⌂ Main menu',
-    goShare:'📤 Share',goMenu:'⌂ Main menu',goFoodLbl:'Food',
+    goShare:'📤 Share',goMenu:'⌂ Main menu',goFoodLbl:'Food',goScoreLbl:'Score',goBestLbl:'Best',
     questTitle:'📋 Quests',questBack:'← Back',questReset:'Resets at midnight',
     questClaim:'Claim',questClaimed:'✓ Claimed',questDone:'Quest complete!',
-    settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',
+    settingsTitle:'⚙️ Settings',settingsNick:'👤 Nickname',settingsDiff:'Difficulty',settingsTgAcc:'Telegram account',settingsTgFrom:'✈️ from Telegram',
     diffEasy:'😌 Easy',diffNormal:'😐 Normal',diffHard:'😤 Hardcore',
     settingsSound:'🔊 Sound',settingsChangeNick:'✏️ Change',
     settingsMusic:'🎵 Music',settingsSfx:'🔊 Sound effects',
@@ -1437,10 +1452,10 @@ const TRANSLATIONS={
     lvlLabel:'Рівень',hudScore:'Рахунок:',hudRecord:'Рекорд:',
     pauseTitle:'⏸ ПАУЗА',pauseResume:'▶ Продовжити',
     pauseRestart:'↺ Почати рівень спочатку',pauseMenu:'⌂ Головне меню',
-    goShare:'📤 Поділитися',goMenu:'⌂ Головне меню',goFoodLbl:'Їжа',
+    goShare:'📤 Поділитися',goMenu:'⌂ Головне меню',goFoodLbl:'Їжа',goScoreLbl:'Очок',goBestLbl:'Рекорд',
     questTitle:'📋 Квести',questBack:'← Назад',questReset:'Скидання опівночі',
     questClaim:'Забрати',questClaimed:'✓ Отримано',questDone:'Квест виконано!',
-    settingsTitle:'⚙️ Налаштування',settingsNick:'👤 Нік',settingsDiff:'Складність',
+    settingsTitle:'⚙️ Налаштування',settingsNick:'👤 Нік',settingsDiff:'Складність',settingsTgAcc:'Telegram акаунт',settingsTgFrom:'✈️ з Telegram',
     diffEasy:'😌 Легка',diffNormal:'😐 Нормал',diffHard:'😤 Хардкор',
     settingsSound:'🔊 Звук',settingsChangeNick:'✏️ Змінити',
     settingsMusic:'🎵 Музика',settingsSfx:'🔊 Звукові ефекти',
@@ -1526,10 +1541,10 @@ const TRANSLATIONS={
     lvlLabel:'Poziom',hudScore:'Wynik:',hudRecord:'Rekord:',
     pauseTitle:'⏸ PAUZA',pauseResume:'▶ Wznów',
     pauseRestart:'↺ Restart poziomu',pauseMenu:'⌂ Menu główne',
-    goShare:'📤 Udostępnij',goMenu:'⌂ Menu główne',goFoodLbl:'Jedzenie',
+    goShare:'📤 Udostępnij',goMenu:'⌂ Menu główne',goFoodLbl:'Jedzenie',goScoreLbl:'Punkty',goBestLbl:'Rekord',
     questTitle:'📋 Zadania',questBack:'← Wstecz',questReset:'Reset o północy',
     questClaim:'Odbierz',questClaimed:'✓ Odebrano',questDone:'Zadanie ukończone!',
-    settingsTitle:'⚙️ Ustawienia',settingsNick:'👤 Nick',settingsDiff:'Trudność',
+    settingsTitle:'⚙️ Ustawienia',settingsNick:'👤 Nick',settingsDiff:'Trudność',settingsTgAcc:'Konto Telegram',settingsTgFrom:'✈️ z Telegramu',
     diffEasy:'😌 Łatwy',diffNormal:'😐 Normalny',diffHard:'😤 Hardcore',
     settingsSound:'🔊 Dźwięk',settingsChangeNick:'✏️ Zmień',
     settingsMusic:'🎵 Muzyka',settingsSfx:'🔊 Efekty dźwiękowe',
@@ -1650,16 +1665,20 @@ function applyLang(){
   const goSh=document.getElementById('goShare');if(goSh)goSh.textContent=L.goShare;
   const goMn=document.getElementById('goMenu');if(goMn)goMn.textContent=L.goMenu;
   const goFdLbl=document.getElementById('goLevelLbl');if(goFdLbl)goFdLbl.textContent=L.goFoodLbl;
+  const goScLbl=document.getElementById('goScoreLbl');if(goScLbl)goScLbl.textContent=L.goScoreLbl;
+  const goBsLbl=document.getElementById('goBestLbl');if(goBsLbl)goBsLbl.textContent=L.goBestLbl;
+  const tgAccLblEl=document.getElementById('tgAccLbl');if(tgAccLblEl)tgAccLblEl.textContent=L.settingsTgAcc;
+  const tgNickHintEl=document.getElementById('tgNickHint');if(tgNickHintEl)tgNickHintEl.textContent=L.settingsTgFrom;
   const questT=document.querySelector('#questScreen .rec-title');if(questT)questT.textContent=L.questTitle;
   const questBk=document.getElementById('questBack');if(questBk)questBk.textContent=L.questBack;
   const setT=document.querySelector('#settingsScreen .rec-title');if(setT)setT.textContent=L.settingsTitle;
   // Settings labels — use IDs to avoid index-shift bugs
   const _sl=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
-  _sl('settNickLbl', L.settingsNick||'👤 Никнейм');
-  _sl('settDiffLbl', L.settingsDiff||'🎯 Сложность');
-  _sl('settSoundLbl', L.settingsSound||'🔊 Звук');
-  _sl('settLangLbl', L.settingsLang||'🌐 Язык');
-  _sl('btnChangeNick', L.settingsChangeNick||'✏️ Изменить');
+  _sl('settNickLbl', L.settingsNick||'👤 Nickname');
+  _sl('settDiffLbl', L.settingsDiff||'🎯 Difficulty');
+  _sl('settSoundLbl', L.settingsSound||'🔊 Sound');
+  _sl('settLangLbl', L.settingsLang||'🌐 Language');
+  _sl('btnChangeNick', L.settingsChangeNick||'✏️ Change');
   // Sound .rl sub-labels
   const setRls=document.querySelectorAll('#settingsScreen .rl');
   if(setRls[0])setRls[0].textContent=L.settingsMusic;
@@ -1756,31 +1775,33 @@ fetchGlobalStats();
 
 const SKINS=[
   // Free — unlock by level
-  {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Зелёный'},
-  {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Синий'},
-  {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Красный'},
-  {emoji:'🌿',body:'#34d399',shine:'#a7f3d0',glow:'#10b981',bg:'#051a10',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#0a2e1a',unlockLevel:15,name:'Джунгли'},
-  {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Золотой'},
-  {emoji:'🌸',body:'#f9a8d4',shine:'#fce7f3',glow:'#ec4899',bg:'#1a0510',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d0a20',unlockLevel:25,name:'Сакура'},
-  {emoji:'⚡',body:'#fde047',shine:'#fefce8',glow:'#eab308',bg:'#0a0a00',foodColor:'#818cf8',foodInner:'#c7d2fe',obs:'#1a1a00',unlockLevel:30,name:'Молния'},
-  {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Фиолетовый'},
+  {emoji:'🟢',body:'#4ade80',shine:'#a7f3d0',glow:'#4ade80',bg:'#111827',foodColor:'#ef4444',foodInner:'#fca5a5',obs:'#374151',unlockLevel:1,name:'Green'},
+  {emoji:'🔵',body:'#38bdf8',shine:'#bae6fd',glow:'#38bdf8',bg:'#0c1a2e',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e3a5f',unlockLevel:5,name:'Blue'},
+  {emoji:'🔴',body:'#f87171',shine:'#fecaca',glow:'#ef4444',bg:'#1a0a0a',foodColor:'#4ade80',foodInner:'#bbf7d0',obs:'#3f1a1a',unlockLevel:10,name:'Red'},
+  {emoji:'🌿',body:'#34d399',shine:'#a7f3d0',glow:'#10b981',bg:'#051a10',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#0a2e1a',unlockLevel:15,name:'Jungle'},
+  {emoji:'🌟',body:'#fbbf24',shine:'#fef3c7',glow:'#f59e0b',bg:'#1a1500',foodColor:'#a78bfa',foodInner:'#ede9fe',obs:'#3d2e00',unlockLevel:20,name:'Golden'},
+  {emoji:'🌸',body:'#f9a8d4',shine:'#fce7f3',glow:'#ec4899',bg:'#1a0510',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d0a20',unlockLevel:25,name:'Sakura'},
+  {emoji:'⚡',body:'#fde047',shine:'#fefce8',glow:'#eab308',bg:'#0a0a00',foodColor:'#818cf8',foodInner:'#c7d2fe',obs:'#1a1a00',unlockLevel:30,name:'Lightning'},
+  {emoji:'🟣',body:'#a78bfa',shine:'#ede9fe',glow:'#7c3aed',bg:'#0d0a1a',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#2a1a3a',unlockLevel:35,name:'Purple'},
   // Shop skins — purchased for coins
-  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:100,name:'Розовый'},
-  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:150,name:'Тёмный'},
-  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:200,name:'Океан'},
-  {emoji:'🌙',body:'#818cf8',shine:'#c7d2fe',glow:'#6366f1',bg:'#020617',foodColor:'#f9a8d4',foodInner:'#fce7f3',obs:'#0f0a2e',unlockLevel:999,price:250,name:'Ночной'},
-  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:300,name:'Огонь'},
-  {emoji:'💎',body:'#67e8f9',shine:'#e0f2fe',glow:'#22d3ee',bg:'#001a20',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#002a30',unlockLevel:999,price:400,name:'Алмаз'},
+  {emoji:'🌈',body:'#f472b6',shine:'#fbcfe8',glow:'#ec4899',bg:'#1a0a14',foodColor:'#34d399',foodInner:'#a7f3d0',obs:'#3d1a2e',unlockLevel:999,price:100,name:'Pink'},
+  {emoji:'🖤',body:'#94a3b8',shine:'#e2e8f0',glow:'#cbd5e1',bg:'#000000',foodColor:'#f59e0b',foodInner:'#fde68a',obs:'#1e293b',unlockLevel:999,price:150,name:'Dark'},
+  {emoji:'🌊',body:'#06b6d4',shine:'#cffafe',glow:'#22d3ee',bg:'#001a2e',foodColor:'#fb923c',foodInner:'#fed7aa',obs:'#0c2a3d',unlockLevel:999,price:200,name:'Ocean'},
+  {emoji:'🌙',body:'#818cf8',shine:'#c7d2fe',glow:'#6366f1',bg:'#020617',foodColor:'#f9a8d4',foodInner:'#fce7f3',obs:'#0f0a2e',unlockLevel:999,price:250,name:'Night'},
+  {emoji:'🔥',body:'#f97316',shine:'#fed7aa',glow:'#ea580c',bg:'#1a0800',foodColor:'#facc15',foodInner:'#fef9c3',obs:'#3d1800',unlockLevel:999,price:300,name:'Fire'},
+  {emoji:'💎',body:'#67e8f9',shine:'#e0f2fe',glow:'#22d3ee',bg:'#001a20',foodColor:'#f472b6',foodInner:'#fbcfe8',obs:'#002a30',unlockLevel:999,price:400,name:'Diamond'},
 ];
 // ── SAVES ───────────────────────────────────────────────────────
 // Reset on version change — clears localStorage for ALL players on page reload
 if(localStorage.getItem('snakeVer')!=='2'){const _keepPid=localStorage.getItem('snake2_pid');Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));localStorage.setItem('snakeVer','2');if(_keepPid)localStorage.setItem('snake2_pid',_keepPid);}
 const S='snake2_';
 // ?reset=1 — clears localStorage (dev only, not via Telegram startapp for safety)
-if(new URLSearchParams(location.search).get('reset')==='1'){if(confirm('Сбросить весь локальный прогресс?')){localStorage.clear();history.replaceState(null,'',location.pathname);}}
+if(new URLSearchParams(location.search).get('reset')==='1'){if(confirm('Reset all local progress?')){localStorage.clear();history.replaceState(null,'',location.pathname);}}
 // Telegram startapp=ref_XXXX — save referrer for later bonus processing
 (()=>{const sp=window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';if(sp.startsWith('ref_')&&!localStorage.getItem('snake2_ref_done')){localStorage.setItem('snake2_ref',sp.slice(4));}})();
-currentLang=localStorage.getItem(S+'Lang')||'ru';
+currentLang=localStorage.getItem(S+'Lang')||detectLang();
+// Translate the loading screen + <html lang> immediately for the detected language
+try{const _L=TRANSLATIONS[currentLang];document.documentElement.lang=currentLang;const _ld=document.querySelector('#loadingScreen div:last-child');if(_ld&&_L)_ld.textContent=_L.loading;}catch(e){}
 // ── VARIABLES (defaults; populated from Supabase on startup) ──────────
 let theme      = 'dark';
 let musicOn    = true;
@@ -1934,7 +1955,7 @@ function applyLocalCache(){
   musicOn      = localStorage.getItem(S+'Music')!=='off';
   sfxOn        = localStorage.getItem(S+'Sfx')!=='off';
   theme        = localStorage.getItem(S+'Theme')||'dark';
-  currentLang  = localStorage.getItem(S+'Lang')||'ru';
+  currentLang  = localStorage.getItem(S+'Lang')||detectLang();
   const _bestHudCached=document.getElementById('bestHud');if(_bestHudCached)_bestHudCached.textContent=best;
   // Profile is considered loaded only if a player was actually in cache (has a nick)
   if(lbNickname) profileLoaded=true;
@@ -1942,19 +1963,19 @@ function applyLocalCache(){
 // Clear everything (on reset)
 // ── ACHIEVEMENTS ──────────────────────────────────────────────────
 const ACHIEVEMENTS=[
-  {id:'first_bite',   icon:'🍎', name:'Первый укус',      desc:'Съешь первую еду'},
-  {id:'ten_food',     icon:'🔟', name:'Десятка',          desc:'Съешь 10 еды за одну игру'},
-  {id:'combo_master', icon:'🔥', name:'Комбо-мастер',     desc:'Сделай комбо x3 (5+ подряд)'},
-  {id:'gold_eater',   icon:'⭐', name:'Золотоискатель',   desc:'Съешь золотую еду'},
-  {id:'shield_user',  icon:'🛡', name:'Под защитой',      desc:'Подбери щит'},
-  {id:'bomb_user',    icon:'💣', name:'Подрывник',        desc:'Используй бомбу'},
-  {id:'speed_user',   icon:'⚡', name:'Спидстер',         desc:'Используй ускорение'},
-  {id:'freeze_user',  icon:'❄', name:'Заморозка',        desc:'Используй заморозку'},
-  {id:'level5',       icon:'5️⃣', name:'Уровень 5',        desc:'Достигни 5-го уровня'},
-  {id:'level10',      icon:'🔟', name:'Уровень 10',       desc:'Достигни 10-го уровня'},
-  {id:'survivor',     icon:'💀', name:'Выживший',         desc:'Продержись 30 сек в Выживании'},
-  {id:'time_champ',   icon:'⏱', name:'Чемпион времени',  desc:'Набери 20+ очков за 60 сек'},
-  {id:'mirror_5',     icon:'🪞', name:'Зеркальщик',      desc:'Съешь 5 еды в режиме Зеркало'},
+  {id:'first_bite',   icon:'🍎', name:'First bite',      desc:'Eat first food'},
+  {id:'ten_food',     icon:'🔟', name:'Ten food',          desc:'Eat 10 food in one game'},
+  {id:'combo_master', icon:'🔥', name:'Combo master',     desc:'Get combo ×3 (5+ in a row)'},
+  {id:'gold_eater',   icon:'⭐', name:'Gold digger',   desc:'Eat golden food'},
+  {id:'shield_user',  icon:'🛡', name:'Protected',      desc:'Pick up a shield'},
+  {id:'bomb_user',    icon:'💣', name:'Demolisher',      desc:'Use a bomb'},
+  {id:'speed_user',   icon:'⚡', name:'Speedster',         desc:'Use speed boost'},
+  {id:'freeze_user',  icon:'❄', name:'Freezer',        desc:'Use freeze'},
+  {id:'level5',       icon:'5️⃣', name:'Level 5',        desc:'Reach level 5'},
+  {id:'level10',      icon:'🔟', name:'Level 10',       desc:'Reach level 10'},
+  {id:'survivor',     icon:'💀', name:'Survivor',         desc:'Survive 30 sec in Survival'},
+  {id:'time_champ',   icon:'⏱', name:'Time champ',  desc:'Score 20+ pts in 60 sec'},
+  {id:'mirror_5',     icon:'🪞', name:'Mirror player',      desc:'Eat 5 food in Mirror mode'},
 ];
 let unlockedAch=new Set(); // populated from Supabase in initGame()
 let survivalTime=0; // tracks elapsed time in survival mode
@@ -2025,13 +2046,13 @@ function buildAchScreen(){
 }
 // ── DAILY QUESTS ──────────────────────────────────────────────────
 const QUEST_POOL=[
-  {type:'eat_food',   icon:'🍎',title:'Обжора',          make:(n)=>`Съешь ${n} еды за день`},
-  {type:'score',      icon:'🏆',title:'Очкарик',         make:(n)=>`Набери ${n} очков за день`},
-  {type:'play_games', icon:'🎮',title:'Игроман',          make:(n)=>`Сыграй ${n===1?'1 раз':`${n} раза`}`},
-  {type:'reach_level',icon:'⬆️',title:'Скалолаз',        make:(n)=>`Достигни уровня ${n}`},
-  {type:'eat_gold',   icon:'⭐',title:'Золотоискатель',  make:(n)=>`Съешь ${n} золотой еды`},
-  {type:'use_bonus',  icon:'🛡',title:'Коллекционер',    make:(n)=>`Подбери ${n===1?'1 бонус':`${n} бонуса`}`},
-  {type:'combo',      icon:'🔥',title:'Комбо',           make:(n)=>`Набери комбо ×${n}`},
+  {type:'eat_food',   icon:'🍎',title:'Glutton',          make:(n)=>`Eat ${n} food today`},
+  {type:'score',      icon:'🏆',title:'Scorer',         make:(n)=>`Score ${n} points today`},
+  {type:'play_games', icon:'🎮',title:'Gamer',          make:(n)=>`Play ${n===1?'once':`${n} times`}`},
+  {type:'reach_level',icon:'⬆️',title:'Climber',        make:(n)=>`Reach level ${n}`},
+  {type:'eat_gold',   icon:'⭐',title:'Gold digger',  make:(n)=>`Eat ${n} golden food`},
+  {type:'use_bonus',  icon:'🛡',title:'Collector',    make:(n)=>`Pick up ${n===1?'1 bonus':`${n} bonuses`}`},
+  {type:'combo',      icon:'🔥',title:'Combo',           make:(n)=>`Get combo ×${n}`},
 ];
 const QUEST_PARAMS={
   eat_food:   [{n:10,coins:8},{n:25,coins:15},{n:50,coins:30}],
@@ -2310,7 +2331,7 @@ function buildSkinRow(){
     // Badge label
     let badge='';
     if(isEq) badge=`<span class="dot-badge b-eq">✓</span>`;
-    else if(!unlocked&&s.price) badge=`<span class="dot-badge">🪙${s.price>=1000?(s.price/1000)+'к':s.price}</span>`;
+    else if(!unlocked&&s.price) badge=`<span class="dot-badge">🪙${s.price>=1000?(s.price/1000)+'k':s.price}</span>`;
     else if(!unlocked) badge=`<span class="dot-badge">${T().skinLvlFmt(s.unlockLevel)}</span>`;
     dot.innerHTML=`<span class="dot-emoji">${s.emoji}</span>${badge}`;
     const sel=()=>{shopPreviewIdx=i;buildSkinRow();buildShopPreview();};
@@ -3008,7 +3029,7 @@ function buildShopPreview(){
       // Profile found — apply data from Supabase
       applyProfile(profileData);
       fetchModeBests(pid);
-      currentLang = localStorage.getItem(S+'Lang')||'ru';
+      currentLang = localStorage.getItem(S+'Lang')||detectLang();
       applyTheme();
       applyLang();
       refreshMenuUI();
@@ -3975,7 +3996,7 @@ function endGame(){
     const _pid=localStorage.getItem(S+'pid');
     if(_pid) fetch('https://wopvlulqfzecujmfoezr.supabase.co/functions/v1/notify-beaten',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({winner_id:_pid,winner_nick:lbNickname||'Игрок',new_score:score,winner_token:getWriteToken()})
+      body:JSON.stringify({winner_id:_pid,winner_nick:lbNickname||'Player',new_score:score,winner_token:getWriteToken()})
     }).catch(()=>{});
   }
   if(navigator.vibrate) navigator.vibrate([180]);
@@ -4116,7 +4137,7 @@ function dbgUnlockAll(){
   SKINS.forEach((s,i)=>boughtSkins.add(i));
   saveAll();refreshMenuUI();
   dbgUpdateStats();
-  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#a78bfa">🔓 Скины!</span>';
+  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#a78bfa">🔓 Skins!</span>';
 }
 function dbgSetLevel(n){
   dbgClose();
@@ -4136,7 +4157,7 @@ let dbgInvOn=false;
 function dbgToggleInv(){
   dbgInvOn=!dbgInvOn;
   document.getElementById('dbgInvBtn').classList.toggle('active-toggle',dbgInvOn);
-  document.getElementById('dbgInvBtn').textContent=dbgInvOn?'♾ ВКЛ':'♾ Инв.';
+  document.getElementById('dbgInvBtn').textContent=dbgInvOn?'♾ ON':(T().dbgInv||'♾ Inv.');
 }
 function dbgCoins(n){
   coins+=n;saveAll();refreshMenuUI();
@@ -4146,16 +4167,16 @@ function dbgUnlockAllAch(){
   ACHIEVEMENTS.forEach(a=>{if(!unlockedAch.has(a.id)){unlockedAch.add(a.id);}});
   saveAch();
   dbgUpdateStats();
-  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#4ade80">🏅 Ачивки!</span>';
+  document.getElementById('dbgStats').innerHTML+=' · <span style="color:#4ade80">🏅 Achiev.!</span>';
 }
 function dbgResetAll(){
-  if(!confirm('Сбросить весь прогресс?')) return;
+  if(!confirm('Reset all progress?')) return;
   Object.keys(localStorage).filter(k=>k.startsWith('snake')).forEach(k=>localStorage.removeItem(k));
   location.reload();
 }
 function dbgUpdateStats(){
   const el=document.getElementById('dbgStats');
-  if(el) el.innerHTML=`Ур.<b>${currentLevel}</b> · 🪙<b>${coins}</b>`;
+  if(el) el.innerHTML=`Lvl <b>${currentLevel}</b> · 🪙<b>${coins}</b>`;
 }
 // Key ` / ё — open from anywhere (e.code is layout-independent)
 document.addEventListener('keydown',e=>{if(e.code==='Backquote') dbgOpen();});
@@ -4552,7 +4573,7 @@ function stopMusic(){
 
     if(!newNick){
       inp.classList.add('err');
-      errEl.textContent=T().welcPlaceholder||'Введи ник';
+      errEl.textContent=T().welcPlaceholder||'Enter a nickname';
       return;
     }
     if(newNick===lbNickname){ closeModal(); return; }
@@ -4572,7 +4593,7 @@ function stopMusic(){
         const res=await r.json();
         if(res&&res.available===false){
           inp.classList.add('err');
-          errEl.textContent=T().nickTaken?T().nickTaken(newNick):`Ник "${newNick}" уже занят`;
+          errEl.textContent=T().nickTaken?T().nickTaken(newNick):`Nickname "${newNick}" is already taken`;
           if(statusEl) statusEl.textContent='';
           saveBtn.disabled=false; cancelBtn.disabled=false;
           return;
@@ -4598,10 +4619,10 @@ function stopMusic(){
         saveBtn.disabled=false; cancelBtn.disabled=false;
         if(renameJson.error==='rename_cooldown'){
           inp.classList.add('err');
-          errEl.textContent=T().nickCooldown||'Подождите 1 час между переименованиями';
+          errEl.textContent=T().nickCooldown||'You can only change your nickname once per hour';
         } else {
           inp.classList.add('err');
-          errEl.textContent=renameJson.error||'Ошибка сервера';
+          errEl.textContent=renameJson.error||'Server error';
         }
         return;
       }
