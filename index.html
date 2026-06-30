@@ -578,7 +578,7 @@ canvas{
   cursor:pointer;touch-action:manipulation;font-family:inherit;
 }
 /* ── QUESTS ───────────────────────────────────────────── */
-#questScreen{justify-content:safe center;}
+#questScreen{justify-content:flex-start;}
 .quest-grid{display:flex;flex-direction:column;gap:9px;width:min(340px,calc(100vw - 24px));}
 .quest-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 14px;transition:var(--transition);}
 .quest-card.done{border-color:var(--ac);}
@@ -4524,7 +4524,7 @@ function stopMusic(){
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span>Home</span>
   </button>
-  <button class="nav-item" id="navRecords" onclick="showScreen('recordsScreen')">
+  <button class="nav-item" id="navRecords" onclick="openRecords()">
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
     <span>Records</span>
   </button>
@@ -4536,7 +4536,7 @@ function stopMusic(){
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span>Shop</span>
   </button>
-  <button class="nav-item" id="navSettings" onclick="showScreen('settingsScreen')">
+  <button class="nav-item" id="navSettings" onclick="openSettings()">
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
     <span>Profile</span>
   </button>
