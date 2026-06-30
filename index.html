@@ -66,7 +66,7 @@ body{
   min-height:var(--tg-vh,100vh);
   min-height:-webkit-fill-available;
   overflow-y:auto;overflow-x:hidden;
-  padding:10px 0 calc(70px + env(safe-area-inset-bottom,0px));
+  padding:10px 0 calc(90px + env(safe-area-inset-bottom, 18px));
   background:var(--bg);
 }
 .screen.active{display:flex;}
@@ -439,7 +439,7 @@ canvas{
 .lb-submit-btn{width:100%;padding:10px 0;background:var(--ac);border:none;border-radius:12px;color:#0d0d0d;font-size:.9rem;font-weight:700;cursor:pointer;touch-action:manipulation;pointer-events:all;font-family:inherit;}
 .lb-skip{font-size:.7rem;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px;text-decoration:underline;pointer-events:all;font-family:inherit;}
 /* ── ACHIEVEMENTS ─────────────────────────────────────── */
-#achScreen{padding:10px 0 80px;}
+#achScreen{padding:10px 0 calc(90px + env(safe-area-inset-bottom, 18px));}
 .ach-cnt{font-size:.72rem;color:var(--text3);margin-bottom:6px;font-weight:600;}
 .ach-tabs{display:flex;width:min(340px,calc(100vw - 24px));border-bottom:1px solid var(--border);flex-shrink:0;margin-bottom:8px;}
 .ach-tab{flex:1;padding:8px 4px;font-size:.72rem;font-weight:700;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text3);cursor:pointer;touch-action:manipulation;transition:color .15s,border-color .15s;margin-bottom:-1px;font-family:inherit;}
@@ -4558,15 +4558,23 @@ function stopMusic(){
       document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});
       var nid=MAP[id];
       if(nid){var b=document.getElementById(nid);if(b)b.classList.add('active');}
+      if(id==='settingsScreen')applyTgNickVisibility();
     };
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',patch);}
   else{patch();}
   // Init settings active states once JS engine is ready
+  function applyTgNickVisibility(){
+    var isTg=localStorage.getItem('snake2_tgLinked')==='1'||
+             !!(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData);
+    var lbl=document.getElementById('settNickLbl');
+    if(lbl){var card=lbl.closest('.sett-card');if(card)card.style.display=isTg?'none':'';}
+  }
   function initSettingsStates(){
     if(typeof updateDiffBtns==='function') updateDiffBtns();
     if(typeof updateLangBtns==='function') updateLangBtns();
     if(typeof updateSoundToggles==='function') updateSoundToggles();
+    applyTgNickVisibility();
   }
   setTimeout(initSettingsStates, 300);
 })();
