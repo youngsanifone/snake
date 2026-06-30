@@ -1039,7 +1039,7 @@ const TRANSLATIONS={
     btnBack:'← Späť',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
     recBest:'Najlepšie skóre',recLvl:'Max. úroveň',recGames:'Hier odohratých',
-    lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',lbSubmitError:'Nepodarilo sa odoslať skóre',lbSubmitOk:'✅ Skóre odoslané!',
+    lbLoading:'Načítavam...',lbEmpty:'Zatiaľ nikto — buď prvý!',lbError:'Chyba načítania 😞',lbRetry:'Skúsiť znova',lbSubmitError:'Nepodarilo sa odoslať skóre',lbSubmitOk:'✅ Skóre odoslané!',
     shopBack:'← Späť',achBack:'← Späť',achTabAll:'Všetky',achTabUnlocked:'✅ Otvorené',achTabLocked:'🔒 Zatvorené',
     shopEquipped:'Oblečený',shopEquip:'Obliecť',shopBought:'Kúpené',
     shopNotEnough:'Nedostatok mincí',
@@ -1128,7 +1128,7 @@ const TRANSLATIONS={
     btnBack:'← Назад',
     recTitle:'🏆 Рекорды',tabMy:'👤 Мои',tabOnline:'🌍 Онлайн',
     recBest:'Лучший счёт',recLvl:'Макс. уровень',recGames:'Игр сыграно',
-    lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',lbSubmitError:'Не удалось отправить счёт',lbSubmitOk:'✅ Счёт отправлен!',
+    lbLoading:'Загрузка...',lbEmpty:'Пока никого нет — будь первым!',lbError:'Ошибка загрузки 😞',lbRetry:'Повторить',lbSubmitError:'Не удалось отправить счёт',lbSubmitOk:'✅ Счёт отправлен!',
     shopBack:'← Назад',achBack:'← Назад',achTabAll:'Все',achTabUnlocked:'✅ Открытые',achTabLocked:'🔒 Закрытые',
     shopEquipped:'Надет',shopEquip:'Надеть',shopBought:'Куплено',
     shopNotEnough:'Не хватает монет',
@@ -1217,7 +1217,7 @@ const TRANSLATIONS={
     btnBack:'← Back',
     recTitle:'🏆 Records',tabMy:'👤 My',tabOnline:'🌍 Online',
     recBest:'Best score',recLvl:'Max level',recGames:'Games played',
-    lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',lbSubmitError:'Failed to submit score',lbSubmitOk:'✅ Score submitted!',
+    lbLoading:'Loading...',lbEmpty:'Nobody yet — be the first!',lbError:'Loading error 😞',lbRetry:'Retry',lbSubmitError:'Failed to submit score',lbSubmitOk:'✅ Score submitted!',
     shopBack:'← Back',achBack:'← Back',achTabAll:'All',achTabUnlocked:'✅ Unlocked',achTabLocked:'🔒 Locked',
     shopEquipped:'Equipped',shopEquip:'Equip',shopBought:'Bought',
     shopNotEnough:'Not enough coins',
@@ -1306,7 +1306,7 @@ const TRANSLATIONS={
     btnBack:'← Назад',
     recTitle:'🏆 Рекорди',tabMy:'👤 Мої',tabOnline:'🌍 Онлайн',
     recBest:'Найкращий рахунок',recLvl:'Макс. рівень',recGames:'Зіграно ігор',
-    lbLoading:'Завантаження...',lbEmpty:'Поки нікого — будь першим!',lbError:'Помилка завантаження 😞',lbSubmitError:'Не вдалося надіслати рахунок',lbSubmitOk:'✅ Рахунок надіслано!',
+    lbLoading:'Завантаження...',lbEmpty:'Поки нікого — будь першим!',lbError:'Помилка завантаження 😞',lbRetry:'Повторити',lbSubmitError:'Не вдалося надіслати рахунок',lbSubmitOk:'✅ Рахунок надіслано!',
     shopBack:'← Назад',achBack:'← Назад',achTabAll:'Усі',achTabUnlocked:'✅ Відкриті',achTabLocked:'🔒 Закриті',
     shopEquipped:'Одягнено',shopEquip:'Одягнути',shopBought:'Куплено',
     shopNotEnough:'Не вистачає монет',
@@ -1395,7 +1395,7 @@ const TRANSLATIONS={
     btnBack:'← Wstecz',
     recTitle:'🏆 Rekordy',tabMy:'👤 Moje',tabOnline:'🌍 Online',
     recBest:'Najlepszy wynik',recLvl:'Maks. poziom',recGames:'Rozegrane gry',
-    lbLoading:'Ładowanie...',lbEmpty:'Jeszcze nikogo — bądź pierwszy!',lbError:'Błąd ładowania 😞',lbSubmitError:'Nie udało się wysłać wyniku',lbSubmitOk:'✅ Wynik wysłany!',
+    lbLoading:'Ładowanie...',lbEmpty:'Jeszcze nikogo — bądź pierwszy!',lbError:'Błąd ładowania 😞',lbRetry:'Spróbuj ponownie',lbSubmitError:'Nie udało się wysłać wyniku',lbSubmitOk:'✅ Wynik wysłany!',
     shopBack:'← Wstecz',achBack:'← Wstecz',achTabAll:'Wszystkie',achTabUnlocked:'✅ Odblokowane',achTabLocked:'🔒 Zablokowane',
     shopEquipped:'Założony',shopEquip:'Załóż',shopBought:'Kupiono',
     shopNotEnough:'Za mało monet',
@@ -2065,7 +2065,7 @@ async function fetchLeaderboard(){
       </div>`).join('');
   }catch(e){
     console.error('lb fetch failed:',e.message);
-    el.innerHTML=`<div class="lb-empty">${T().lbError}<br><button onclick="fetchLeaderboard()" style="margin-top:10px;padding:6px 18px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text3);font-size:0.78rem;cursor:pointer;">🔄 ${currentLang==='ru'?'Повторить':currentLang==='sk'?'Skúsiť znova':'Retry'}</button></div>`;
+    el.innerHTML=`<div class="lb-empty">${T().lbError}<br><button onclick="fetchLeaderboard()" style="margin-top:10px;padding:6px 18px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text3);font-size:0.78rem;cursor:pointer;">🔄 ${T().lbRetry||'Retry'}</button></div>`;
   }
 }
 
