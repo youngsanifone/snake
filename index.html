@@ -4528,11 +4528,11 @@ function stopMusic(){
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
     <span>Records</span>
   </button>
-  <button class="nav-item" id="navQuests" onclick="buildQuestScreen();showScreen('questScreen')">
+  <button class="nav-item" id="navQuests" onclick="if(typeof loadQuests==='function')loadQuests();if(typeof buildQuestScreen==='function')buildQuestScreen();showScreen('questScreen')">
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
     <span>Quests</span>
   </button>
-  <button class="nav-item" id="navShop" onclick="buildShopScreen();showScreen('shopScreen')">
+  <button class="nav-item" id="navShop" onclick="if(typeof buildShopScreen==='function')buildShopScreen();showScreen('shopScreen')">
     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span>Shop</span>
   </button>
@@ -4562,6 +4562,13 @@ function stopMusic(){
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',patch);}
   else{patch();}
+  // Init settings active states once JS engine is ready
+  function initSettingsStates(){
+    if(typeof updateDiffBtns==='function') updateDiffBtns();
+    if(typeof updateLangBtns==='function') updateLangBtns();
+    if(typeof updateSoundToggles==='function') updateSoundToggles();
+  }
+  setTimeout(initSettingsStates, 300);
 })();
 </script>
 
