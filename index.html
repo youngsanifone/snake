@@ -58,8 +58,9 @@
 .auth-switch{text-align:center;font-size:.78rem;color:var(--text2);margin-top:12px;}
 .auth-switch a{color:var(--ac);cursor:pointer;font-weight:700;margin-left:5px;}
 .auth-close{position:absolute;top:8px;right:11px;background:none;border:none;color:var(--text3);font-size:1.15rem;cursor:pointer;line-height:1;}
-#welcAuthBtn,#acctLoginBtn{background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;}
-#welcAuthBtn:hover,#acctLoginBtn:hover{border-color:var(--ac);color:var(--ac);}
+#acctLoginBtn{background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;}
+#acctLoginBtn:hover{border-color:var(--ac);color:var(--ac);}
+#welcAuthBtn{width:100%;padding:14px 0;background:var(--ac);border:none;border-radius:14px;color:#0d0d0d;font-size:.95rem;font-weight:800;cursor:pointer;touch-action:manipulation;font-family:inherit;margin-top:4px;}
 .acct-logout{background:transparent;border:1px solid var(--border);color:var(--text2);padding:6px 13px;border-radius:9px;font-size:.76rem;font-weight:600;cursor:pointer;}
 html{width:100%;height:100%;}
 body{
@@ -552,22 +553,7 @@ canvas{
   width:min(320px,88vw);
 }
 .welc-sub{font-size:.82rem;color:var(--text2);text-align:center;line-height:1.5;}
-#welcInput{
-  width:100%;padding:13px 14px;
-  background:var(--panel2);border:1.5px solid var(--border);border-radius:14px;
-  color:var(--text);font-size:1rem;text-align:center;
-  pointer-events:all;-webkit-user-select:text;user-select:text;touch-action:auto;
-  outline:none;font-family:inherit;
-}
-#welcInput:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-dim);}
-#welcInput::placeholder{color:var(--text3);}
 #tgLoginWrap{display:flex;justify-content:center;margin:4px 0 2px;min-height:1px;}
-#welcBtn{
-  width:100%;padding:14px 0;
-  background:var(--ac);border:none;
-  border-radius:14px;color:#0d0d0d;font-size:.95rem;font-weight:800;letter-spacing:2px;
-  cursor:pointer;touch-action:manipulation;pointer-events:all;font-family:inherit;
-}
 /* ── SETTINGS ─────────────────────────────────────────── */
 .sett-card{
   background:var(--panel);border:1px solid var(--border);border-radius:16px;
@@ -654,10 +640,8 @@ canvas{
   <div class="welc-card">
     <div class="menu-snake" style="font-size:3rem;margin-bottom:4px;">🐍</div>
     <div class="menu-title">Snake</div>
-    <div class="welc-sub">Hello! Enter your name for the leaderboard 🌍</div>
+    <div class="welc-sub">Sign in to play and save your progress 🌍</div>
     <div id="tgLoginWrap" style="display:flex;justify-content:center;margin:4px 0 2px;min-height:1px"></div>
-    <input id="welcInput" type="text" maxlength="16" placeholder="Your nickname..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <button id="welcBtn">▶ &nbsp;PLAY!</button>
     <button id="welcAuthBtn" type="button">✉️ Log in / Sign up</button>
   </div>
 </div>
@@ -1059,9 +1043,8 @@ let currentLang='en';
 const TRANSLATIONS={
   sk:{
     appTitle:'Had',loading:'Načítavam...',anon:'Anonym',
-    welcSub:'Ahoj! Zadaj svoje meno do rebríčka 🌍',
+    welcSub:'Prihláste sa, aby ste mohli hrať a ukladať postup 🌍',
     welcPlaceholder:'Tvoja prezývka...',
-    welcBtn:'▶ &nbsp;HRAŤ!',
     menuStatBest:'Rekord',menuStatLvl:'Max. úr.',menuStatCoins:'🪙 Mincí',
     btnPlay:'▶ &nbsp;HRAŤ',
     navRecords:'Rekordy',navAch:'Ocenenia',navQuests:'Úlohy',navShop:'Obchod',navSettings:'Nastavenia',
@@ -1148,9 +1131,8 @@ const TRANSLATIONS={
   },
   ru:{
     appTitle:'Змейка',loading:'Загрузка...',anon:'Аноним',
-    welcSub:'Привет! Введи своё имя для таблицы рекордов 🌍',
+    welcSub:'Войдите, чтобы играть и сохранять прогресс 🌍',
     welcPlaceholder:'Твой ник...',
-    welcBtn:'▶ &nbsp;ПОЕХАЛИ!',
     menuStatBest:'Рекорд',menuStatLvl:'Ур. макс',menuStatCoins:'🪙 Монет',
     btnPlay:'▶ &nbsp;ИГРАТЬ',
     navRecords:'Рекорды',navAch:'Ачивки',navQuests:'Квесты',navShop:'Магазин',navSettings:'Настройки',
@@ -1237,9 +1219,8 @@ const TRANSLATIONS={
   },
   en:{
     appTitle:'Snake',loading:'Loading...',anon:'Anonymous',
-    welcSub:'Hello! Enter your name for the leaderboard 🌍',
+    welcSub:'Sign in to play and save your progress 🌍',
     welcPlaceholder:'Your nickname...',
-    welcBtn:'▶ &nbsp;PLAY!',
     menuStatBest:'Best',menuStatLvl:'Max Lvl',menuStatCoins:'🪙 Coins',
     btnPlay:'▶ &nbsp;PLAY',
     navRecords:'Records',navAch:'Achiev.',navQuests:'Quests',navShop:'Shop',navSettings:'Settings',
@@ -1326,9 +1307,8 @@ const TRANSLATIONS={
   },
   uk:{
     appTitle:'Змійка',loading:'Завантаження...',anon:'Анонім',
-    welcSub:'Привіт! Введи своє ім\'я для таблиці рекордів 🌍',
+    welcSub:'Увійдіть, щоб грати та зберігати прогрес 🌍',
     welcPlaceholder:'Твій нік...',
-    welcBtn:'▶ &nbsp;ПОЇХАЛИ!',
     menuStatBest:'Рекорд',menuStatLvl:'Макс. рів.',menuStatCoins:'🪙 Монет',
     btnPlay:'▶ &nbsp;ГРАТИ',
     navRecords:'Рекорди',navAch:'Ачівки',navQuests:'Квести',navShop:'Магазин',navSettings:'Налаштування',
@@ -1415,9 +1395,8 @@ const TRANSLATIONS={
   },
   pl:{
     appTitle:'Wąż',loading:'Ładowanie...',anon:'Anonim',
-    welcSub:'Cześć! Wpisz swoje imię do rankingu 🌍',
+    welcSub:'Zaloguj się, aby grać i zapisywać postępy 🌍',
     welcPlaceholder:'Twój nick...',
-    welcBtn:'▶ &nbsp;GRAJ!',
     menuStatBest:'Rekord',menuStatLvl:'Maks. poz.',menuStatCoins:'🪙 Monet',
     btnPlay:'▶ &nbsp;GRAJ',
     navRecords:'Rekordy',navAch:'Osiągnięcia',navQuests:'Zadania',navShop:'Sklep',navSettings:'Ustawienia',
@@ -1514,8 +1493,6 @@ function applyLang(){
   ACHIEVEMENTS.forEach((a,i)=>{if(L.achNames[i])a.name=L.achNames[i];if(L.achDescs[i])a.desc=L.achDescs[i];});
   QUEST_POOL.forEach((q,i)=>{if(L.questTitles[i])q.title=L.questTitles[i];if(L.questMakes[i])q.make=L.questMakes[i];});
   const welcSubEl=document.querySelector('.welc-sub');if(welcSubEl)welcSubEl.textContent=L.welcSub;
-  const welcInpEl=document.getElementById('welcInput');if(welcInpEl)welcInpEl.placeholder=L.welcPlaceholder;
-  const welcBtnEl=document.getElementById('welcBtn');if(welcBtnEl)welcBtnEl.innerHTML=L.welcBtn;
   document.querySelectorAll('.menu-title').forEach(el=>el.textContent=L.appTitle);
   const msblbls=document.querySelectorAll('.msb-lbl');
   if(msblbls[0])msblbls[0].textContent=L.menuStatBest;
@@ -2561,10 +2538,7 @@ function buildShopPreview(){
     console.warn('[init] timeout — forcing menu');
     loading.style.display='none';
     applyLocalCache(); applyTheme(); applyLang(); refreshMenuUI();
-    const welcInp2=document.getElementById('welcInput');
-    const anon2=!lbNickname||['Аноним','Anonym','Anonymous','Анонім','Anonim'].includes(lbNickname);
-    showScreen(anon2?'welcomeScreen':'menuScreen');
-    if(anon2) setTimeout(()=>welcInp2?.focus(),300);
+    showScreen(cloudEnabled?'menuScreen':'welcomeScreen');
   },13000);
 
   // ── COMMON SETUP (runs for ALL users — TG and non-TG) ─────────────
@@ -2907,72 +2881,11 @@ function buildShopPreview(){
     if(!cloudEnabled) injectTgLogin();
   }
 
-  // Attach welcome screen event handlers here (needed in both code paths)
-  const welcInp=document.getElementById('welcInput');
-  const welcBtn=document.getElementById('welcBtn');
-  async function doWelc(raw){
-    const name=(raw||'').trim();
-    // Validate nick: required, 1–16 chars
-    if(!name||name.length<1){
-      welcInp.style.borderColor='#ef4444';
-      setTimeout(()=>welcInp.style.borderColor='',600);
-      welcInp.focus();
-      return;
-    }
-    if(name.length>16){
-      welcInp.style.borderColor='#ef4444';
-      setTimeout(()=>welcInp.style.borderColor='',600);
-      welcInp.focus();
-      return;
-    }
-    lbNickname=name;
-    localStorage.setItem(S+'Nick',name);
-    // Guest (not logged in): play locally only — no cloud write, no uniqueness
-    // check, no leaderboard. They can log in with Telegram anytime to compete.
-    if(!cloudEnabled){
-      profileLoaded=true;
-      showScreen('menuScreen');
-      refreshMenuUI();
-      return;
-    }
-    // Nick uniqueness: reject a nick already used by a different player.
-    // Profile "restore by nick" was removed on purpose — under the write-token
-    // model it would let anyone adopt another player's unclaimed profile.
-    // Telegram users restore securely via telegram-auth (bound to telegram_id).
-    const anonNames=['Аноним','Anonym','Anonymous','Анонім','Anonim'];
-    if(!anonNames.includes(name)){
-      try{
-        const r=await fetch(`${SB_URL}/rest/v1/rpc/check_nick_available`,{
-          method:'POST',headers:SB_HEADERS,
-          body:JSON.stringify({p_nick:name,p_player_id:getPlayerId()}),
-          signal:AbortSignal.timeout?.(5000)
-        });
-        if(r.ok){
-          const d=await r.json();
-          if(d&&d.available===false){
-            lbNickname='';
-            localStorage.removeItem(S+'Nick');
-            alert(T().nickTaken(name));
-            welcInp.style.borderColor='#ef4444';
-            setTimeout(()=>welcInp.style.borderColor='',600);
-            welcInp.select();welcInp.focus();
-            return; // don't create a duplicate nick
-          }
-        }
-      }catch(e){}
-    }
-    // Create profile in Supabase (await — ensure write completes before navigating to menu)
-    profileLoaded=true;
-    await upsertProfile();
-    showScreen('menuScreen');
-    refreshMenuUI();
-  }
-  welcBtn.addEventListener('click',()=>doWelc(welcInp.value));
-  welcBtn.addEventListener('touchstart',e=>{e.preventDefault();doWelc(welcInp.value);},{passive:false});
-  welcInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doWelc(welcInp.value);}});
-  // Anonymous user from older versions — ask them to set a name (progress is preserved)
-  const ANON_NAMES=['Аноним','Anonym','Anonymous','Анонім','Anonim'];
-  const isAnonNick=(n)=>!n||ANON_NAMES.includes(n);
+  // Guest play was removed — the welcome screen now only offers Telegram/email
+  // login (see #welcAuthBtn). Screen routing below uses cloudEnabled instead
+  // of nickname heuristics: unauthenticated visitors (new or returning) always
+  // land on welcomeScreen; their local progress is preserved and applied once
+  // they sign in.
 
   // Presence writer — runs for ALL users (TG and non-TG), outer scope.
   // setOnline(state) flips is_online + refreshes last_seen via save_profile.
@@ -3010,13 +2923,9 @@ function buildShopPreview(){
       applyLang();
       refreshMenuUI();
       loading.style.display='none';
-      // Anonymous users must provide a name — progress will be saved, just need a nick
-      if(isAnonNick(lbNickname)){
-        showScreen('welcomeScreen');
-        setTimeout(()=>welcInp.focus(),300);
-      } else {
-        showScreen('menuScreen');
-      }
+      // Unauthenticated visitors always land on the login screen, even with a
+      // cloud profile on record (e.g. a legacy pre-auth anonymous row).
+      showScreen(cloudEnabled?'menuScreen':'welcomeScreen');
     } else {
       // No profile in Supabase — check localStorage
       applyLocalCache();
@@ -3024,12 +2933,11 @@ function buildShopPreview(){
       applyLang();
       refreshMenuUI();
       loading.style.display='none';
-      if(isAnonNick(lbNickname)){
-        // Brand new player
+      if(!cloudEnabled){
+        // Brand new or not-yet-authenticated player
         showScreen('welcomeScreen');
-        setTimeout(()=>welcInp.focus(),300);
       } else {
-        // Profile exists in localStorage — restore and sync to Supabase
+        // Authenticated but no cloud profile yet — restore local cache and sync
         profileLoaded=true;
         showScreen('menuScreen');
         upsertProfile();
@@ -3042,8 +2950,7 @@ function buildShopPreview(){
     applyLang();
     refreshMenuUI();
     loading.style.display='none';
-    showScreen(isAnonNick(lbNickname)?'welcomeScreen':'menuScreen');
-    if(isAnonNick(lbNickname)) setTimeout(()=>welcInp.focus(),300);
+    showScreen(cloudEnabled?'menuScreen':'welcomeScreen');
   }
 })();
 // ── ANIMATED MENU BACKGROUND — COSMIC AURORA ───────────────────────
