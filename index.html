@@ -44,6 +44,23 @@
   --canvas-border:#252525;
   --transition:background .25s,color .25s,border-color .25s;
 }
+/* ── Auth modal (email login/register) ── */
+#authModal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:20px;}
+.auth-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px 20px 20px;width:100%;max-width:340px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+.auth-title{font-size:1.15rem;font-weight:800;text-align:center;margin-bottom:14px;color:var(--text);}
+.auth-tgwrap{display:flex;justify-content:center;margin-bottom:6px;min-height:1px;}
+.auth-or{text-align:center;font-size:.72rem;color:var(--text3);margin:10px 0 8px;}
+#authEmail,#authPassword,#authNick{width:100%;background:var(--panel2);border:1.5px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;font-size:.9rem;outline:none;margin-bottom:9px;}
+#authEmail:focus,#authPassword:focus,#authNick:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-dim);}
+#authSubmit{width:100%;background:var(--ac);color:#0a0a0a;border:none;padding:12px;border-radius:10px;font-size:.92rem;font-weight:800;cursor:pointer;margin-top:2px;}
+#authSubmit:disabled{opacity:.6;cursor:default;}
+.auth-err{color:#f87171;font-size:.76rem;min-height:16px;text-align:center;margin:4px 0 2px;}
+.auth-switch{text-align:center;font-size:.78rem;color:var(--text2);margin-top:12px;}
+.auth-switch a{color:var(--ac);cursor:pointer;font-weight:700;margin-left:5px;}
+.auth-close{position:absolute;top:8px;right:11px;background:none;border:none;color:var(--text3);font-size:1.15rem;cursor:pointer;line-height:1;}
+#welcAuthBtn,#acctLoginBtn{background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;}
+#welcAuthBtn:hover,#acctLoginBtn:hover{border-color:var(--ac);color:var(--ac);}
+.acct-logout{background:transparent;border:1px solid var(--border);color:var(--text2);padding:6px 13px;border-radius:9px;font-size:.76rem;font-weight:600;cursor:pointer;}
 html{width:100%;height:100%;}
 body{
   width:100%;
@@ -641,6 +658,24 @@ canvas{
     <div id="tgLoginWrap" style="display:flex;justify-content:center;margin:4px 0 2px;min-height:1px"></div>
     <input id="welcInput" type="text" maxlength="16" placeholder="Your nickname..." autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="welcBtn">▶ &nbsp;PLAY!</button>
+    <button id="welcAuthBtn" type="button">✉️ Log in / Sign up</button>
+  </div>
+</div>
+<!-- AUTH MODAL (email login / register) -->
+<div id="authModal">
+  <div class="auth-box">
+    <button class="auth-close" id="authClose" type="button">✕</button>
+    <div class="auth-title" id="authTitle">Log in</div>
+    <div class="auth-tgwrap" id="authTgWrap"></div>
+    <div class="auth-or" id="authOr">— or with email —</div>
+    <input id="authEmail" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" spellcheck="false">
+    <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
+    <input id="authNick" type="text" maxlength="16" placeholder="Nickname" autocomplete="off" spellcheck="false" style="display:none">
+    <div class="auth-err" id="authErr"></div>
+    <button id="authSubmit" type="button">Log in</button>
+    <div class="auth-switch">
+      <span id="authSwitchTxt">No account?</span><a id="authSwitchLink">Sign up</a>
+    </div>
   </div>
 </div>
 <!-- MENU -->
@@ -901,6 +936,20 @@ canvas{
           <div style="font-size:.75rem;color:var(--muted)" id="tgAccLbl">Telegram account</div>
         </div>
         <span style="font-size:1.2rem">✈️</span>
+      </div>
+    </div>
+    <!-- Account (email login / status) — web only, hidden in Telegram -->
+    <div class="sett-card" id="acctCard">
+      <div class="sett-label" id="acctLbl">🔑 Account</div>
+      <div id="acctGuest">
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:8px" id="acctGuestHint">Log in to save progress & join the leaderboard from any device.</div>
+        <button id="acctLoginBtn" type="button">✉️ Log in / Sign up</button>
+      </div>
+      <div id="acctUser" style="display:none">
+        <div class="sett-row">
+          <span style="font-size:.82rem;color:var(--text2)" id="acctUserStatus">☁️ Signed in</span>
+          <button class="acct-logout" id="acctLogoutBtn" type="button">Log out</button>
+        </div>
       </div>
     </div>
     <!-- Nickname -->
@@ -2696,7 +2745,7 @@ function buildShopPreview(){
 
   // Returning web user who logged in with Telegram before → keep cloud enabled
   // (no need to re-login every visit; their pid/token are canonical).
-  if(!cloudEnabled && localStorage.getItem(S+'tgLinked')==='1'
+  if(!cloudEnabled && (localStorage.getItem(S+'tgLinked')==='1'||localStorage.getItem(S+'emailLinked')==='1')
      && localStorage.getItem(S+'pid') && localStorage.getItem(S+'wtok')){
     cloudEnabled=true;
   }
@@ -2726,11 +2775,11 @@ function buildShopPreview(){
       location.href=u.toString();
     }catch(e){ alert('Login init error'); }
   }
-  async function activateSession(d){
+  async function activateSession(d,viaTelegram=true){
     cloudEnabled=true;
     localStorage.setItem(S+'pid',d.player_id); setCookie(S+'pid',d.player_id);
     if(d.write_token){ localStorage.setItem(S+'wtok',d.write_token); setCookie(S+'wtok',d.write_token); }
-    localStorage.setItem(S+'tgLinked','1');
+    localStorage.setItem(S+(viaTelegram?'tgLinked':'emailLinked'),'1');
     if(d.profile){ applyProfile(d.profile); fetchModeBests(d.player_id); }
     else { lbNickname=(d.telegram_user&&(d.telegram_user.username||d.telegram_user.first_name))||'Player'; localStorage.setItem(S+'Nick',lbNickname); profileLoaded=true; upsertProfile(); }
     applyTheme(); applyLang(); refreshMenuUI(); startHeartbeat(); showScreen('menuScreen');
@@ -2766,6 +2815,92 @@ function buildShopPreview(){
     btn.onclick=startOidcLogin;
     wrap.appendChild(btn);
   }
+  // ── EMAIL AUTH (login / register) ──────────────────────────────────
+  const _authL={
+    ru:{login:'Вход',reg:'Регистрация',or:'— или по e-mail —',email:'E-mail',pass:'Пароль',nick:'Никнейм',doLogin:'Войти',doReg:'Зарегистрироваться',noAcc:'Нет аккаунта?',hasAcc:'Уже есть аккаунт?',switchReg:'Регистрация',switchLogin:'Войти',welcBtn:'✉️ Вход / Регистрация',acctBtn:'✉️ Вход / Регистрация',acctLbl:'🔑 Аккаунт',acctHint:'Войдите, чтобы сохранять прогресс и попасть в таблицу лидеров с любого устройства.',signedIn:'☁️ Вы вошли',logout:'Выйти',e_invalid_email:'Неверный e-mail',e_weak_password:'Пароль минимум 6 символов',e_email_taken:'Этот e-mail уже занят',e_invalid_credentials:'Неверный e-mail или пароль',e_fields:'Заполните e-mail и пароль',e_net:'Ошибка сети, попробуйте ещё раз'},
+    en:{login:'Log in',reg:'Sign up',or:'— or with email —',email:'Email',pass:'Password',nick:'Nickname',doLogin:'Log in',doReg:'Sign up',noAcc:'No account?',hasAcc:'Have an account?',switchReg:'Sign up',switchLogin:'Log in',welcBtn:'✉️ Log in / Sign up',acctBtn:'✉️ Log in / Sign up',acctLbl:'🔑 Account',acctHint:'Log in to save progress & join the leaderboard from any device.',signedIn:'☁️ Signed in',logout:'Log out',e_invalid_email:'Invalid email',e_weak_password:'Password min 6 chars',e_email_taken:'Email already in use',e_invalid_credentials:'Wrong email or password',e_fields:'Enter email and password',e_net:'Network error, try again'},
+    uk:{login:'Вхід',reg:'Реєстрація',or:'— або через e-mail —',email:'E-mail',pass:'Пароль',nick:'Нікнейм',doLogin:'Увійти',doReg:'Зареєструватися',noAcc:'Немає акаунта?',hasAcc:'Вже є акаунт?',switchReg:'Реєстрація',switchLogin:'Увійти',welcBtn:'✉️ Вхід / Реєстрація',acctBtn:'✉️ Вхід / Реєстрація',acctLbl:'🔑 Акаунт',acctHint:'Увійдіть, щоб зберігати прогрес і потрапити в таблицю лідерів з будь-якого пристрою.',signedIn:'☁️ Ви увійшли',logout:'Вийти',e_invalid_email:'Невірний e-mail',e_weak_password:'Пароль мінімум 6 символів',e_email_taken:'Цей e-mail вже зайнятий',e_invalid_credentials:'Невірний e-mail або пароль',e_fields:'Заповніть e-mail і пароль',e_net:'Помилка мережі, спробуйте ще раз'},
+    pl:{login:'Logowanie',reg:'Rejestracja',or:'— lub przez e-mail —',email:'E-mail',pass:'Hasło',nick:'Pseudonim',doLogin:'Zaloguj',doReg:'Zarejestruj się',noAcc:'Nie masz konta?',hasAcc:'Masz konto?',switchReg:'Rejestracja',switchLogin:'Zaloguj',welcBtn:'✉️ Zaloguj / Zarejestruj',acctBtn:'✉️ Zaloguj / Zarejestruj',acctLbl:'🔑 Konto',acctHint:'Zaloguj się, aby zapisywać postępy i trafić do rankingu z każdego urządzenia.',signedIn:'☁️ Zalogowano',logout:'Wyloguj',e_invalid_email:'Nieprawidłowy e-mail',e_weak_password:'Hasło min. 6 znaków',e_email_taken:'E-mail już zajęty',e_invalid_credentials:'Zły e-mail lub hasło',e_fields:'Podaj e-mail i hasło',e_net:'Błąd sieci, spróbuj ponownie'},
+    sk:{login:'Prihlásenie',reg:'Registrácia',or:'— alebo cez e-mail —',email:'E-mail',pass:'Heslo',nick:'Prezývka',doLogin:'Prihlásiť',doReg:'Zaregistrovať',noAcc:'Nemáte účet?',hasAcc:'Máte účet?',switchReg:'Registrácia',switchLogin:'Prihlásiť',welcBtn:'✉️ Prihlásiť / Registrácia',acctBtn:'✉️ Prihlásiť / Registrácia',acctLbl:'🔑 Účet',acctHint:'Prihláste sa, aby ste si uložili postup a dostali sa do rebríčka z akéhokoľvek zariadenia.',signedIn:'☁️ Prihlásený',logout:'Odhlásiť',e_invalid_email:'Neplatný e-mail',e_weak_password:'Heslo min. 6 znakov',e_email_taken:'E-mail sa už používa',e_invalid_credentials:'Nesprávny e-mail alebo heslo',e_fields:'Zadajte e-mail a heslo',e_net:'Chyba siete, skúste znova'}
+  };
+  const _aL=()=>_authL[currentLang]||_authL.en;
+  const _am=id=>document.getElementById(id);
+  let _authMode='login';
+  function setAuthMode(m){
+    _authMode=m; const L=_aL();
+    _am('authTitle').textContent=m==='register'?L.reg:L.login;
+    _am('authSubmit').textContent=m==='register'?L.doReg:L.doLogin;
+    _am('authNick').style.display=m==='register'?'':'none';
+    _am('authSwitchTxt').textContent=m==='register'?L.hasAcc:L.noAcc;
+    _am('authSwitchLink').textContent=m==='register'?L.switchLogin:L.switchReg;
+    _am('authErr').textContent='';
+  }
+  function openAuthModal(m){
+    const L=_aL();
+    _am('authOr').textContent=L.or;
+    _am('authEmail').placeholder=L.email;
+    _am('authPassword').placeholder=L.pass;
+    _am('authNick').placeholder=L.nick;
+    const tw=_am('authTgWrap'); tw.innerHTML='';
+    if(!isTG){
+      const labels={ru:'✈️ Войти через Telegram',en:'✈️ Sign in with Telegram',uk:'✈️ Увійти через Telegram',pl:'✈️ Zaloguj przez Telegram',sk:'✈️ Prihlásiť cez Telegram'};
+      const b=document.createElement('button'); b.type='button'; b.textContent=labels[currentLang]||labels.en;
+      b.style.cssText='background:#229ED9;color:#fff;font-weight:700;padding:10px 18px;border-radius:11px;border:none;cursor:pointer;font-size:.88rem';
+      b.onclick=startOidcLogin; tw.appendChild(b); _am('authOr').style.display='';
+    } else { _am('authOr').style.display='none'; }
+    setAuthMode(m||'login');
+    _am('authModal').style.display='flex';
+    setTimeout(()=>{try{_am('authEmail').focus();}catch(_){}} ,100);
+  }
+  function closeAuthModal(){ _am('authModal').style.display='none'; }
+  async function submitEmailAuth(){
+    const L=_aL(); const err=_am('authErr');
+    const email=(_am('authEmail').value||'').trim();
+    const password=_am('authPassword').value||'';
+    const nick=(_am('authNick').value||'').trim();
+    if(!email||!password){ err.textContent=L.e_fields; return; }
+    const btn=_am('authSubmit'); btn.disabled=true;
+    try{
+      const payload={action:_authMode,email,password};
+      if(_authMode==='register'&&nick) payload.nick=nick;
+      const r=await fetch(SB_URL+'/functions/v1/email-auth',{method:'POST',headers:SB_HEADERS,body:JSON.stringify(payload),signal:AbortSignal.timeout?.(15000)});
+      const d=await r.json().catch(()=>null);
+      if(d&&d.ok&&d.player_id){ closeAuthModal(); await activateSession(d,false); try{updateAcctCard();}catch(_){}; return; }
+      const code=(d&&d.error)||'';
+      err.textContent=L['e_'+code]||L.e_net;
+    }catch(e){ err.textContent=L.e_net; }
+    finally{ btn.disabled=false; }
+  }
+  function updateAcctCard(){
+    const card=_am('acctCard'); if(!card) return; const L=_aL();
+    if(isTG){ card.style.display='none'; return; }
+    card.style.display='';
+    const lbl=_am('acctLbl'); if(lbl) lbl.textContent=L.acctLbl;
+    const hint=_am('acctGuestHint'); if(hint) hint.textContent=L.acctHint;
+    const lbtn=_am('acctLoginBtn'); if(lbtn) lbtn.textContent=L.acctBtn;
+    const isEmail=localStorage.getItem(S+'emailLinked')==='1';
+    const isTgUser=localStorage.getItem(S+'tgLinked')==='1';
+    if(cloudEnabled&&(isEmail||isTgUser)){
+      _am('acctGuest').style.display='none'; _am('acctUser').style.display='';
+      const st=_am('acctUserStatus'); if(st) st.textContent=L.signedIn+(lbNickname?(' · '+lbNickname):'');
+      const lo=_am('acctLogoutBtn'); if(lo){ lo.textContent=L.logout; lo.style.display=isEmail?'':'none'; }
+    } else { _am('acctGuest').style.display=''; _am('acctUser').style.display='none'; }
+  }
+  function snakeLogout(){ ['pid','wtok','tgLinked','emailLinked'].forEach(k=>localStorage.removeItem(S+k)); location.reload(); }
+  (function wireAuthUI(){
+    const on=(id,ev,fn)=>{ const el=_am(id); if(el) el.addEventListener(ev,fn); };
+    on('welcAuthBtn','click',()=>openAuthModal('login'));
+    on('acctLoginBtn','click',()=>openAuthModal('login'));
+    on('acctLogoutBtn','click',snakeLogout);
+    on('authClose','click',closeAuthModal);
+    on('authSubmit','click',submitEmailAuth);
+    on('authSwitchLink','click',()=>setAuthMode(_authMode==='login'?'register':'login'));
+    on('authModal','click',e=>{ if(e.target===_am('authModal')) closeAuthModal(); });
+    on('authPassword','keydown',e=>{ if(e.key==='Enter') submitEmailAuth(); });
+    const wb=_am('welcAuthBtn'); if(wb) wb.textContent=_aL().welcBtn;
+  })();
+  window.openAuthModal=openAuthModal; window.updateAcctCard=updateAcctCard; window.snakeLogout=snakeLogout;
+  try{ updateAcctCard(); }catch(_){}
   // Web: handle the OAuth redirect (returning with ?code) before the guest flow.
   if(!isTG){
     if(await handleOidcRedirect()) return;
@@ -4558,7 +4693,7 @@ function stopMusic(){
       document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});
       var nid=MAP[id];
       if(nid){var b=document.getElementById(nid);if(b)b.classList.add('active');}
-      if(id==='settingsScreen')applyTgNickVisibility();
+      if(id==='settingsScreen'){applyTgNickVisibility();if(window.updateAcctCard)window.updateAcctCard();}
     };
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',patch);}
